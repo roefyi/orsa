@@ -228,14 +228,6 @@ struct NewBrewView: View {
                     }
                     .foregroundColor(.primaryText)
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        // Edit parameters
-                    } label: {
-                        Image(systemName: "ellipsis")
-                    }
-                    .foregroundColor(.primaryText)
-                }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Submit") {
                         saveBrew()
