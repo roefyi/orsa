@@ -6,19 +6,28 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ContentView: View {
+    @Query private var userProfiles: [UserProfile]
+    @Environment(\.modelContext) private var modelContext
+    
+    var isOnboardingComplete: Bool {
+        userProfiles.first?.onboardingCompleted ?? false
+    }
+    
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        Group {
+            if isOnboardingComplete {
+                MainTabView()
+            } else {
+                OnboardingView()
+            }
         }
-        .padding()
     }
 }
 
 #Preview {
     ContentView()
+        .modelContainer(for: [UserProfile.self, Equipment.self, Bean.self, Brew.self])
 }

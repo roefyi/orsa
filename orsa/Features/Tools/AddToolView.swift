@@ -1,0 +1,76 @@
+//
+//  AddToolView.swift
+//  orsa
+//
+//  Created by Rome on 1/9/26.
+//
+
+import SwiftUI
+import SwiftData
+
+struct AddToolView: View {
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+    
+    @State private var type: EquipmentType = .machine
+    @State private var brand = ""
+    @State private var model = ""
+    @State private var isPrimary = false
+    
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section("equipment info") {
+                    Picker("Type", selection: $type) {
+                        ForEach(EquipmentType.allCases, id: \.self) { type in
+                            Text(type.rawValue.capitalized).tag(type)
+                        }
+                    }
+                    TextField("Brand", text: $brand)
+                    TextField("Model", text: $model)
+                    Toggle("Set as Primary", isOn: $isPrimary)
+                }
+            }
+            .navigationTitle("add tool")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .foregroundColor(.primaryText)
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        saveEquipment()
+                        dismiss()
+                    }
+                    .disabled(brand.isEmpty && model.isEmpty)
+                    .tint(brand.isEmpty && model.isEmpty ? Color.secondaryText : .accent)
+                    .font(.oscineHeadline)
+                }
+            }
+        }
+    }
+    
+    private func saveEquipment() {
+        let equipment = Equipment(
+            type: type.rawValue,
+            brand: brand,
+            model: model,
+            isPrimary: isPrimary
+        )
+        modelContext.insert(equipment)
+        
+        do {
+            try modelContext.save()
+        } catch {
+            print("Error saving equipment: \(error)")
+        }
+    }
+}
+
+#Preview {
+    AddToolView()
+        .modelContainer(for: [Equipment.self])
+}

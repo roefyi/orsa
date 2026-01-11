@@ -10,9 +10,28 @@
 		E2CC12FE2F120F1A0078ED0D /* orsa.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = orsa.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		E2CC14662F1344240078ED0D /* Exceptions for "orsa" folder in "orsa" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+				Resources/TrialStaticFonts/Oscine_Trial_Bd.ttf,
+				Resources/TrialStaticFonts/Oscine_Trial_BdIt.ttf,
+				Resources/TrialStaticFonts/Oscine_Trial_It.ttf,
+				Resources/TrialStaticFonts/Oscine_Trial_Lt.ttf,
+				Resources/TrialStaticFonts/Oscine_Trial_LtIt.ttf,
+				Resources/TrialStaticFonts/Oscine_Trial_XBdIt.ttf,
+			);
+			target = E2CC12FD2F120F1A0078ED0D /* orsa */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		E2CC13002F120F1A0078ED0D /* orsa */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				E2CC14662F1344240078ED0D /* Exceptions for "orsa" folder in "orsa" target */,
+			);
 			path = orsa;
 			sourceTree = "<group>";
 		};
@@ -254,7 +273,8 @@
 				DEVELOPMENT_ASSET_PATHS = "\"orsa/Preview Content\"";
 				DEVELOPMENT_TEAM = S2RZZZ99HT;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = orsa/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -283,7 +303,8 @@
 				DEVELOPMENT_ASSET_PATHS = "\"orsa/Preview Content\"";
 				DEVELOPMENT_TEAM = S2RZZZ99HT;
 				ENABLE_PREVIEWS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
+				GENERATE_INFOPLIST_FILE = NO;
+				INFOPLIST_FILE = orsa/Info.plist;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
