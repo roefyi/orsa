@@ -70,6 +70,11 @@ struct orsaApp: App {
         UISlider.appearance().maximumTrackTintColor = sliderTrackColor // Unfilled portion (right of thumb)
         UISlider.appearance().thumbTintColor = accentColor // Thumb color
         
+        // Configure Form appearance
+        let cardBackgroundUIColor = UIColor(red: 233/255, green: 231/255, blue: 234/255, alpha: 1.0)
+        UITableView.appearance().backgroundColor = appBackgroundColor
+        UITableViewCell.appearance().backgroundColor = cardBackgroundUIColor
+        
         #if DEBUG
         FontBundleChecker.checkFontsInBundle()
         FontDebugHelper.listAllOscineFonts()

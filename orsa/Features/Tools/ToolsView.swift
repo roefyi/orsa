@@ -23,6 +23,13 @@ struct ToolsView: View {
                         showingAddTool = true
                     }
                     .listRowBackground(AppColors.cardCream)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button(role: .destructive) {
+                            deleteEquipment(item)
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
                 }
             }
             .scrollContentBackground(.hidden)
@@ -42,6 +49,15 @@ struct ToolsView: View {
             .sheet(isPresented: $showingAddTool) {
                 AddToolView(existingEquipment: selectedEquipment)
             }
+        }
+    }
+    
+    private func deleteEquipment(_ equipment: Equipment) {
+        modelContext.delete(equipment)
+        do {
+            try modelContext.save()
+        } catch {
+            print("Error deleting equipment: \(error)")
         }
     }
 }

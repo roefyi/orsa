@@ -40,6 +40,8 @@ struct AddBeanView: View {
                         .lineLimit(3...6)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.appBackground)
             .navigationTitle("add beans")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

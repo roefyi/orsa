@@ -37,6 +37,8 @@ struct AddToolView: View {
                     Toggle("Set as Primary", isOn: $isPrimary)
                 }
             }
+            .scrollContentBackground(.hidden)
+            .background(Color.appBackground)
             .navigationTitle(existingEquipment != nil ? "edit tool" : "add tool")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {

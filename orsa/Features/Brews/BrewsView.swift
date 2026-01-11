@@ -22,6 +22,13 @@ struct BrewsView: View {
                         selectedBrew = brew
                     }
                     .listRowBackground(AppColors.cardCream)
+                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                        Button(role: .destructive) {
+                            deleteBrew(brew)
+                        } label: {
+                            Label("Delete", systemImage: "trash")
+                        }
+                    }
                 }
             }
             .scrollContentBackground(.hidden)
@@ -46,6 +53,15 @@ struct BrewsView: View {
                     showingNewBrew = true
                 }
             }
+        }
+    }
+    
+    private func deleteBrew(_ brew: Brew) {
+        modelContext.delete(brew)
+        do {
+            try modelContext.save()
+        } catch {
+            print("Error deleting brew: \(error)")
         }
     }
 }
