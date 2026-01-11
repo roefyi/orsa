@@ -64,6 +64,12 @@ struct orsaApp: App {
         UIButton.appearance().tintColor = accentColor
         UIBarButtonItem.appearance().tintColor = accentColor
         
+        // Configure slider appearance
+        let sliderTrackColor = UIColor(red: 200/255, green: 193/255, blue: 189/255, alpha: 0.3) // Lighter track background
+        UISlider.appearance().minimumTrackTintColor = accentColor // Filled portion (left of thumb)
+        UISlider.appearance().maximumTrackTintColor = sliderTrackColor // Unfilled portion (right of thumb)
+        UISlider.appearance().thumbTintColor = accentColor // Thumb color
+        
         #if DEBUG
         FontBundleChecker.checkFontsInBundle()
         FontDebugHelper.listAllOscineFonts()

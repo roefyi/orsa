@@ -64,42 +64,24 @@ struct NewBrewView: View {
                                 .textCase(.lowercase)
                             
                             // Time Slider
-                            HStack(spacing: 16) {
-                                Text("Time")
-                                    .font(.oscineBody)
-                                    .foregroundColor(.primaryText)
-                                    .frame(width: 60, alignment: .leading)
-                                
-                                Slider(value: $brewTime, in: 15...75, step: 1)
-                                    .tint(.accent)
-                                
-                                Text("\(Int(brewTime))s")
-                                    .font(.oscineBody)
-                                    .foregroundColor(.primaryText)
-                                    .frame(width: 50, alignment: .trailing)
-                            }
-                            .padding(.vertical, 16)
-                            .padding(.horizontal, 16)
+                            CustomSlider(
+                                title: "Time",
+                                value: $brewTime,
+                                in: 15...75,
+                                step: 1,
+                                suffix: "s"
+                            )
                             .background(Color.cardBackground)
                             .cornerRadius(8)
                             
                             // Yield Slider
-                            HStack(spacing: 16) {
-                                Text("Yield")
-                                    .font(.oscineBody)
-                                    .foregroundColor(.primaryText)
-                                    .frame(width: 60, alignment: .leading)
-                                
-                                Slider(value: $yield, in: 10...110, step: 1)
-                                    .tint(.accent)
-                                
-                                Text("\(Int(yield))g")
-                                    .font(.oscineBody)
-                                    .foregroundColor(.primaryText)
-                                    .frame(width: 50, alignment: .trailing)
-                            }
-                            .padding(.vertical, 16)
-                            .padding(.horizontal, 16)
+                            CustomSlider(
+                                title: "Yield",
+                                value: $yield,
+                                in: 10...110,
+                                step: 1,
+                                suffix: "g"
+                            )
                             .background(Color.cardBackground)
                             .cornerRadius(8)
                         }
