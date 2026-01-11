@@ -27,20 +27,21 @@ struct CustomSlider: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .leading) {
-                // Background track (entire element)
+                // Background track (entire element) - lighter for unfilled portion
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.primaryText.opacity(0.15))
+                    .fill(Color.primaryText.opacity(0.1))
                     .frame(height: 44)
                 
-                // Progress indicator (filled portion extends to right edge)
+                // Progress indicator (filled portion extends to/past thumb, thumb overlays it)
                 let progress = CGFloat((value - range.lowerBound) / (range.upperBound - range.lowerBound))
                 let thumbWidth: CGFloat = 52
                 let trackWidth = geometry.size.width
+                let thumbCenter = thumbWidth/2 + (trackWidth - thumbWidth) * progress
                 
-                // Fill extends full width
+                // Fill extends to thumb center (darker) - creates seamless look when thumb overlays
                 RoundedRectangle(cornerRadius: 8)
                     .fill(Color.primaryText.opacity(0.25))
-                    .frame(width: trackWidth, height: 44)
+                    .frame(width: max(0, thumbCenter + thumbWidth/2), height: 44)
                 
                 // Text content inside slider
                 HStack {
@@ -60,20 +61,21 @@ struct CustomSlider: View {
                 }
                 .frame(height: 44)
                 
-                // Thumb (draggable handle) - seamless with track
+                // Thumb (draggable handle) - overlays the fill seamlessly, matches element height
                 RoundedRectangle(cornerRadius: 6)
                     .fill(Color.primaryText.opacity(0.8))
-                    .frame(width: thumbWidth, height: 36)
+                    .frame(width: thumbWidth, height: 44)
                     .scaleEffect(isDragging ? 1.05 : 1.0)
                     .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isDragging)
                     .position(
-                        x: thumbWidth/2 + (trackWidth * progress),
+                        x: thumbCenter,
                         y: 22
                     )
                     .gesture(
                         DragGesture(minimumDistance: 0)
                             .onChanged { gesture in
                                 isDragging = true
+                                // Allow thumb to reach from start (thumbWidth/2) to end (width - thumbWidth/2)
                                 let trackStart = thumbWidth/2
                                 let trackEnd = geometry.size.width - thumbWidth/2
                                 let position = max(trackStart, min(gesture.location.x, trackEnd))
