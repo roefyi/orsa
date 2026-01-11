@@ -12,13 +12,17 @@ struct ToolsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Equipment.dateAdded, order: .reverse) private var equipment: [Equipment]
     @State private var showingAddTool = false
+    @State private var selectedEquipment: Equipment?
     
     var body: some View {
         NavigationStack {
             List {
                 ForEach(equipment) { item in
-                    EquipmentCardView(equipment: item)
-                        .listRowBackground(AppColors.cardCream)
+                    EquipmentCardView(equipment: item) {
+                        selectedEquipment = item
+                        showingAddTool = true
+                    }
+                    .listRowBackground(AppColors.cardCream)
                 }
             }
             .scrollContentBackground(.hidden)
@@ -28,6 +32,7 @@ struct ToolsView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
+                        selectedEquipment = nil
                         showingAddTool = true
                     } label: {
                         Image(systemName: "plus")
@@ -35,7 +40,7 @@ struct ToolsView: View {
                 }
             }
             .sheet(isPresented: $showingAddTool) {
-                AddToolView()
+                AddToolView(existingEquipment: selectedEquipment)
             }
         }
     }

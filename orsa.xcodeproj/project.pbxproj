@@ -15,7 +15,6 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
-				Resources/TrialStaticFonts/Oscine_Trial_Bd.ttf,
 				Resources/TrialStaticFonts/Oscine_Trial_BdIt.ttf,
 				Resources/TrialStaticFonts/Oscine_Trial_It.ttf,
 				Resources/TrialStaticFonts/Oscine_Trial_Lt.ttf,

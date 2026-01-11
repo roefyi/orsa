@@ -9,6 +9,8 @@ import SwiftUI
 import SwiftData
 
 struct NewBrewView: View {
+    let existingBrew: Brew?
+    
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     
@@ -28,6 +30,10 @@ struct NewBrewView: View {
     @State private var selectedBean: Bean?
     @State private var drinkType = "Espresso"
     @State private var dose: Double = 18.0
+    
+    init(existingBrew: Brew? = nil) {
+        self.existingBrew = existingBrew
+    }
     
     var userName: String {
         userProfiles.first?.name ?? ""
@@ -93,47 +99,104 @@ struct NewBrewView: View {
                                 .foregroundColor(.primaryText)
                                 .textCase(.lowercase)
                             
-                            HStack(spacing: 20) {
+                            HStack(spacing: 12) {
                                 // Thumbs down
                                 Button {
                                     selectedRating = selectedRating == 1 ? nil : 1
                                 } label: {
-                                    Image(systemName: selectedRating == 1 ? "hand.thumbsdown.fill" : "hand.thumbsdown")
-                                        .font(.oscineTitle2)
-                                        .foregroundColor(selectedRating == 1 ? .red : .gray)
+                                    Group {
+                                        if selectedRating == 1 {
+                                            Text("👎")
+                                                .font(.system(size: 24))
+                                        } else {
+                                            Image(systemName: "hand.thumbsdown")
+                                                .font(.system(size: 20, weight: .medium))
+                                                .foregroundColor(.primaryText.opacity(0.8))
+                                        }
+                                    }
+                                    .frame(width: 60, height: 60)
+                                    .background(Color.cardBackground)
+                                    .cornerRadius(12)
                                 }
                                 
                                 // Neutral face
                                 Button {
                                     selectedRating = selectedRating == 3 ? nil : 3
                                 } label: {
-                                    Image(systemName: selectedRating == 3 ? "face.neutral.fill" : "face.neutral")
-                                        .font(.oscineTitle2)
-                                        .foregroundColor(selectedRating == 3 ? .yellow : .gray)
+                                    Group {
+                                        if selectedRating == 3 {
+                                            Text("😐")
+                                                .font(.system(size: 24))
+                                        } else {
+                                            // Create a simple neutral face outline
+                                            ZStack {
+                                                Circle()
+                                                    .stroke(Color.primaryText.opacity(0.8), lineWidth: 2)
+                                                    .frame(width: 20, height: 20)
+                                                // Eyes
+                                                HStack(spacing: 4) {
+                                                    Circle()
+                                                        .fill(Color.primaryText.opacity(0.8))
+                                                        .frame(width: 2, height: 2)
+                                                    Circle()
+                                                        .fill(Color.primaryText.opacity(0.8))
+                                                        .frame(width: 2, height: 2)
+                                                }
+                                                .offset(y: -2)
+                                                // Mouth (straight line)
+                                                Rectangle()
+                                                    .fill(Color.primaryText.opacity(0.8))
+                                                    .frame(width: 8, height: 1.5)
+                                                    .offset(y: 4)
+                                            }
+                                        }
+                                    }
+                                    .frame(width: 60, height: 60)
+                                    .background(Color.cardBackground)
+                                    .cornerRadius(12)
                                 }
                                 
                                 // Thumbs up
                                 Button {
                                     selectedRating = selectedRating == 4 ? nil : 4
                                 } label: {
-                                    Image(systemName: selectedRating == 4 ? "hand.thumbsup.fill" : "hand.thumbsup")
-                                        .font(.oscineTitle2)
-                                        .foregroundColor(selectedRating == 4 ? .green : .gray)
+                                    Group {
+                                        if selectedRating == 4 {
+                                            Text("👍")
+                                                .font(.system(size: 24))
+                                        } else {
+                                            Image(systemName: "hand.thumbsup")
+                                                .font(.system(size: 20, weight: .medium))
+                                                .foregroundColor(.primaryText.opacity(0.8))
+                                        }
+                                    }
+                                    .frame(width: 60, height: 60)
+                                    .background(Color.cardBackground)
+                                    .cornerRadius(12)
                                 }
                                 
                                 // Heart
                                 Button {
                                     selectedRating = selectedRating == 5 ? nil : 5
                                 } label: {
-                                    Image(systemName: selectedRating == 5 ? "heart.fill" : "heart")
-                                        .font(.oscineTitle2)
-                                        .foregroundColor(selectedRating == 5 ? .red : .gray)
+                                    Group {
+                                        if selectedRating == 5 {
+                                            Text("❤️")
+                                                .font(.system(size: 24))
+                                        } else {
+                                            Image(systemName: "heart")
+                                                .font(.system(size: 20, weight: .medium))
+                                                .foregroundColor(.primaryText.opacity(0.8))
+                                        }
+                                    }
+                                    .frame(width: 60, height: 60)
+                                    .background(Color.cardBackground)
+                                    .cornerRadius(12)
                                 }
+                                
+                                Spacer()
                             }
-                            .frame(maxWidth: .infinity)
-                            .padding()
-                            .background(Color.cardBackground)
-                            .cornerRadius(8)
+                            .frame(maxWidth: .infinity, alignment: .leading)
                         }
                         
                         // Notes Section
@@ -156,7 +219,7 @@ struct NewBrewView: View {
             }
             .scrollContentBackground(.hidden)
             .background(Color.appBackground)
-            .navigationTitle("new brew")
+            .navigationTitle(existingBrew != nil ? "brew details" : "new brew")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -190,31 +253,57 @@ struct NewBrewView: View {
     }
     
     private func setupAutoPopulation() {
-        // Get default dose from user profile
-        if let profile = userProfiles.first {
-            dose = profile.defaultDose
+        if let brew = existingBrew {
+            // Load existing brew data for editing
+            brewTime = Double(brew.brewTime.replacingOccurrences(of: "s", with: "")) ?? 30.0
+            yield = brew.yield
+            notes = brew.notes ?? ""
+            selectedRating = brew.rating
+            temperature = brew.temperature > 0 ? String(brew.temperature) : ""
+            grindSetting = brew.grindSetting
+            drinkType = brew.drinkType
+            dose = brew.dose
+            selectedBean = beans.first { $0.id == brew.beanID }
+        } else {
+            // Get default dose from user profile
+            if let profile = userProfiles.first {
+                dose = profile.defaultDose
+            }
+            
+            // Get current beans
+            selectedBean = beans.first { $0.status == BeanStatus.current.rawValue }
         }
-        
-        // Get current beans
-        selectedBean = beans.first { $0.status == BeanStatus.current.rawValue }
-        
-        // TODO: Get last brew parameters and auto-populate
     }
     
     private func saveBrew() {
-        let brew = Brew(
-            beanID: selectedBean?.id,
-            drinkType: drinkType,
-            dose: dose,
-            grindSetting: grindSetting,
-            temperature: Double(temperature) ?? 0,
-            brewTime: "\(Int(brewTime))s",
-            yield: yield,
-            rating: selectedRating,
-            notes: notes.isEmpty ? nil : notes,
-            method: drinkType.lowercased()
-        )
-        modelContext.insert(brew)
+        if let brew = existingBrew {
+            // Update existing brew
+            brew.beanID = selectedBean?.id
+            brew.drinkType = drinkType
+            brew.dose = dose
+            brew.grindSetting = grindSetting
+            brew.temperature = Double(temperature) ?? 0
+            brew.brewTime = "\(Int(brewTime))s"
+            brew.yield = yield
+            brew.rating = selectedRating
+            brew.notes = notes.isEmpty ? nil : notes
+            brew.method = drinkType.lowercased()
+        } else {
+            // Create new brew
+            let brew = Brew(
+                beanID: selectedBean?.id,
+                drinkType: drinkType,
+                dose: dose,
+                grindSetting: grindSetting,
+                temperature: Double(temperature) ?? 0,
+                brewTime: "\(Int(brewTime))s",
+                yield: yield,
+                rating: selectedRating,
+                notes: notes.isEmpty ? nil : notes,
+                method: drinkType.lowercased()
+            )
+            modelContext.insert(brew)
+        }
         
         do {
             try modelContext.save()

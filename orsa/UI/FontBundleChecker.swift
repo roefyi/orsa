@@ -15,7 +15,8 @@ struct FontBundleChecker {
         
         let fontNames = [
             "Oscine_Trial_Rg.ttf",
-            "Oscine_Trial_XBd.ttf"
+            "Oscine_Trial_XBd.ttf",
+            "Oscine_Trial_Bd.ttf"
         ]
         
         for fontName in fontNames {
@@ -49,7 +50,8 @@ struct FontBundleChecker {
         print("\n=== Loading Fonts Directly ===")
         let fontFileNames = [
             "Oscine_Trial_Rg.ttf",
-            "Oscine_Trial_XBd.ttf"
+            "Oscine_Trial_XBd.ttf",
+            "Oscine_Trial_Bd.ttf"
         ]
         
         for fontName in fontFileNames {

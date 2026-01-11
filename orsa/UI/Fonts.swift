@@ -14,17 +14,24 @@ extension Font {
         return .custom("OscineTrial-Regular", size: size)
     }
     
-    // Oscine ExtraBold (for headers and titles)
+    // Oscine Bold (for headings)
+    static func oscineBold(size: CGFloat) -> Font {
+        return .custom("OscineTrial-Bold", size: size)
+    }
+    
+    // Oscine ExtraBold (for titles)
     static func oscineExtraBold(size: CGFloat) -> Font {
         return .custom("OscineTrial-XBold", size: size)  // Confirmed PostScript name
     }
     
-    // Headers and Titles (ExtraBold)
+    // Titles (ExtraBold)
     static let oscineLargeTitle = oscineExtraBold(size: 34)
     static let oscineTitle = oscineExtraBold(size: 28)
     static let oscineTitle2 = oscineExtraBold(size: 22)
     static let oscineTitle3 = oscineExtraBold(size: 20)
-    static let oscineHeadline = oscineExtraBold(size: 17)
+    
+    // Headings (Bold)
+    static let oscineHeadline = oscineBold(size: 17)
     
     // Body Text (Regular)
     static let oscineBody = oscineRegular(size: 17)

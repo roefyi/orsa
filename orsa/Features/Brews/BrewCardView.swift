@@ -10,6 +10,8 @@ import SwiftData
 
 struct BrewCardView: View {
     let brew: Brew
+    let onTap: () -> Void
+    
     @Query private var beans: [Bean]
     @Query private var equipment: [Equipment]
     
@@ -19,29 +21,32 @@ struct BrewCardView: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 4) {
-            HStack {
-                Text(bean?.coffeeName ?? "Unknown Coffee")
-                    .font(.oscineHeadline)
-                    .foregroundColor(.primaryText)
-                Spacer()
-                Text(brew.timestamp, style: .date)
+        Button(action: onTap) {
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Text(bean?.coffeeName ?? "Unknown Coffee")
+                        .font(.oscineHeadline)
+                        .foregroundColor(.primaryText)
+                    Spacer()
+                    Text(brew.timestamp, style: .date)
+                        .font(.oscineCaption)
+                        .foregroundColor(.secondaryText)
+                }
+                
+                if let roaster = bean?.roaster {
+                    Text(roaster)
+                        .font(.oscineSubheadline)
+                        .foregroundColor(.secondaryText)
+                }
+                
+                Text(brew.drinkType)
                     .font(.oscineCaption)
                     .foregroundColor(.secondaryText)
             }
-            
-            if let roaster = bean?.roaster {
-                Text(roaster)
-                    .font(.oscineSubheadline)
-                    .foregroundColor(.secondaryText)
-            }
-            
-            Text(brew.drinkType)
-                .font(.oscineCaption)
-                .foregroundColor(.secondaryText)
+            .padding(.vertical, 8)
+            .padding(.horizontal, 4)
         }
-        .padding(.vertical, 8)
-        .padding(.horizontal, 4)
+        .buttonStyle(PlainButtonStyle())
     }
 }
 
@@ -51,7 +56,7 @@ struct BrewCardView: View {
     let brew = Brew(timestamp: Date(), drinkType: "Espresso")
     
     List {
-        BrewCardView(brew: brew)
+        BrewCardView(brew: brew, onTap: {})
     }
     .modelContainer(container)
 }

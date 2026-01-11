@@ -9,6 +9,8 @@ import SwiftUI
 import SwiftData
 
 struct AddToolView: View {
+    let existingEquipment: Equipment?
+    
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     
@@ -16,6 +18,10 @@ struct AddToolView: View {
     @State private var brand = ""
     @State private var model = ""
     @State private var isPrimary = false
+    
+    init(existingEquipment: Equipment? = nil) {
+        self.existingEquipment = existingEquipment
+    }
     
     var body: some View {
         NavigationStack {
@@ -31,7 +37,7 @@ struct AddToolView: View {
                     Toggle("Set as Primary", isOn: $isPrimary)
                 }
             }
-            .navigationTitle("add tool")
+            .navigationTitle(existingEquipment != nil ? "edit tool" : "add tool")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
@@ -50,17 +56,34 @@ struct AddToolView: View {
                     .font(.oscineHeadline)
                 }
             }
+            .onAppear {
+                if let equipment = existingEquipment {
+                    type = equipment.equipmentType
+                    brand = equipment.brand
+                    model = equipment.model
+                    isPrimary = equipment.isPrimary
+                }
+            }
         }
     }
     
     private func saveEquipment() {
-        let equipment = Equipment(
-            type: type.rawValue,
-            brand: brand,
-            model: model,
-            isPrimary: isPrimary
-        )
-        modelContext.insert(equipment)
+        if let equipment = existingEquipment {
+            // Update existing equipment
+            equipment.equipmentType = type
+            equipment.brand = brand
+            equipment.model = model
+            equipment.isPrimary = isPrimary
+        } else {
+            // Create new equipment
+            let equipment = Equipment(
+                type: type.rawValue,
+                brand: brand,
+                model: model,
+                isPrimary: isPrimary
+            )
+            modelContext.insert(equipment)
+        }
         
         do {
             try modelContext.save()

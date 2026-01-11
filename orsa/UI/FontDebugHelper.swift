@@ -33,13 +33,17 @@ struct FontDebugHelper {
     static func testFontNames() {
         let testNames = [
             "OscineTrial-Regular",  // Try this first (from font file)
+            "OscineTrial-Bold",  // Bold font
             "OscineTrial-ExtraBold",  // Try this first (likely name)
+            "OscineTrial-XBold",  // ExtraBold
             "Oscine_Trial_Rg",
             "OscineTrial-Rg",
             "OscineTrialRg",
             "Oscine-Trial-Rg",
             "Oscine_Trail_Rg",
-            "OscineTrial-Regular",
+            "Oscine_Trial_Bd",
+            "OscineTrial-Bd",
+            "OscineTrialBd",
             "Oscine_Trial_XBd",
             "OscineTrial-XBd",
             "OscineTrialXBd",
