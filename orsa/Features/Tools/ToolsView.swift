@@ -14,10 +14,21 @@ struct ToolsView: View {
     @State private var showingAddTool = false
     @State private var selectedEquipment: Equipment?
     
+    var sortedEquipment: [Equipment] {
+        equipment.sorted { first, second in
+            // Primary equipment first
+            if first.isPrimary != second.isPrimary {
+                return first.isPrimary
+            }
+            // Then by date added (most recent first)
+            return first.dateAdded > second.dateAdded
+        }
+    }
+    
     var body: some View {
         NavigationStack {
             List {
-                ForEach(equipment) { item in
+                ForEach(sortedEquipment) { item in
                     EquipmentCardView(equipment: item) {
                         selectedEquipment = item
                         showingAddTool = true
@@ -34,8 +45,8 @@ struct ToolsView: View {
             }
             .onAppear {
                 print("ToolsView appeared - Equipment count: \(equipment.count)")
-                equipment.forEach { eq in
-                    print("  - \(eq.displayName) (\(eq.type)) - id: \(eq.id)")
+                sortedEquipment.forEach { eq in
+                    print("  - \(eq.displayName) (\(eq.type)) - id: \(eq.id) - primary: \(eq.isPrimary)")
                 }
             }
             .scrollContentBackground(.hidden)

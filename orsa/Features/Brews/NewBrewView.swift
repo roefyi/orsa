@@ -30,7 +30,7 @@ struct NewBrewView: View {
     @State private var selectedBean: Bean?
     @State private var selectedMachine: Equipment?
     @State private var selectedGrinder: Equipment?
-    @State private var drinkType = "Espresso"
+    @State private var drinkType = "Single Shot"
     @State private var milkType = "None"
     @State private var dose: Double = 18.0
     @State private var showingEditParameters = false
@@ -46,10 +46,11 @@ struct NewBrewView: View {
     var descriptionText: String {
         let coffeeName = selectedBean?.coffeeName ?? "coffee"
         let roasterName = selectedBean?.roaster ?? ""
+        let drinkTypeLower = drinkType.lowercased()
         if !roasterName.isEmpty {
-            return "\(userName) is making a \(drinkType) with \(coffeeName) by \(roasterName)"
+            return "\(userName) is making a \(drinkTypeLower) with \(coffeeName) by \(roasterName)"
         } else {
-            return "\(userName) is making a \(drinkType) with \(coffeeName)"
+            return "\(userName) is making a \(drinkTypeLower) with \(coffeeName)"
         }
     }
     
@@ -280,7 +281,8 @@ struct NewBrewView: View {
                     temperature: $temperature,
                     grindSetting: $grindSetting,
                     drinkType: $drinkType,
-                    milkType: $milkType
+                    milkType: $milkType,
+                    dose: $dose
                 )
             }
         }
