@@ -85,7 +85,49 @@ struct orsaApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .modelContainer(for: [UserProfile.self, Equipment.self, Bean.self, Brew.self])
+                .modelContainer(createModelContainer())
+        }
+    }
+    
+    private func createModelContainer() -> ModelContainer {
+        let schema = Schema([
+            UserProfile.self,
+            Equipment.self,
+            Bean.self,
+            Brew.self
+        ])
+        
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        
+        do {
+            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+        } catch {
+            // If migration fails, try to delete the database and create a fresh one
+            print("⚠️ Migration failed: \(error.localizedDescription)")
+            print("Attempting to reset database...")
+            
+            // Get the default database URL
+            let url = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+            let databaseURL = url.appendingPathComponent("default.store")
+            
+            // Try to delete the corrupted database
+            if FileManager.default.fileExists(atPath: databaseURL.path) {
+                do {
+                    try FileManager.default.removeItem(at: databaseURL)
+                    print("✓ Deleted corrupted database")
+                } catch {
+                    print("✗ Could not delete database: \(error.localizedDescription)")
+                }
+            }
+            
+            // Try creating a fresh container
+            do {
+                let freshContainer = try ModelContainer(for: schema, configurations: [modelConfiguration])
+                print("✓ Created fresh database")
+                return freshContainer
+            } catch {
+                fatalError("Could not create ModelContainer even after reset: \(error)")
+            }
         }
     }
 }

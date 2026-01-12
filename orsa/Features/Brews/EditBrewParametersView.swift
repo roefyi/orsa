@@ -23,8 +23,6 @@ struct EditBrewParametersView: View {
     @Binding var grindSetting: String
     @Binding var drinkType: String
     @Binding var milkType: String
-    @Binding var wdt: Bool
-    @Binding var rdt: Bool
     
     // Local state for drink type picker
     @State private var drinkTypeOptions = ["Espresso", "Cappuccino", "Latte", "Americano", "Macchiato", "Flat White", "Cortado"]
@@ -37,9 +35,7 @@ struct EditBrewParametersView: View {
         temperature: Binding<String>,
         grindSetting: Binding<String>,
         drinkType: Binding<String>,
-        milkType: Binding<String>,
-        wdt: Binding<Bool>,
-        rdt: Binding<Bool>
+        milkType: Binding<String>
     ) {
         self._selectedBean = selectedBean
         self._selectedMachine = selectedMachine
@@ -48,8 +44,6 @@ struct EditBrewParametersView: View {
         self._grindSetting = grindSetting
         self._drinkType = drinkType
         self._milkType = milkType
-        self._wdt = wdt
-        self._rdt = rdt
     }
     
     var machines: [Equipment] {
@@ -296,29 +290,6 @@ struct EditBrewParametersView: View {
                                 .cornerRadius(8)
                             }
                             
-                            // Prep Section
-                            VStack(alignment: .leading, spacing: 8) {
-                                Text("prep")
-                                    .font(.oscineSubheadline)
-                                    .foregroundColor(.primaryText)
-                                    .textCase(.lowercase)
-                                
-                                VStack(spacing: 12) {
-                                    Toggle("WDT", isOn: $wdt)
-                                        .font(.oscineBody)
-                                        .foregroundColor(.primaryText)
-                                        .padding()
-                                        .background(Color.cardBackground)
-                                        .cornerRadius(8)
-                                    
-                                    Toggle("RDT", isOn: $rdt)
-                                        .font(.oscineBody)
-                                        .foregroundColor(.primaryText)
-                                        .padding()
-                                        .background(Color.cardBackground)
-                                        .cornerRadius(8)
-                                }
-                            }
                         }
                         .padding(.horizontal, 20)
                     }
@@ -358,8 +329,6 @@ struct EditBrewParametersView: View {
         @State private var grindSetting = "5"
         @State private var drinkType = "Espresso"
         @State private var milkType = "None"
-        @State private var wdt = false
-        @State private var rdt = false
         
         var body: some View {
             EditBrewParametersView(
@@ -369,9 +338,7 @@ struct EditBrewParametersView: View {
                 temperature: $temperature,
                 grindSetting: $grindSetting,
                 drinkType: $drinkType,
-                milkType: $milkType,
-                wdt: $wdt,
-                rdt: $rdt
+                milkType: $milkType
             )
         }
     }

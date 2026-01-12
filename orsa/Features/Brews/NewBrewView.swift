@@ -33,8 +33,6 @@ struct NewBrewView: View {
     @State private var drinkType = "Espresso"
     @State private var milkType = "None"
     @State private var dose: Double = 18.0
-    @State private var wdt = false
-    @State private var rdt = false
     @State private var showingEditParameters = false
     
     init(existingBrew: Brew? = nil) {
@@ -260,9 +258,7 @@ struct NewBrewView: View {
                     temperature: $temperature,
                     grindSetting: $grindSetting,
                     drinkType: $drinkType,
-                    milkType: $milkType,
-                    wdt: $wdt,
-                    rdt: $rdt
+                    milkType: $milkType
                 )
             }
         }
@@ -280,8 +276,6 @@ struct NewBrewView: View {
             drinkType = brew.drinkType
             milkType = brew.milkType ?? "None"
             dose = brew.dose
-            wdt = brew.wdt
-            rdt = brew.rdt
             selectedBean = beans.first { $0.id == brew.beanID }
             selectedMachine = equipment.first { $0.id == brew.machineID }
             selectedGrinder = equipment.first { $0.id == brew.grinderID }
@@ -312,8 +306,6 @@ struct NewBrewView: View {
             brew.rating = selectedRating
             brew.notes = notes.isEmpty ? nil : notes
             brew.method = drinkType.lowercased()
-            brew.wdt = wdt
-            brew.rdt = rdt
         } else {
             // Create new brew
             let brew = Brew(
@@ -329,9 +321,7 @@ struct NewBrewView: View {
                 yield: yield,
                 rating: selectedRating,
                 notes: notes.isEmpty ? nil : notes,
-                method: drinkType.lowercased(),
-                wdt: wdt,
-                rdt: rdt
+                method: drinkType.lowercased()
             )
             modelContext.insert(brew)
         }

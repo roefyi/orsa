@@ -32,6 +32,12 @@ struct ToolsView: View {
                     }
                 }
             }
+            .onAppear {
+                print("ToolsView appeared - Equipment count: \(equipment.count)")
+                equipment.forEach { eq in
+                    print("  - \(eq.displayName) (\(eq.type)) - id: \(eq.id)")
+                }
+            }
             .scrollContentBackground(.hidden)
             .background(Color.appBackground)
             .navigationTitle("tools")

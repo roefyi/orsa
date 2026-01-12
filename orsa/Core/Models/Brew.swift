@@ -26,8 +26,6 @@ final class Brew {
     var notes: String?
     var photoData: Data?
     var method: String // "espresso", "pour over", etc.
-    var wdt: Bool // Weiss Distribution Technique
-    var rdt: Bool // Ross Droplet Technique
     
     init(
         id: UUID = UUID(),
@@ -45,9 +43,7 @@ final class Brew {
         rating: Int? = nil,
         notes: String? = nil,
         photoData: Data? = nil,
-        method: String = "",
-        wdt: Bool = false,
-        rdt: Bool = false
+        method: String = ""
     ) {
         self.id = id
         self.timestamp = timestamp
@@ -65,7 +61,5 @@ final class Brew {
         self.notes = notes
         self.photoData = photoData
         self.method = method
-        self.wdt = wdt
-        self.rdt = rdt
     }
 }

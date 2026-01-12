@@ -79,18 +79,22 @@ struct AddToolView: View {
         } else {
             // Create new equipment
             let equipment = Equipment(
+                id: UUID(),
                 type: type.rawValue,
                 brand: brand,
                 model: model,
                 isPrimary: isPrimary
             )
             modelContext.insert(equipment)
+            print("Inserted new equipment: \(equipment.displayName) with id: \(equipment.id)")
         }
         
         do {
             try modelContext.save()
+            print("Successfully saved equipment")
         } catch {
-            print("Error saving equipment: \(error)")
+            print("Error saving equipment: \(error.localizedDescription)")
+            print("Full error: \(error)")
         }
     }
 }
