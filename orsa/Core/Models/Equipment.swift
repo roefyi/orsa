@@ -17,6 +17,7 @@ enum EquipmentType: String, Codable, CaseIterable {
 
 @Model
 final class Equipment {
+    var id: UUID
     var type: String // "machine", "grinder", "scale", "kettle"
     var brand: String
     var model: String
@@ -24,12 +25,14 @@ final class Equipment {
     var dateAdded: Date
     
     init(
+        id: UUID = UUID(),
         type: String = EquipmentType.machine.rawValue,
         brand: String = "",
         model: String = "",
         isPrimary: Bool = false,
         dateAdded: Date = Date()
     ) {
+        self.id = id
         self.type = type
         self.brand = brand
         self.model = model

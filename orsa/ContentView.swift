@@ -9,19 +9,24 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @Query private var userProfiles: [UserProfile]
+    @Query(sort: \UserProfile.name) private var userProfiles: [UserProfile]
+    @AppStorage("onboardingCompleted") private var onboardingCompleted = false
     @Environment(\.modelContext) private var modelContext
-    
-    var isOnboardingComplete: Bool {
-        userProfiles.first?.onboardingCompleted ?? false
-    }
     
     var body: some View {
         Group {
-            if isOnboardingComplete {
+            if onboardingCompleted || (userProfiles.first?.onboardingCompleted ?? false) {
                 MainTabView()
             } else {
-                OnboardingView()
+                OnboardingView(onComplete: {
+                    onboardingCompleted = true
+                })
+            }
+        }
+        .onAppear {
+            // Sync AppStorage with SwiftData on appear
+            if let profile = userProfiles.first, profile.onboardingCompleted {
+                onboardingCompleted = true
             }
         }
     }

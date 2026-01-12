@@ -10,11 +10,19 @@ import SwiftData
 
 struct OnboardingView: View {
     @Environment(\.modelContext) private var modelContext
+    @Query private var existingProfiles: [UserProfile]
+    @AppStorage("onboardingCompleted") private var onboardingCompleted = false
+    let onComplete: (() -> Void)?
+    
     @State private var currentStep = 0
     @State private var userName = ""
     @State private var machineName = ""
     @State private var grinderName = ""
     @State private var defaultDose = "18.0"
+    
+    init(onComplete: (() -> Void)? = nil) {
+        self.onComplete = onComplete
+    }
     
     var body: some View {
         ZStack {
@@ -45,15 +53,26 @@ struct OnboardingView: View {
     }
     
     private func completeOnboarding() {
-        let profile = UserProfile(
-            name: userName,
-            defaultDose: Double(defaultDose) ?? 18.0
-        )
+        // Get or create user profile
+        let profile: UserProfile
+        if let existingProfile = existingProfiles.first {
+            profile = existingProfile
+            profile.name = userName
+            profile.defaultDose = Double(defaultDose) ?? 18.0
+        } else {
+            profile = UserProfile(
+                name: userName,
+                defaultDose: Double(defaultDose) ?? 18.0
+            )
+            modelContext.insert(profile)
+        }
+        
         profile.onboardingCompleted = true
         
         // Add equipment
         if !machineName.isEmpty {
             let machine = Equipment(
+                id: UUID(),
                 type: EquipmentType.machine.rawValue,
                 brand: machineName,
                 model: "",
@@ -64,6 +83,7 @@ struct OnboardingView: View {
         
         if !grinderName.isEmpty {
             let grinder = Equipment(
+                id: UUID(),
                 type: EquipmentType.grinder.rawValue,
                 brand: grinderName,
                 model: "",
@@ -72,10 +92,12 @@ struct OnboardingView: View {
             modelContext.insert(grinder)
         }
         
-        modelContext.insert(profile)
-        
         do {
             try modelContext.save()
+            // Update AppStorage immediately
+            onboardingCompleted = true
+            // Call completion handler if provided
+            onComplete?()
         } catch {
             print("Error saving onboarding data: \(error)")
         }
@@ -83,6 +105,6 @@ struct OnboardingView: View {
 }
 
 #Preview {
-    OnboardingView()
+    OnboardingView(onComplete: nil)
         .modelContainer(for: [UserProfile.self, Equipment.self])
 }

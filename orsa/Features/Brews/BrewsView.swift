@@ -45,7 +45,7 @@ struct BrewsView: View {
                     }
                 }
             }
-            .sheet(isPresented: $showingNewBrew) {
+            .fullScreenCover(isPresented: $showingNewBrew) {
                 NewBrewView(existingBrew: selectedBrew)
             }
             .onChange(of: selectedBrew) { oldValue, newValue in

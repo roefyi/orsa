@@ -28,8 +28,14 @@ struct NewBrewView: View {
     
     // This will be auto-populated based on last brew
     @State private var selectedBean: Bean?
+    @State private var selectedMachine: Equipment?
+    @State private var selectedGrinder: Equipment?
     @State private var drinkType = "Espresso"
+    @State private var milkType = "None"
     @State private var dose: Double = 18.0
+    @State private var wdt = false
+    @State private var rdt = false
+    @State private var showingEditParameters = false
     
     init(existingBrew: Brew? = nil) {
         self.existingBrew = existingBrew
@@ -228,18 +234,36 @@ struct NewBrewView: View {
                     }
                     .foregroundColor(.primaryText)
                 }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Submit") {
+                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                    Button("Edit") {
+                        showingEditParameters = true
+                    }
+                    .tint(.accent)
+                    .font(.oscineHeadline)
+                    
+                    Button("Save") {
                         saveBrew()
                         dismiss()
                     }
-                    .disabled(false) // Sliders always have values, so always enabled
                     .tint(.accent)
                     .font(.oscineHeadline)
                 }
             }
             .onAppear {
                 setupAutoPopulation()
+            }
+            .fullScreenCover(isPresented: $showingEditParameters) {
+                EditBrewParametersView(
+                    selectedBean: $selectedBean,
+                    selectedMachine: $selectedMachine,
+                    selectedGrinder: $selectedGrinder,
+                    temperature: $temperature,
+                    grindSetting: $grindSetting,
+                    drinkType: $drinkType,
+                    milkType: $milkType,
+                    wdt: $wdt,
+                    rdt: $rdt
+                )
             }
         }
     }
@@ -254,8 +278,13 @@ struct NewBrewView: View {
             temperature = brew.temperature > 0 ? String(brew.temperature) : ""
             grindSetting = brew.grindSetting
             drinkType = brew.drinkType
+            milkType = brew.milkType ?? "None"
             dose = brew.dose
+            wdt = brew.wdt
+            rdt = brew.rdt
             selectedBean = beans.first { $0.id == brew.beanID }
+            selectedMachine = equipment.first { $0.id == brew.machineID }
+            selectedGrinder = equipment.first { $0.id == brew.grinderID }
         } else {
             // Get default dose from user profile
             if let profile = userProfiles.first {
@@ -271,7 +300,10 @@ struct NewBrewView: View {
         if let brew = existingBrew {
             // Update existing brew
             brew.beanID = selectedBean?.id
+            brew.machineID = selectedMachine?.id
+            brew.grinderID = selectedGrinder?.id
             brew.drinkType = drinkType
+            brew.milkType = milkType == "None" ? nil : milkType
             brew.dose = dose
             brew.grindSetting = grindSetting
             brew.temperature = Double(temperature) ?? 0
@@ -280,11 +312,16 @@ struct NewBrewView: View {
             brew.rating = selectedRating
             brew.notes = notes.isEmpty ? nil : notes
             brew.method = drinkType.lowercased()
+            brew.wdt = wdt
+            brew.rdt = rdt
         } else {
             // Create new brew
             let brew = Brew(
                 beanID: selectedBean?.id,
+                machineID: selectedMachine?.id,
+                grinderID: selectedGrinder?.id,
                 drinkType: drinkType,
+                milkType: milkType == "None" ? nil : milkType,
                 dose: dose,
                 grindSetting: grindSetting,
                 temperature: Double(temperature) ?? 0,
@@ -292,7 +329,9 @@ struct NewBrewView: View {
                 yield: yield,
                 rating: selectedRating,
                 notes: notes.isEmpty ? nil : notes,
-                method: drinkType.lowercased()
+                method: drinkType.lowercased(),
+                wdt: wdt,
+                rdt: rdt
             )
             modelContext.insert(brew)
         }
