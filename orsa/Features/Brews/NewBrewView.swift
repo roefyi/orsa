@@ -216,6 +216,35 @@ struct NewBrewView: View {
                                 .background(Color.cardBackground)
                                 .cornerRadius(8)
                         }
+                        
+                        // Action Buttons
+                        VStack(spacing: 12) {
+                            // Home button (primary) - submits and saves
+                            Button {
+                                saveBrew()
+                                dismiss()
+                            } label: {
+                                Text("home")
+                                    .font(.oscineHeadline)
+                                    .foregroundColor(.primaryText)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(AppColors.buttonYellow)
+                                    .cornerRadius(12)
+                            }
+                            
+                            // Share button (secondary) - text only
+                            Button {
+                                // TODO: Implement share functionality
+                                print("Share brew")
+                            } label: {
+                                Text("share")
+                                    .font(.oscineHeadline)
+                                    .foregroundColor(.primaryText)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                            }
+                        }
                     }
                     .padding(.horizontal, 20)
                 }
@@ -232,16 +261,9 @@ struct NewBrewView: View {
                     }
                     .foregroundColor(.primaryText)
                 }
-                ToolbarItemGroup(placement: .navigationBarTrailing) {
+                ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Edit") {
                         showingEditParameters = true
-                    }
-                    .tint(.accent)
-                    .font(.oscineHeadline)
-                    
-                    Button("Save") {
-                        saveBrew()
-                        dismiss()
                     }
                     .tint(.accent)
                     .font(.oscineHeadline)
