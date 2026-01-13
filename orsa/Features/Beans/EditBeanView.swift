@@ -82,6 +82,7 @@ struct EditBeanView: View {
                 }
             }
             .scrollContentBackground(.hidden)
+            .scrollDismissesKeyboard(.interactively)
             .background(Color.appBackground)
             .navigationTitle("edit beans")
             .navigationBarTitleDisplayMode(.inline)

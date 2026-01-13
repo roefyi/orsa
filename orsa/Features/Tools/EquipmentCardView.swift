@@ -25,26 +25,27 @@ struct EquipmentCardView: View {
     }
     
     var body: some View {
-        Button(action: onTap) {
-            HStack {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(equipment.displayName)
-                        .font(.oscineHeadline)
-                        .foregroundColor(.cardText)
-                    Text(typeDisplay)
-                        .font(.oscineCaption)
-                        .foregroundColor(.cardText.opacity(0.7))
-                }
-                Spacer()
-                if equipment.isPrimary {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.cardText)
-                }
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text(equipment.displayName)
+                    .font(.oscineHeadline)
+                    .foregroundColor(.cardText)
+                Text(typeDisplay)
+                    .font(.oscineCaption)
+                    .foregroundColor(.cardText.opacity(0.7))
             }
-            .padding(.vertical, 8)
-            .padding(.horizontal, 4)
+            Spacer()
+            if equipment.isPrimary {
+                Image(systemName: "checkmark.circle.fill")
+                    .foregroundColor(.cardText)
+            }
         }
-        .buttonStyle(PlainButtonStyle())
+        .padding(.vertical, 12)
+        .padding(.horizontal, 16)
+        .contentShape(Rectangle())
+        .onTapGesture {
+            onTap()
+        }
     }
 }
 

@@ -34,6 +34,7 @@ struct ToolsView: View {
                         showingAddTool = true
                     }
                     .listRowBackground(AppColors.cardCream)
+                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 8, trailing: 0))
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button(role: .destructive) {
                             deleteEquipment(item)
@@ -60,11 +61,15 @@ struct ToolsView: View {
                         showingAddTool = true
                     } label: {
                         Image(systemName: "plus")
+                            .foregroundColor(.primaryText)
                     }
                 }
             }
             .sheet(isPresented: $showingAddTool) {
                 AddToolView(existingEquipment: selectedEquipment)
+                    .onDisappear {
+                        selectedEquipment = nil
+                    }
             }
         }
     }

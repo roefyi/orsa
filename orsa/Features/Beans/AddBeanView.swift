@@ -43,6 +43,7 @@ struct AddBeanView: View {
                 }
             }
             .scrollContentBackground(.hidden)
+            .scrollDismissesKeyboard(.interactively)
             .background(Color.appBackground)
             .navigationTitle("add beans")
             .navigationBarTitleDisplayMode(.inline)

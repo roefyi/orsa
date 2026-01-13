@@ -284,6 +284,7 @@ struct BeanDetailView: View {
                     showingEditBean = true
                 } label: {
                     Image(systemName: "ellipsis")
+                        .foregroundColor(.primaryText)
                 }
             }
         }

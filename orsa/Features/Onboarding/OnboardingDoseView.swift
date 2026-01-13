@@ -53,6 +53,9 @@ struct OnboardingDoseView: View {
             }
         }
         .background(Color.appBackground)
+        .onTapGesture {
+            isTextFieldFocused = false
+        }
     }
 }
 

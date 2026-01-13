@@ -234,18 +234,6 @@ struct NewBrewView: View {
                                     .background(AppColors.buttonYellow)
                                     .cornerRadius(12)
                             }
-                            
-                            // Share button (secondary) - text only
-                            Button {
-                                // TODO: Implement share functionality
-                                print("Share brew")
-                            } label: {
-                                Text("share")
-                                    .font(.oscineHeadline)
-                                    .foregroundColor(.primaryText)
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                            }
                         }
                     }
                     .padding(.horizontal, 20)
@@ -253,6 +241,7 @@ struct NewBrewView: View {
                 .padding(.bottom, 100)
             }
             .scrollContentBackground(.hidden)
+            .scrollDismissesKeyboard(.interactively)
             .background(Color.appBackground)
             .navigationTitle(existingBrew != nil ? "brew details" : "new brew")
             .navigationBarTitleDisplayMode(.inline)

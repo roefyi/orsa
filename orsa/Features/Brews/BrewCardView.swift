@@ -28,7 +28,27 @@ struct BrewCardView: View {
                 case 1:
                     Image(systemName: "hand.thumbsdown.fill")
                 case 3:
-                    Image(systemName: "face.smiling.fill")
+                    // Custom neutral face (filled style)
+                    ZStack {
+                        Circle()
+                            .fill(Color.cardText)
+                            .frame(width: 16, height: 16)
+                        // Eyes
+                        HStack(spacing: 3) {
+                            Circle()
+                                .fill(Color.cardBackground)
+                                .frame(width: 2, height: 2)
+                            Circle()
+                                .fill(Color.cardBackground)
+                                .frame(width: 2, height: 2)
+                        }
+                        .offset(y: -2)
+                        // Mouth (straight line)
+                        Rectangle()
+                            .fill(Color.cardBackground)
+                            .frame(width: 6, height: 1.5)
+                            .offset(y: 3)
+                    }
                 case 4:
                     Image(systemName: "hand.thumbsup.fill")
                 case 5:
@@ -43,38 +63,39 @@ struct BrewCardView: View {
     }
     
     var body: some View {
-        Button(action: onTap) {
-            ZStack(alignment: .bottomTrailing) {
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Text(bean?.coffeeName ?? "Unknown Coffee")
-                            .font(.oscineHeadline)
-                            .foregroundColor(.cardText)
-                        Spacer()
-                        Text(brew.timestamp, style: .date)
-                            .font(.oscineCaption)
-                            .foregroundColor(.cardText.opacity(0.7))
-                    }
-                    
-                    if let roaster = bean?.roaster {
-                        Text(roaster)
-                            .font(.oscineSubheadline)
-                            .foregroundColor(.cardText.opacity(0.7))
-                    }
-                    
-                    Text(brew.drinkType)
+        ZStack(alignment: .bottomTrailing) {
+            VStack(alignment: .leading, spacing: 4) {
+                HStack {
+                    Text(bean?.coffeeName ?? "Unknown Coffee")
+                        .font(.oscineHeadline)
+                        .foregroundColor(.cardText)
+                    Spacer()
+                    Text(brew.timestamp, style: .date)
                         .font(.oscineCaption)
                         .foregroundColor(.cardText.opacity(0.7))
                 }
-                .padding(.vertical, 8)
-                .padding(.horizontal, 4)
                 
-                ratingIcon
-                    .padding(.trailing, 4)
-                    .padding(.bottom, 4)
+                if let roaster = bean?.roaster {
+                    Text(roaster)
+                        .font(.oscineSubheadline)
+                        .foregroundColor(.cardText.opacity(0.7))
+                }
+                
+                Text(brew.drinkType)
+                    .font(.oscineCaption)
+                    .foregroundColor(.cardText.opacity(0.7))
             }
+            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
+            
+            ratingIcon
+                .padding(.trailing, 16)
+                .padding(.bottom, 12)
         }
-        .buttonStyle(PlainButtonStyle())
+        .contentShape(Rectangle())
+        .onTapGesture {
+            onTap()
+        }
     }
 }
 

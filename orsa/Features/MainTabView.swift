@@ -20,12 +20,17 @@ struct MainTabView: View {
             
             BeansView()
                 .tabItem {
-                    Label("Beans", systemImage: "leaf")
+                    Label {
+                        Text("Beans")
+                    } icon: {
+                        Image("BeansIcon")
+                            .renderingMode(.template)
+                    }
                 }
             
             ToolsView()
                 .tabItem {
-                    Label("Tools", systemImage: "wrench.and.screwdriver")
+                    Label("Tools", systemImage: "list.bullet")
                 }
         }
     }

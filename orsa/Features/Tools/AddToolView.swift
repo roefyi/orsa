@@ -38,6 +38,7 @@ struct AddToolView: View {
                 }
             }
             .scrollContentBackground(.hidden)
+            .scrollDismissesKeyboard(.interactively)
             .background(Color.appBackground)
             .navigationTitle(existingEquipment != nil ? "edit tool" : "add tool")
             .navigationBarTitleDisplayMode(.inline)

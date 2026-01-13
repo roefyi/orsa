@@ -47,6 +47,9 @@ struct OnboardingNameView: View {
             .padding(.bottom, 50)
         }
         .background(Color.appBackground)
+        .onTapGesture {
+            isTextFieldFocused = false
+        }
     }
 }
 

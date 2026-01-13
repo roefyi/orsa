@@ -72,6 +72,9 @@ struct OnboardingSetupView: View {
             .padding(.bottom, 50)
         }
         .background(Color.appBackground)
+        .onTapGesture {
+            focusedField = nil
+        }
     }
 }
 

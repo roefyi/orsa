@@ -20,8 +20,10 @@ struct BrewsView: View {
                 ForEach(brews) { brew in
                     BrewCardView(brew: brew) {
                         selectedBrew = brew
+                        showingNewBrew = true
                     }
                     .listRowBackground(AppColors.cardCream)
+                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 8, trailing: 0))
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button(role: .destructive) {
                             deleteBrew(brew)
@@ -42,16 +44,15 @@ struct BrewsView: View {
                         showingNewBrew = true
                     } label: {
                         Image(systemName: "plus")
+                            .foregroundColor(.primaryText)
                     }
                 }
             }
             .fullScreenCover(isPresented: $showingNewBrew) {
                 NewBrewView(existingBrew: selectedBrew)
-            }
-            .onChange(of: selectedBrew) { oldValue, newValue in
-                if newValue != nil && !showingNewBrew {
-                    showingNewBrew = true
-                }
+                    .onDisappear {
+                        selectedBrew = nil
+                    }
             }
         }
     }

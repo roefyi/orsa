@@ -148,6 +148,7 @@ struct EditBrewParametersView: View {
                 }
             }
             .scrollContentBackground(.hidden)
+            .scrollDismissesKeyboard(.interactively)
             .background(Color.appBackground)
             .navigationTitle("parameters")
             .onAppear {
