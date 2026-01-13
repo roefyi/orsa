@@ -19,6 +19,7 @@ struct AddBeanView: View {
     @State private var process = ""
     @State private var roastLevel = ""
     @State private var notes = ""
+    @State private var isPrimary = false
     
     var body: some View {
         NavigationStack {
@@ -27,6 +28,7 @@ struct AddBeanView: View {
                     TextField("Coffee Name", text: $coffeeName)
                     TextField("Roaster", text: $roaster)
                     DatePicker("Roast Date", selection: $roastDate, displayedComponents: .date)
+                    Toggle("Set as Primary", isOn: $isPrimary)
                 }
                 
                 Section("details") {
@@ -73,7 +75,8 @@ struct AddBeanView: View {
             origin: origin.isEmpty ? nil : origin,
             roastLevel: roastLevel.isEmpty ? nil : roastLevel,
             tastingNotes: notes.isEmpty ? nil : notes,
-            status: BeanStatus.current.rawValue
+            status: BeanStatus.current.rawValue,
+            isPrimary: isPrimary
         )
         modelContext.insert(bean)
         

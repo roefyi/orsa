@@ -14,11 +14,11 @@ struct BeanCardView: View {
         VStack(alignment: .leading, spacing: 4) {
             Text(bean.coffeeName)
                 .font(.oscineHeadline)
-                .foregroundColor(.primaryText)
+                .foregroundColor(.cardText)
             
             Text(bean.roaster)
                 .font(.oscineSubheadline)
-                .foregroundColor(.secondaryText)
+                .foregroundColor(.cardText.opacity(0.7))
         }
         .padding(.vertical, 8)
         .padding(.horizontal, 4)

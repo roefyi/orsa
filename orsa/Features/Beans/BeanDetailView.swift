@@ -16,6 +16,9 @@ struct BeanDetailView: View {
     @State private var showingImageSourcePicker = false
     @State private var selectedImage: UIImage?
     @State private var imageSourceType: UIImagePickerController.SourceType = .photoLibrary
+    @State private var showingEditBean = false
+    @State private var showingDeleteConfirmation = false
+    @Environment(\.dismiss) private var dismiss
     
     var roastDateString: String {
         if let roastDate = bean.roastDate {
@@ -73,11 +76,11 @@ struct BeanDetailView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(bean.coffeeName)
                             .font(.oscineLargeTitle)
-                            .foregroundColor(.primaryText)
+                            .foregroundColor(.cardText)
                         
                         Text(bean.roaster)
                             .font(.oscineSubheadline)
-                            .foregroundColor(.secondaryText)
+                            .foregroundColor(.cardText.opacity(0.7))
                     }
                     .padding(16)
                 }
@@ -91,10 +94,10 @@ struct BeanDetailView: View {
                     HStack {
                         Text("Roast")
                             .font(.oscineHeadline)
-                            .foregroundColor(.primaryText)
+                            .foregroundColor(.cardText)
                         Spacer()
                         Image(systemName: "flame.fill")
-                            .foregroundColor(.accent)
+                            .foregroundColor(.cardText)
                             .font(.system(size: 16))
                     }
                     
@@ -102,15 +105,15 @@ struct BeanDetailView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             HStack(spacing: 6) {
                                 Image(systemName: "calendar")
-                                    .foregroundColor(.accent)
+                                    .foregroundColor(.cardText)
                                     .font(.system(size: 14))
                                 Text("Roast Date")
                                     .font(.oscineSubheadline)
-                                    .foregroundColor(.primaryText)
+                                    .foregroundColor(.cardText)
                             }
                             Text(roastDateString)
                                 .font(.oscineBody)
-                                .foregroundColor(.secondaryText)
+                                .foregroundColor(.cardText.opacity(0.7))
                         }
                     }
                     
@@ -118,15 +121,15 @@ struct BeanDetailView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             HStack(spacing: 6) {
                                 Image(systemName: "flame.fill")
-                                    .foregroundColor(.accent)
+                                    .foregroundColor(.cardText)
                                     .font(.system(size: 14))
                                 Text("Roast Level")
                                     .font(.oscineSubheadline)
-                                    .foregroundColor(.primaryText)
+                                    .foregroundColor(.cardText)
                             }
                             Text(roastLevel.capitalized)
                                 .font(.oscineBody)
-                                .foregroundColor(.secondaryText)
+                                .foregroundColor(.cardText.opacity(0.7))
                         }
                     }
                     
@@ -134,16 +137,16 @@ struct BeanDetailView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Tasting Notes")
                                 .font(.oscineSubheadline)
-                                .foregroundColor(.primaryText)
+                                .foregroundColor(.cardText)
                             
                             FlowLayout(spacing: 8) {
                                 ForEach(tastingNoteTags, id: \.self) { tag in
                                     Text(tag)
                                         .font(.oscineCaption)
-                                        .foregroundColor(.primaryText)
+                                        .foregroundColor(.cardText)
                                         .padding(.horizontal, 12)
                                         .padding(.vertical, 6)
-                                        .background(Color.cardBackground)
+                                        .background(Color.cardText.opacity(0.2))
                                         .cornerRadius(16)
                                 }
                             }
@@ -160,10 +163,10 @@ struct BeanDetailView: View {
                     HStack {
                         Text("Origin")
                             .font(.oscineHeadline)
-                            .foregroundColor(.primaryText)
+                            .foregroundColor(.cardText)
                         Spacer()
                         Image(systemName: "globe")
-                            .foregroundColor(.accent)
+                            .foregroundColor(.cardText)
                             .font(.system(size: 16))
                     }
                     
@@ -171,15 +174,15 @@ struct BeanDetailView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             HStack(spacing: 6) {
                                 Image(systemName: "globe")
-                                    .foregroundColor(.accent)
+                                    .foregroundColor(.cardText)
                                     .font(.system(size: 14))
                                 Text("Country")
                                     .font(.oscineSubheadline)
-                                    .foregroundColor(.primaryText)
+                                    .foregroundColor(.cardText)
                             }
                             Text(country)
                                 .font(.oscineBody)
-                                .foregroundColor(.secondaryText)
+                                .foregroundColor(.cardText.opacity(0.7))
                         }
                     }
                     
@@ -187,15 +190,15 @@ struct BeanDetailView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             HStack(spacing: 6) {
                                 Image(systemName: "sparkles")
-                                    .foregroundColor(.accent)
+                                    .foregroundColor(.cardText)
                                     .font(.system(size: 14))
                                 Text("Processing Method")
                                     .font(.oscineSubheadline)
-                                    .foregroundColor(.primaryText)
+                                    .foregroundColor(.cardText)
                             }
                             Text(process.capitalized)
                                 .font(.oscineBody)
-                                .foregroundColor(.secondaryText)
+                                .foregroundColor(.cardText.opacity(0.7))
                         }
                     }
                 }
@@ -203,6 +206,72 @@ struct BeanDetailView: View {
                 .background(Color.cardBackground)
                 .cornerRadius(12)
                 .padding(.horizontal, 20)
+                
+                // Settings Card (only show if temperature or grind setting exists)
+                if let temp = bean.temperature, !temp.isEmpty || (bean.grindSetting != nil && !bean.grindSetting!.isEmpty) {
+                    VStack(alignment: .leading, spacing: 16) {
+                        HStack {
+                            Text("Settings")
+                                .font(.oscineHeadline)
+                                .foregroundColor(.cardText)
+                            Spacer()
+                            Image(systemName: "gearshape.fill")
+                                .foregroundColor(.cardText)
+                                .font(.system(size: 16))
+                        }
+                        
+                        if let temp = bean.temperature, !temp.isEmpty {
+                            VStack(alignment: .leading, spacing: 4) {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "thermometer")
+                                        .foregroundColor(.cardText)
+                                        .font(.system(size: 14))
+                                    Text("Temperature")
+                                        .font(.oscineSubheadline)
+                                        .foregroundColor(.cardText)
+                                }
+                                Text(temp)
+                                    .font(.oscineBody)
+                                    .foregroundColor(.cardText.opacity(0.7))
+                            }
+                        }
+                        
+                        if let grind = bean.grindSetting, !grind.isEmpty {
+                            VStack(alignment: .leading, spacing: 4) {
+                                HStack(spacing: 6) {
+                                    Image(systemName: "slider.horizontal.3")
+                                        .foregroundColor(.cardText)
+                                        .font(.system(size: 14))
+                                    Text("Grind Setting")
+                                        .font(.oscineSubheadline)
+                                        .foregroundColor(.cardText)
+                                }
+                                Text(grind)
+                                    .font(.oscineBody)
+                                    .foregroundColor(.cardText.opacity(0.7))
+                            }
+                        }
+                    }
+                    .padding(16)
+                    .background(Color.cardBackground)
+                    .cornerRadius(12)
+                    .padding(.horizontal, 20)
+                }
+                
+                // Delete Button
+                VStack(spacing: 12) {
+                    Button {
+                        showingDeleteConfirmation = true
+                    } label: {
+                        Text("delete")
+                            .font(.oscineHeadline)
+                            .foregroundColor(.primaryText)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 24)
             }
             .padding(.bottom, 100)
         }
@@ -212,11 +281,22 @@ struct BeanDetailView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
-                    // Edit action
+                    showingEditBean = true
                 } label: {
                     Image(systemName: "ellipsis")
                 }
             }
+        }
+        .sheet(isPresented: $showingEditBean) {
+            EditBeanView(existingBean: bean)
+        }
+        .confirmationDialog("Delete Bean", isPresented: $showingDeleteConfirmation, titleVisibility: .visible) {
+            Button("Delete", role: .destructive) {
+                deleteBean()
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("Are you sure you want to delete \(bean.coffeeName)? This action cannot be undone.")
         }
         .confirmationDialog("Select Image Source", isPresented: $showingImageSourcePicker) {
             if UIImagePickerController.isSourceTypeAvailable(.camera) {
@@ -249,6 +329,16 @@ struct BeanDetailView: View {
             } catch {
                 print("Error saving image: \(error)")
             }
+        }
+    }
+    
+    private func deleteBean() {
+        modelContext.delete(bean)
+        do {
+            try modelContext.save()
+            dismiss()
+        } catch {
+            print("Error deleting bean: \(error)")
         }
     }
 }

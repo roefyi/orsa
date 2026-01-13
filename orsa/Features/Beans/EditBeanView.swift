@@ -1,0 +1,164 @@
+//
+//  EditBeanView.swift
+//  orsa
+//
+//  Created by Rome on 1/9/26.
+//
+
+import SwiftUI
+import SwiftData
+
+struct EditBeanView: View {
+    let existingBean: Bean?
+    
+    @Environment(\.dismiss) private var dismiss
+    @Environment(\.modelContext) private var modelContext
+    @Query(sort: \Bean.dateAdded, order: .reverse) private var beans: [Bean]
+    
+    @State private var selectedBeanID: UUID?
+    @State private var coffeeName = ""
+    @State private var roaster = ""
+    @State private var roastDate = Date()
+    @State private var origin = ""
+    @State private var process = ""
+    @State private var roastLevel = ""
+    @State private var notes = ""
+    @State private var isPrimary = false
+    @State private var temperature = ""
+    @State private var grindSetting = ""
+    
+    init(existingBean: Bean? = nil) {
+        self.existingBean = existingBean
+    }
+    
+    var currentBean: Bean? {
+        if let existing = existingBean {
+            return existing
+        }
+        if let selectedID = selectedBeanID {
+            return beans.first { $0.id == selectedID }
+        }
+        return nil
+    }
+    
+    var body: some View {
+        NavigationStack {
+            Form {
+                if existingBean == nil {
+                    Section("select bean") {
+                        Picker("Bean", selection: $selectedBeanID) {
+                            Text("Select a bean").tag(nil as UUID?)
+                            ForEach(beans) { bean in
+                                Text(bean.coffeeName).tag(bean.id as UUID?)
+                            }
+                        }
+                        .onChange(of: selectedBeanID) { oldValue, newValue in
+                            loadBeanData()
+                        }
+                    }
+                }
+                
+                Section("coffee info") {
+                    TextField("Coffee Name", text: $coffeeName)
+                    TextField("Roaster", text: $roaster)
+                    DatePicker("Roast Date", selection: $roastDate, displayedComponents: .date)
+                    Toggle("Set as Primary", isOn: $isPrimary)
+                }
+                
+                Section("details") {
+                    TextField("Origin", text: $origin)
+                    TextField("Process", text: $process)
+                    TextField("Roast Level", text: $roastLevel)
+                }
+                
+                Section("notes") {
+                    TextField("Tasting Notes", text: $notes, axis: .vertical)
+                        .lineLimit(3...6)
+                }
+                
+                Section("settings") {
+                    TextField("Temperature", text: $temperature)
+                    TextField("Grind Setting", text: $grindSetting)
+                }
+            }
+            .scrollContentBackground(.hidden)
+            .background(Color.appBackground)
+            .navigationTitle("edit beans")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .foregroundColor(.primaryText)
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button("Save") {
+                        saveBean()
+                        dismiss()
+                    }
+                    .disabled(currentBean == nil || coffeeName.isEmpty || roaster.isEmpty)
+                    .tint((currentBean == nil || coffeeName.isEmpty || roaster.isEmpty) ? Color.secondaryText : .accent)
+                    .font(.oscineHeadline)
+                }
+            }
+            .onAppear {
+                loadBeanData()
+            }
+        }
+    }
+    
+    private func loadBeanData() {
+        if let bean = currentBean {
+            coffeeName = bean.coffeeName
+            roaster = bean.roaster
+            roastDate = bean.roastDate ?? Date()
+            origin = bean.origin ?? ""
+            process = bean.process ?? ""
+            roastLevel = bean.roastLevel ?? ""
+            notes = bean.tastingNotes ?? ""
+            isPrimary = bean.isPrimary
+            temperature = bean.temperature ?? ""
+            grindSetting = bean.grindSetting ?? ""
+        } else if existingBean == nil {
+            // Reset fields if no bean selected
+            coffeeName = ""
+            roaster = ""
+            roastDate = Date()
+            origin = ""
+            process = ""
+            roastLevel = ""
+            notes = ""
+            isPrimary = false
+            temperature = ""
+            grindSetting = ""
+        }
+    }
+    
+    private func saveBean() {
+        guard let bean = currentBean else { return }
+        
+        // Update existing bean
+        bean.coffeeName = coffeeName
+        bean.roaster = roaster
+        bean.roastDate = roastDate
+        bean.process = process.isEmpty ? nil : process
+        bean.origin = origin.isEmpty ? nil : origin
+        bean.roastLevel = roastLevel.isEmpty ? nil : roastLevel
+        bean.tastingNotes = notes.isEmpty ? nil : notes
+        bean.isPrimary = isPrimary
+        bean.temperature = temperature.isEmpty ? nil : temperature
+        bean.grindSetting = grindSetting.isEmpty ? nil : grindSetting
+        
+        do {
+            try modelContext.save()
+        } catch {
+            print("Error saving bean: \(error)")
+        }
+    }
+}
+
+#Preview {
+    EditBeanView()
+        .modelContainer(for: [Bean.self])
+}

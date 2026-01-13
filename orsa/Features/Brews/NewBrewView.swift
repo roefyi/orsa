@@ -116,7 +116,7 @@ struct NewBrewView: View {
                                         } else {
                                             Image(systemName: "hand.thumbsdown")
                                                 .font(.system(size: 20, weight: .medium))
-                                                .foregroundColor(.primaryText.opacity(0.8))
+                                                .foregroundColor(.cardText.opacity(0.8))
                                         }
                                     }
                                     .frame(width: 60, height: 60)
@@ -136,21 +136,21 @@ struct NewBrewView: View {
                                             // Create a simple neutral face outline
                                             ZStack {
                                                 Circle()
-                                                    .stroke(Color.primaryText.opacity(0.8), lineWidth: 2)
+                                                    .stroke(Color.cardText.opacity(0.8), lineWidth: 2)
                                                     .frame(width: 20, height: 20)
                                                 // Eyes
                                                 HStack(spacing: 4) {
                                                     Circle()
-                                                        .fill(Color.primaryText.opacity(0.8))
+                                                        .fill(Color.cardText.opacity(0.8))
                                                         .frame(width: 2, height: 2)
                                                     Circle()
-                                                        .fill(Color.primaryText.opacity(0.8))
+                                                        .fill(Color.cardText.opacity(0.8))
                                                         .frame(width: 2, height: 2)
                                                 }
                                                 .offset(y: -2)
                                                 // Mouth (straight line)
                                                 Rectangle()
-                                                    .fill(Color.primaryText.opacity(0.8))
+                                                    .fill(Color.cardText.opacity(0.8))
                                                     .frame(width: 8, height: 1.5)
                                                     .offset(y: 4)
                                             }
@@ -172,7 +172,7 @@ struct NewBrewView: View {
                                         } else {
                                             Image(systemName: "hand.thumbsup")
                                                 .font(.system(size: 20, weight: .medium))
-                                                .foregroundColor(.primaryText.opacity(0.8))
+                                                .foregroundColor(.cardText.opacity(0.8))
                                         }
                                     }
                                     .frame(width: 60, height: 60)
@@ -191,7 +191,7 @@ struct NewBrewView: View {
                                         } else {
                                             Image(systemName: "heart")
                                                 .font(.system(size: 20, weight: .medium))
-                                                .foregroundColor(.primaryText.opacity(0.8))
+                                                .foregroundColor(.cardText.opacity(0.8))
                                         }
                                     }
                                     .frame(width: 60, height: 60)
@@ -215,6 +215,7 @@ struct NewBrewView: View {
                                 .lineLimit(3...6)
                                 .padding()
                                 .background(Color.cardBackground)
+                                .foregroundColor(.cardText)
                                 .cornerRadius(8)
                         }
                         

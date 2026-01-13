@@ -29,7 +29,7 @@ struct CustomSlider: View {
             ZStack(alignment: .leading) {
                 // Background track (entire element) - lighter for unfilled portion
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.primaryText.opacity(0.1))
+                    .fill(Color.cardText.opacity(0.1))
                     .frame(height: 44)
                 
                 // Progress indicator (filled portion extends to/past thumb, thumb overlays it)
@@ -40,7 +40,7 @@ struct CustomSlider: View {
                 
                 // Fill extends to thumb center (darker) - creates seamless look when thumb overlays
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.primaryText.opacity(0.25))
+                    .fill(Color.cardText.opacity(0.25))
                     .frame(width: max(0, thumbCenter + thumbWidth/2), height: 44)
                 
                 // Text content inside slider
@@ -48,7 +48,7 @@ struct CustomSlider: View {
                     // Title on the left
                     Text(title)
                         .font(.oscineBody)
-                        .foregroundColor(.primaryText.opacity(0.7))
+                        .foregroundColor(.cardText.opacity(0.7))
                         .padding(.leading, 12)
                     
                     Spacer()
@@ -56,14 +56,14 @@ struct CustomSlider: View {
                     // Value on the right
                     Text(formatValue(value) + (suffix ?? ""))
                         .font(.oscineBody)
-                        .foregroundColor(.primaryText)
+                        .foregroundColor(.cardText)
                         .padding(.trailing, 12)
                 }
                 .frame(height: 44)
                 
                 // Thumb (draggable handle) - overlays the fill seamlessly, matches element height
                 RoundedRectangle(cornerRadius: 6)
-                    .fill(Color.primaryText.opacity(0.8))
+                    .fill(Color.cardText.opacity(0.8))
                     .frame(width: thumbWidth, height: 44)
                     .scaleEffect(isDragging ? 1.05 : 1.0)
                     .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isDragging)

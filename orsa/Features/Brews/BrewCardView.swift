@@ -20,31 +20,59 @@ struct BrewCardView: View {
         return beans.first { $0.id == beanID }
     }
     
+    @ViewBuilder
+    private var ratingIcon: some View {
+        if let rating = brew.rating {
+            Group {
+                switch rating {
+                case 1:
+                    Image(systemName: "hand.thumbsdown.fill")
+                case 3:
+                    Image(systemName: "face.smiling.fill")
+                case 4:
+                    Image(systemName: "hand.thumbsup.fill")
+                case 5:
+                    Image(systemName: "heart.fill")
+                default:
+                    EmptyView()
+                }
+            }
+            .font(.system(size: 16))
+            .foregroundColor(.cardText)
+        }
+    }
+    
     var body: some View {
         Button(action: onTap) {
-            VStack(alignment: .leading, spacing: 4) {
-                HStack {
-                    Text(bean?.coffeeName ?? "Unknown Coffee")
-                        .font(.oscineHeadline)
-                        .foregroundColor(.primaryText)
-                    Spacer()
-                    Text(brew.timestamp, style: .date)
+            ZStack(alignment: .bottomTrailing) {
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Text(bean?.coffeeName ?? "Unknown Coffee")
+                            .font(.oscineHeadline)
+                            .foregroundColor(.cardText)
+                        Spacer()
+                        Text(brew.timestamp, style: .date)
+                            .font(.oscineCaption)
+                            .foregroundColor(.cardText.opacity(0.7))
+                    }
+                    
+                    if let roaster = bean?.roaster {
+                        Text(roaster)
+                            .font(.oscineSubheadline)
+                            .foregroundColor(.cardText.opacity(0.7))
+                    }
+                    
+                    Text(brew.drinkType)
                         .font(.oscineCaption)
-                        .foregroundColor(.secondaryText)
+                        .foregroundColor(.cardText.opacity(0.7))
                 }
+                .padding(.vertical, 8)
+                .padding(.horizontal, 4)
                 
-                if let roaster = bean?.roaster {
-                    Text(roaster)
-                        .font(.oscineSubheadline)
-                        .foregroundColor(.secondaryText)
-                }
-                
-                Text(brew.drinkType)
-                    .font(.oscineCaption)
-                    .foregroundColor(.secondaryText)
+                ratingIcon
+                    .padding(.trailing, 4)
+                    .padding(.bottom, 4)
             }
-            .padding(.vertical, 8)
-            .padding(.horizontal, 4)
         }
         .buttonStyle(PlainButtonStyle())
     }

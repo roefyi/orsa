@@ -28,6 +28,9 @@ final class Bean {
     var bagWeight: Double? // grams or oz
     var remainingWeight: Double? // grams or oz
     var status: String // "current", "next", "archived"
+    var isPrimary: Bool
+    var temperature: String? // Brew temperature
+    var grindSetting: String? // Grind setting
     var dateAdded: Date
     var dateFinished: Date?
     var photoData: Data?
@@ -45,6 +48,9 @@ final class Bean {
         bagWeight: Double? = nil,
         remainingWeight: Double? = nil,
         status: String = BeanStatus.current.rawValue,
+        isPrimary: Bool = false,
+        temperature: String? = nil,
+        grindSetting: String? = nil,
         dateAdded: Date = Date(),
         dateFinished: Date? = nil,
         photoData: Data? = nil
@@ -61,6 +67,9 @@ final class Bean {
         self.bagWeight = bagWeight
         self.remainingWeight = remainingWeight
         self.status = status
+        self.isPrimary = isPrimary
+        self.temperature = temperature
+        self.grindSetting = grindSetting
         self.dateAdded = dateAdded
         self.dateFinished = dateFinished
         self.photoData = photoData

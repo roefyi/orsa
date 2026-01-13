@@ -30,15 +30,15 @@ struct EquipmentCardView: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text(equipment.displayName)
                         .font(.oscineHeadline)
-                        .foregroundColor(.primaryText)
+                        .foregroundColor(.cardText)
                     Text(typeDisplay)
                         .font(.oscineCaption)
-                        .foregroundColor(.secondaryText)
+                        .foregroundColor(.cardText.opacity(0.7))
                 }
                 Spacer()
                 if equipment.isPrimary {
                     Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.accent)
+                        .foregroundColor(.cardText)
                 }
             }
             .padding(.vertical, 8)
