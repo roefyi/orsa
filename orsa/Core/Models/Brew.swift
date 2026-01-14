@@ -9,7 +9,7 @@ import Foundation
 import SwiftData
 
 @Model
-final class Brew {
+final class Brew: Identifiable {
     var id: UUID
     var timestamp: Date
     var beanID: UUID?

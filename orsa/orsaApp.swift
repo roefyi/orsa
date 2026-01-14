@@ -11,15 +11,49 @@ import SwiftData
 @main
 struct orsaApp: App {
     init() {
-        // Configure navigation bar appearance with clean white background
-        let appBackgroundColor = UIColor.white
+        // Configure adaptive colors
+        let appBackgroundColor = UIColor { traitCollection in
+            switch traitCollection.userInterfaceStyle {
+            case .dark:
+                return UIColor(red: 28/255, green: 28/255, blue: 30/255, alpha: 1.0) // Dark grey for dark mode
+            default:
+                return UIColor.white // White for light mode
+            }
+        }
         
+        let textColor = UIColor { traitCollection in
+            switch traitCollection.userInterfaceStyle {
+            case .dark:
+                return UIColor.white // White text for dark mode
+            default:
+                return UIColor(red: 30/255, green: 30/255, blue: 30/255, alpha: 1.0) // Dark text for light mode
+            }
+        }
+        
+        let accentColor = UIColor { traitCollection in
+            switch traitCollection.userInterfaceStyle {
+            case .dark:
+                return UIColor.white // White for dark mode
+            default:
+                return UIColor(red: 30/255, green: 30/255, blue: 30/255, alpha: 1.0) // Dark for light mode
+            }
+        }
+        
+        let accentDarkColor = UIColor { traitCollection in
+            switch traitCollection.userInterfaceStyle {
+            case .dark:
+                return UIColor.white // White for dark mode
+            default:
+                return UIColor(red: 20/255, green: 20/255, blue: 20/255, alpha: 1.0) // Darker for light mode
+            }
+        }
+        
+        // Configure navigation bar appearance
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = appBackgroundColor
         appearance.shadowColor = .clear
         appearance.shadowImage = UIImage()
-        let textColor = UIColor(red: 30/255, green: 30/255, blue: 30/255, alpha: 1.0)
         appearance.largeTitleTextAttributes = [
             .font: UIFont(name: "OscineTrial-XBold", size: 34) ?? UIFont.systemFont(ofSize: 34, weight: .bold),
             .foregroundColor: textColor
@@ -40,9 +74,6 @@ struct orsaApp: App {
         tabBarAppearance.backgroundColor = appBackgroundColor
         tabBarAppearance.shadowColor = .clear
         tabBarAppearance.shadowImage = UIImage()
-        
-        let accentColor = UIColor(red: 30/255, green: 30/255, blue: 30/255, alpha: 1.0)
-        let accentDarkColor = UIColor(red: 20/255, green: 20/255, blue: 20/255, alpha: 1.0)
         
         tabBarAppearance.stackedLayoutAppearance.normal.iconColor = accentColor.withAlphaComponent(0.5)
         tabBarAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [
@@ -65,13 +96,27 @@ struct orsaApp: App {
         UIBarButtonItem.appearance().tintColor = accentColor
         
         // Configure slider appearance
-        let sliderTrackColor = UIColor(white: 0.9, alpha: 1.0) // Light gray track
+        let sliderTrackColor = UIColor { traitCollection in
+            switch traitCollection.userInterfaceStyle {
+            case .dark:
+                return UIColor(white: 0.3, alpha: 1.0) // Darker track for dark mode
+            default:
+                return UIColor(white: 0.9, alpha: 1.0) // Light gray track for light mode
+            }
+        }
         UISlider.appearance().minimumTrackTintColor = accentColor // Filled portion (left of thumb)
         UISlider.appearance().maximumTrackTintColor = sliderTrackColor // Unfilled portion (right of thumb)
         UISlider.appearance().thumbTintColor = accentColor // Thumb color
         
         // Configure Form appearance
-        let cardBackgroundUIColor = UIColor(red: 249/255, green: 249/255, blue: 249/255, alpha: 1.0)
+        let cardBackgroundUIColor = UIColor { traitCollection in
+            switch traitCollection.userInterfaceStyle {
+            case .dark:
+                return UIColor(red: 44/255, green: 44/255, blue: 46/255, alpha: 1.0) // Dark grey cards for dark mode
+            default:
+                return UIColor(red: 249/255, green: 249/255, blue: 249/255, alpha: 1.0) // Light grey cards for light mode
+            }
+        }
         UITableView.appearance().backgroundColor = appBackgroundColor
         UITableViewCell.appearance().backgroundColor = cardBackgroundUIColor
         

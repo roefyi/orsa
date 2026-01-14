@@ -44,7 +44,7 @@ struct OnboardingNameView: View {
             Button(action: onNext) {
                 Text("Next")
                     .font(.oscineHeadline)
-                    .foregroundColor(.primaryText)
+                    .foregroundColor(userName.isEmpty ? .primaryText : .buttonText)
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(userName.isEmpty ? Color.secondaryText.opacity(0.3) : AppColors.buttonYellow)

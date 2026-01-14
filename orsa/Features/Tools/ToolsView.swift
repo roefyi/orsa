@@ -43,6 +43,17 @@ struct ToolsView: View {
                         }
                     }
                 }
+                
+                // Settings Section
+                Section {
+                    SettingsCardView()
+                        .listRowBackground(Color.clear)
+                        .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 8, trailing: 0))
+                } header: {
+                    Text("settings")
+                        .foregroundColor(.secondaryText)
+                        .textCase(.uppercase)
+                }
             }
             .onAppear {
                 print("ToolsView appeared - Equipment count: \(equipment.count)")

@@ -19,17 +19,25 @@ struct BrewsView: View {
             List {
                 ForEach(brews) { brew in
                     BrewCardView(brew: brew) {
+                        HapticFeedback.light()
                         selectedBrew = brew
-                        showingNewBrew = true
                     }
                     .listRowBackground(AppColors.cardCream)
                     .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 8, trailing: 0))
-                    .swipeActions(edge: .trailing, allowsFullSwipe: true) {
+                    .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button(role: .destructive) {
                             deleteBrew(brew)
                         } label: {
                             Label("Delete", systemImage: "trash")
                         }
+                        
+                        Button {
+                            selectedBrew = brew
+                            showingNewBrew = true
+                        } label: {
+                            Label("Edit", systemImage: "pencil")
+                        }
+                        .tint(.blue)
                     }
                 }
             }
@@ -53,6 +61,9 @@ struct BrewsView: View {
                     .onDisappear {
                         selectedBrew = nil
                     }
+            }
+            .fullScreenCover(item: $selectedBrew) { brew in
+                BrewShareCardView(brew: brew)
             }
         }
     }

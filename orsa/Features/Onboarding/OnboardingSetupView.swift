@@ -76,7 +76,7 @@ struct OnboardingSetupView: View {
             Button(action: onNext) {
                 Text("Next")
                     .font(.oscineHeadline)
-                    .foregroundColor(.primaryText)
+                    .foregroundColor((machineName.isEmpty || grinderName.isEmpty) ? .primaryText : .buttonText)
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(machineName.isEmpty || grinderName.isEmpty ? Color.secondaryText.opacity(0.3) : AppColors.buttonYellow)

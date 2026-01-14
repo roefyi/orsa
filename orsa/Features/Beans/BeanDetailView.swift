@@ -68,7 +68,8 @@ struct BeanDetailView: View {
                                     )
                             }
                         }
-                        .frame(height: 200)
+                        .frame(maxWidth: .infinity)
+                        .aspectRatio(1, contentMode: .fill)
                         .clipped()
                     }
                     .buttonStyle(PlainButtonStyle())

@@ -29,7 +29,7 @@ struct OnboardingIntroView: View {
             Button(action: onNext) {
                 Text("Get Started")
                     .font(.oscineHeadline)
-                    .foregroundColor(.primaryText)
+                    .foregroundColor(.buttonText)
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(AppColors.buttonYellow)

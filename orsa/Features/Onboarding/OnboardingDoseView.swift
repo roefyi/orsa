@@ -48,7 +48,7 @@ struct OnboardingDoseView: View {
             Button(action: onComplete) {
                 Text("Done")
                     .font(.oscineHeadline)
-                    .foregroundColor(.primaryText)
+                    .foregroundColor(defaultDose.isEmpty ? .primaryText : .buttonText)
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(defaultDose.isEmpty ? Color.secondaryText.opacity(0.3) : AppColors.buttonYellow)

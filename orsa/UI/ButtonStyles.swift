@@ -13,7 +13,7 @@ struct YellowButtonStyle: ButtonStyle {
     func makeBody(configuration: Configuration) -> some View {
         configuration.label
             .font(.oscineHeadline)
-            .foregroundColor(.primaryText)
+            .foregroundColor(isDisabled ? .primaryText : .buttonText)
             .frame(maxWidth: .infinity)
             .padding()
             .background(isDisabled ? Color.secondaryText.opacity(0.3) : AppColors.buttonYellow)

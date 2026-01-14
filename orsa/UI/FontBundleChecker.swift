@@ -64,7 +64,7 @@ struct FontBundleChecker {
                 print("  PostScript Name: \(postScriptName)")
                 
                 // Try to create UIFont with the PostScript name
-                if let uiFont = UIFont(name: postScriptName, size: 17) {
+                if UIFont(name: postScriptName, size: 17) != nil {
                     print("  ✓ UIFont created successfully!")
                 } else {
                     print("  ✗ UIFont creation failed")
