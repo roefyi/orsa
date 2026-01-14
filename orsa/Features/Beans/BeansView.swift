@@ -22,6 +22,7 @@ struct BeansView: View {
                     BeanCardView(bean: bean)
                         .contentShape(Rectangle())
                         .onTapGesture {
+                            HapticFeedback.light()
                             selectedBean = bean
                             showingBeanDetail = true
                         }

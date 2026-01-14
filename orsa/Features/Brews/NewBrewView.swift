@@ -34,6 +34,7 @@ struct NewBrewView: View {
     @State private var milkType = "None"
     @State private var dose: Double = 18.0
     @State private var showingEditParameters = false
+    @State private var longPressJustCompleted = false
     
     init(existingBrew: Brew? = nil) {
         self.existingBrew = existingBrew
@@ -106,97 +107,154 @@ struct NewBrewView: View {
                             
                             HStack(spacing: 12) {
                                 // Thumbs down
-                                Button {
-                                    selectedRating = selectedRating == 1 ? nil : 1
-                                } label: {
-                                    Group {
-                                        if selectedRating == 1 {
-                                            Text("👎")
-                                                .font(.system(size: 24))
-                                        } else {
-                                            Image(systemName: "hand.thumbsdown")
-                                                .font(.system(size: 20, weight: .medium))
-                                                .foregroundColor(.cardText.opacity(0.8))
+                                Group {
+                                    if selectedRating == 1 {
+                                        Text("👎")
+                                            .font(.system(size: 24))
+                                    } else {
+                                        Image(systemName: "hand.thumbsdown")
+                                            .font(.system(size: 20, weight: .medium))
+                                            .foregroundColor(.cardText.opacity(0.8))
+                                    }
+                                }
+                                .frame(width: 60, height: 60)
+                                .background(Color.cardBackground)
+                                .cornerRadius(12)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    if !longPressJustCompleted && selectedRating != 1 {
+                                        HapticFeedback.light()
+                                        selectedRating = 1
+                                    }
+                                    longPressJustCompleted = false
+                                }
+                                .onLongPressGesture(minimumDuration: 0.5) {
+                                    if selectedRating == 1 {
+                                        longPressJustCompleted = true
+                                        HapticFeedback.medium()
+                                        selectedRating = nil
+                                        // Reset flag after a short delay to allow tap gestures to work again
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                            longPressJustCompleted = false
                                         }
                                     }
-                                    .frame(width: 60, height: 60)
-                                    .background(Color.cardBackground)
-                                    .cornerRadius(12)
                                 }
                                 
                                 // Neutral face
-                                Button {
-                                    selectedRating = selectedRating == 3 ? nil : 3
-                                } label: {
-                                    Group {
-                                        if selectedRating == 3 {
-                                            Text("😐")
-                                                .font(.system(size: 24))
-                                        } else {
-                                            // Create a simple neutral face outline
-                                            ZStack {
+                                Group {
+                                    if selectedRating == 3 {
+                                        Text("😐")
+                                            .font(.system(size: 24))
+                                    } else {
+                                        // Create a simple neutral face outline
+                                        ZStack {
+                                            Circle()
+                                                .stroke(Color.cardText.opacity(0.8), lineWidth: 2)
+                                                .frame(width: 20, height: 20)
+                                            // Eyes
+                                            HStack(spacing: 4) {
                                                 Circle()
-                                                    .stroke(Color.cardText.opacity(0.8), lineWidth: 2)
-                                                    .frame(width: 20, height: 20)
-                                                // Eyes
-                                                HStack(spacing: 4) {
-                                                    Circle()
-                                                        .fill(Color.cardText.opacity(0.8))
-                                                        .frame(width: 2, height: 2)
-                                                    Circle()
-                                                        .fill(Color.cardText.opacity(0.8))
-                                                        .frame(width: 2, height: 2)
-                                                }
-                                                .offset(y: -2)
-                                                // Mouth (straight line)
-                                                Rectangle()
                                                     .fill(Color.cardText.opacity(0.8))
-                                                    .frame(width: 8, height: 1.5)
-                                                    .offset(y: 4)
+                                                    .frame(width: 2, height: 2)
+                                                Circle()
+                                                    .fill(Color.cardText.opacity(0.8))
+                                                    .frame(width: 2, height: 2)
                                             }
+                                            .offset(y: -2)
+                                            // Mouth (straight line)
+                                            Rectangle()
+                                                .fill(Color.cardText.opacity(0.8))
+                                                .frame(width: 8, height: 1.5)
+                                                .offset(y: 4)
                                         }
                                     }
-                                    .frame(width: 60, height: 60)
-                                    .background(Color.cardBackground)
-                                    .cornerRadius(12)
+                                }
+                                .frame(width: 60, height: 60)
+                                .background(Color.cardBackground)
+                                .cornerRadius(12)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    if !longPressJustCompleted && selectedRating != 3 {
+                                        HapticFeedback.light()
+                                        selectedRating = 3
+                                    }
+                                    longPressJustCompleted = false
+                                }
+                                .onLongPressGesture(minimumDuration: 0.5) {
+                                    if selectedRating == 3 {
+                                        longPressJustCompleted = true
+                                        HapticFeedback.medium()
+                                        selectedRating = nil
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                            longPressJustCompleted = false
+                                        }
+                                    }
                                 }
                                 
                                 // Thumbs up
-                                Button {
-                                    selectedRating = selectedRating == 4 ? nil : 4
-                                } label: {
-                                    Group {
-                                        if selectedRating == 4 {
-                                            Text("👍")
-                                                .font(.system(size: 24))
-                                        } else {
-                                            Image(systemName: "hand.thumbsup")
-                                                .font(.system(size: 20, weight: .medium))
-                                                .foregroundColor(.cardText.opacity(0.8))
+                                Group {
+                                    if selectedRating == 4 {
+                                        Text("👍")
+                                            .font(.system(size: 24))
+                                    } else {
+                                        Image(systemName: "hand.thumbsup")
+                                            .font(.system(size: 20, weight: .medium))
+                                            .foregroundColor(.cardText.opacity(0.8))
+                                    }
+                                }
+                                .frame(width: 60, height: 60)
+                                .background(Color.cardBackground)
+                                .cornerRadius(12)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    if !longPressJustCompleted && selectedRating != 4 {
+                                        HapticFeedback.light()
+                                        selectedRating = 4
+                                    }
+                                    longPressJustCompleted = false
+                                }
+                                .onLongPressGesture(minimumDuration: 0.5) {
+                                    if selectedRating == 4 {
+                                        longPressJustCompleted = true
+                                        HapticFeedback.medium()
+                                        selectedRating = nil
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                            longPressJustCompleted = false
                                         }
                                     }
-                                    .frame(width: 60, height: 60)
-                                    .background(Color.cardBackground)
-                                    .cornerRadius(12)
                                 }
                                 
                                 // Heart
-                                Button {
-                                    selectedRating = selectedRating == 5 ? nil : 5
-                                } label: {
-                                    Group {
-                                        if selectedRating == 5 {
-                                            Text("❤️")
-                                                .font(.system(size: 24))
-                                        } else {
-                                            Image(systemName: "heart")
-                                                .font(.system(size: 20, weight: .medium))
-                                                .foregroundColor(.cardText.opacity(0.8))
+                                Group {
+                                    if selectedRating == 5 {
+                                        Text("❤️")
+                                            .font(.system(size: 24))
+                                    } else {
+                                        Image(systemName: "heart")
+                                            .font(.system(size: 20, weight: .medium))
+                                            .foregroundColor(.cardText.opacity(0.8))
+                                    }
+                                }
+                                .frame(width: 60, height: 60)
+                                .background(Color.cardBackground)
+                                .cornerRadius(12)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    if !longPressJustCompleted && selectedRating != 5 {
+                                        HapticFeedback.light()
+                                        selectedRating = 5
+                                    }
+                                    longPressJustCompleted = false
+                                }
+                                .onLongPressGesture(minimumDuration: 0.5) {
+                                    if selectedRating == 5 {
+                                        longPressJustCompleted = true
+                                        HapticFeedback.medium()
+                                        selectedRating = nil
+                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                                            longPressJustCompleted = false
                                         }
                                     }
-                                    .frame(width: 60, height: 60)
-                                    .background(Color.cardBackground)
-                                    .cornerRadius(12)
                                 }
                                 
                                 Spacer()
@@ -223,6 +281,7 @@ struct NewBrewView: View {
                         VStack(spacing: 12) {
                             // Home button (primary) - submits and saves
                             Button {
+                                HapticFeedback.medium()
                                 saveBrew()
                                 dismiss()
                             } label: {

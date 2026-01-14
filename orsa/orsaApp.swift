@@ -11,15 +11,15 @@ import SwiftData
 @main
 struct orsaApp: App {
     init() {
-        // Configure navigation bar appearance to use Oscine font and app background color
-        let appBackgroundColor = UIColor(red: 200/255, green: 193/255, blue: 189/255, alpha: 1.0)
+        // Configure navigation bar appearance with clean white background
+        let appBackgroundColor = UIColor.white
         
         let appearance = UINavigationBarAppearance()
         appearance.configureWithOpaqueBackground()
         appearance.backgroundColor = appBackgroundColor
         appearance.shadowColor = .clear
         appearance.shadowImage = UIImage()
-        let textColor = UIColor(red: 57/255, green: 54/255, blue: 46/255, alpha: 1.0)
+        let textColor = UIColor(red: 30/255, green: 30/255, blue: 30/255, alpha: 1.0)
         appearance.largeTitleTextAttributes = [
             .font: UIFont(name: "OscineTrial-XBold", size: 34) ?? UIFont.systemFont(ofSize: 34, weight: .bold),
             .foregroundColor: textColor
@@ -41,12 +41,12 @@ struct orsaApp: App {
         tabBarAppearance.shadowColor = .clear
         tabBarAppearance.shadowImage = UIImage()
         
-        let accentColor = UIColor(red: 57/255, green: 54/255, blue: 46/255, alpha: 1.0)
-        let accentDarkColor = UIColor(red: 35/255, green: 33/255, blue: 28/255, alpha: 1.0)
+        let accentColor = UIColor(red: 30/255, green: 30/255, blue: 30/255, alpha: 1.0)
+        let accentDarkColor = UIColor(red: 20/255, green: 20/255, blue: 20/255, alpha: 1.0)
         
-        tabBarAppearance.stackedLayoutAppearance.normal.iconColor = accentColor.withAlphaComponent(0.6)
+        tabBarAppearance.stackedLayoutAppearance.normal.iconColor = accentColor.withAlphaComponent(0.5)
         tabBarAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [
-            .foregroundColor: accentColor.withAlphaComponent(0.6)
+            .foregroundColor: accentColor.withAlphaComponent(0.5)
         ]
         tabBarAppearance.stackedLayoutAppearance.selected.iconColor = accentDarkColor
         tabBarAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [
@@ -57,7 +57,7 @@ struct orsaApp: App {
         UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
         UITabBar.appearance().backgroundColor = appBackgroundColor
         UITabBar.appearance().shadowImage = UIImage()
-        UITabBar.appearance().unselectedItemTintColor = accentColor.withAlphaComponent(0.6)
+        UITabBar.appearance().unselectedItemTintColor = accentColor.withAlphaComponent(0.5)
         UITabBar.appearance().tintColor = accentDarkColor
         
         // Configure button/control tint color globally
@@ -65,13 +65,13 @@ struct orsaApp: App {
         UIBarButtonItem.appearance().tintColor = accentColor
         
         // Configure slider appearance
-        let sliderTrackColor = UIColor(red: 200/255, green: 193/255, blue: 189/255, alpha: 0.3) // Lighter track background
+        let sliderTrackColor = UIColor(white: 0.9, alpha: 1.0) // Light gray track
         UISlider.appearance().minimumTrackTintColor = accentColor // Filled portion (left of thumb)
         UISlider.appearance().maximumTrackTintColor = sliderTrackColor // Unfilled portion (right of thumb)
         UISlider.appearance().thumbTintColor = accentColor // Thumb color
         
         // Configure Form appearance
-        let cardBackgroundUIColor = UIColor(red: 233/255, green: 231/255, blue: 234/255, alpha: 1.0)
+        let cardBackgroundUIColor = UIColor(red: 249/255, green: 249/255, blue: 249/255, alpha: 1.0)
         UITableView.appearance().backgroundColor = appBackgroundColor
         UITableViewCell.appearance().backgroundColor = cardBackgroundUIColor
         

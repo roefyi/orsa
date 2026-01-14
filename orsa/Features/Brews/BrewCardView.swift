@@ -94,6 +94,7 @@ struct BrewCardView: View {
         }
         .contentShape(Rectangle())
         .onTapGesture {
+            HapticFeedback.light()
             onTap()
         }
     }

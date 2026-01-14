@@ -8,28 +8,28 @@
 import SwiftUI
 
 extension Color {
-    // Primary button color - bright yellow
+    // Primary button color - bright yellow (kept as requested)
     static let primaryButton = Color(red: 1.0, green: 0.85, blue: 0.0) // Bright yellow
     
-    // Background colors
-    static let appBackground = Color(red: 200/255.0, green: 193/255.0, blue: 189/255.0) // RGB(200, 193, 189)
-    static let cardBackground = Color(red: 57/255.0, green: 54/255.0, blue: 46/255.0).opacity(0.7) // RGB(57, 54, 46) - Dark card background at 70% opacity
-    static let cardText = Color(red: 233/255.0, green: 231/255.0, blue: 234/255.0) // RGB(233, 231, 234) - Light text on cards
+    // Background colors - clean white/light gray palette
+    static let appBackground = Color.white // White background
+    static let cardBackground = Color(red: 249/255.0, green: 249/255.0, blue: 249/255.0) // Very light gray for cards
+    static let cardText = Color(red: 30/255.0, green: 30/255.0, blue: 30/255.0) // Dark text on light cards
     
     // Text colors
-    static let primaryText = Color(red: 57/255.0, green: 54/255.0, blue: 46/255.0) // RGB(57, 54, 46)
-    static let secondaryText = Color(white: 0.4) // Dark gray
+    static let primaryText = Color(red: 30/255.0, green: 30/255.0, blue: 30/255.0) // Dark gray/black
+    static let secondaryText = Color(white: 0.5) // Medium gray
     
-    // Accent colors - matching text color
-    static let accent = primaryText // RGB(57, 54, 46)
-    static let accentDark = Color(red: 35/255.0, green: 33/255.0, blue: 28/255.0) // Darker version for selected tabs
+    // Accent colors
+    static let accent = primaryText
+    static let accentDark = Color(red: 20/255.0, green: 20/255.0, blue: 20/255.0) // Darker for selected tabs
 }
 
 // Custom color set for consistency
 struct AppColors {
-    static let buttonYellow = Color(red: 1.0, green: 0.85, blue: 0.0)
-    static let backgroundGray = Color(red: 200/255.0, green: 193/255.0, blue: 189/255.0) // RGB(200, 193, 189)
-    static let cardCream = Color(red: 57/255.0, green: 54/255.0, blue: 46/255.0).opacity(0.7) // RGB(57, 54, 46) - Dark card background at 70% opacity
-    static let textBlack = Color.black
-    static let textGray = Color(white: 0.4)
+    static let buttonYellow = Color(red: 1.0, green: 0.85, blue: 0.0) // Yellow button (kept)
+    static let backgroundGray = Color.white // White background
+    static let cardCream = Color(red: 249/255.0, green: 249/255.0, blue: 249/255.0) // Very light gray cards
+    static let textBlack = Color(red: 30/255.0, green: 30/255.0, blue: 30/255.0)
+    static let textGray = Color(white: 0.5)
 }

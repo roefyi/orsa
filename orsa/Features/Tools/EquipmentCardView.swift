@@ -44,6 +44,7 @@ struct EquipmentCardView: View {
         .padding(.horizontal, 16)
         .contentShape(Rectangle())
         .onTapGesture {
+            HapticFeedback.light()
             onTap()
         }
     }

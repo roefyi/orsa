@@ -45,6 +45,7 @@ struct BeanDetailView: View {
                 VStack(alignment: .leading, spacing: 0) {
                     // Photo - no padding, tappable
                     Button {
+                        HapticFeedback.light()
                         showingImageSourcePicker = true
                     } label: {
                         ZStack {
@@ -261,6 +262,7 @@ struct BeanDetailView: View {
                 // Delete Button
                 VStack(spacing: 12) {
                     Button {
+                        HapticFeedback.medium()
                         showingDeleteConfirmation = true
                     } label: {
                         Text("delete")
@@ -281,6 +283,7 @@ struct BeanDetailView: View {
         .toolbar {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
+                    HapticFeedback.light()
                     showingEditBean = true
                 } label: {
                     Image(systemName: "ellipsis")
