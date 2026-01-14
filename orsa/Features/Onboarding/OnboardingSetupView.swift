@@ -34,8 +34,14 @@ struct OnboardingSetupView: View {
                 
                 VStack(spacing: 16) {
                     TextField("Machine", text: $machineName)
-                        .textFieldStyle(.roundedBorder)
-                        .font(.oscineBody)
+                        .font(.oscineRegular(size: 17))
+                        .foregroundColor(.primaryText)
+                        .padding()
+                        .background(Color.clear)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.primaryText, lineWidth: 1)
+                        )
                         .focused($focusedField, equals: .machine)
                         .submitLabel(.next)
                         .onSubmit {
@@ -43,8 +49,14 @@ struct OnboardingSetupView: View {
                         }
                     
                     TextField("Grinder", text: $grinderName)
-                        .textFieldStyle(.roundedBorder)
-                        .font(.oscineBody)
+                        .font(.oscineRegular(size: 17))
+                        .foregroundColor(.primaryText)
+                        .padding()
+                        .background(Color.clear)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.primaryText, lineWidth: 1)
+                        )
                         .focused($focusedField, equals: .grinder)
                         .submitLabel(.next)
                         .onSubmit {

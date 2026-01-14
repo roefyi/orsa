@@ -301,6 +301,42 @@ struct NewBrewView: View {
             
             // Get current beans
             selectedBean = beans.first { $0.status == BeanStatus.current.rawValue }
+            
+            // Load last brew's parameters (drink type, temperature, grind setting)
+            if let lastBrew = brews.first {
+                // Always use last brew's drink type, temperature, and grind setting
+                drinkType = lastBrew.drinkType.isEmpty ? "Single Shot" : lastBrew.drinkType
+                temperature = lastBrew.temperature > 0 ? String(Int(lastBrew.temperature)) : ""
+                grindSetting = lastBrew.grindSetting.isEmpty ? "" : lastBrew.grindSetting
+                milkType = lastBrew.milkType ?? "None"
+                
+                // Also load equipment and dose from last brew
+                if lastBrew.machineID != nil {
+                    selectedMachine = equipment.first { $0.id == lastBrew.machineID }
+                } else {
+                    // Fallback to primary machine if last brew had none
+                    selectedMachine = equipment.first { $0.equipmentType == .machine && $0.isPrimary }
+                }
+                
+                if lastBrew.grinderID != nil {
+                    selectedGrinder = equipment.first { $0.id == lastBrew.grinderID }
+                } else {
+                    // Fallback to primary grinder if last brew had none
+                    selectedGrinder = equipment.first { $0.equipmentType == .grinder && $0.isPrimary }
+                }
+                
+                if lastBrew.dose > 0 {
+                    dose = lastBrew.dose
+                }
+            } else {
+                // No previous brews - use defaults
+                drinkType = "Single Shot"
+                milkType = "None"
+                
+                // Use primary equipment
+                selectedMachine = equipment.first { $0.equipmentType == .machine && $0.isPrimary }
+                selectedGrinder = equipment.first { $0.equipmentType == .grinder && $0.isPrimary }
+            }
         }
     }
     

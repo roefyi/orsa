@@ -21,15 +21,22 @@ struct OnboardingDoseView: View {
                     .font(.oscineLargeTitle)
                     .padding(.horizontal, 32)
                 
-                HStack {
+                HStack(spacing: 12) {
                     TextField("18.0", text: $defaultDose)
-                        .textFieldStyle(.roundedBorder)
-                        .font(.oscineBody)
+                        .font(.oscineRegular(size: 17))
+                        .foregroundColor(.primaryText)
                         .keyboardType(.decimalPad)
+                        .padding()
+                        .background(Color.clear)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 12)
+                                .stroke(Color.primaryText, lineWidth: 1)
+                        )
                         .focused($isTextFieldFocused)
                     
                     Text("g")
-                        .foregroundColor(.secondary)
+                        .font(.oscineRegular(size: 17))
+                        .foregroundColor(.primaryText.opacity(0.7))
                 }
                 .padding(.horizontal, 32)
             }

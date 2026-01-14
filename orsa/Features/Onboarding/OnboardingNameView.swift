@@ -22,8 +22,14 @@ struct OnboardingNameView: View {
                     .padding(.horizontal, 32)
                 
                 TextField("Enter your name", text: $userName)
-                    .textFieldStyle(.roundedBorder)
-                    .font(.oscineBody)
+                    .font(.oscineRegular(size: 17))
+                    .foregroundColor(.primaryText)
+                    .padding()
+                    .background(Color.clear)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color.primaryText, lineWidth: 1)
+                    )
                     .padding(.horizontal, 32)
                     .focused($isTextFieldFocused)
                     .onAppear {
