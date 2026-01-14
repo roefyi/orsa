@@ -13,6 +13,7 @@ enum EquipmentType: String, Codable, CaseIterable {
     case grinder = "grinder"
     case scale = "scale"
     case kettle = "kettle"
+    case filter = "filter"
 }
 
 @Model

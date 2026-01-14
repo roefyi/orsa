@@ -21,6 +21,8 @@ struct EquipmentCardView: View {
             return "scale"
         case .kettle:
             return "kettle"
+        case .filter:
+            return "filter"
         }
     }
     

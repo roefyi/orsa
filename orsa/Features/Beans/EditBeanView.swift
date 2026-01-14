@@ -45,7 +45,7 @@ struct EditBeanView: View {
         NavigationStack {
             Form {
                 if existingBean == nil {
-                    Section("select bean") {
+                    Section {
                         Picker("Bean", selection: $selectedBeanID) {
                             Text("Select a bean").tag(nil as UUID?)
                             ForEach(beans) { bean in
@@ -55,30 +55,50 @@ struct EditBeanView: View {
                         .onChange(of: selectedBeanID) { oldValue, newValue in
                             loadBeanData()
                         }
+                    } header: {
+                        Text("select bean")
+                            .foregroundColor(.secondaryText)
+                            .textCase(.uppercase)
                     }
                 }
                 
-                Section("coffee info") {
+                Section {
                     TextField("Coffee Name", text: $coffeeName)
                     TextField("Roaster", text: $roaster)
                     DatePicker("Roast Date", selection: $roastDate, displayedComponents: .date)
                     Toggle("Set as Primary", isOn: $isPrimary)
+                } header: {
+                    Text("coffee info")
+                        .foregroundColor(.secondaryText)
+                        .textCase(.uppercase)
                 }
                 
-                Section("details") {
+                Section {
                     TextField("Origin", text: $origin)
                     TextField("Process", text: $process)
                     TextField("Roast Level", text: $roastLevel)
+                } header: {
+                    Text("details")
+                        .foregroundColor(.secondaryText)
+                        .textCase(.uppercase)
                 }
                 
-                Section("notes") {
+                Section {
                     TextField("Tasting Notes", text: $notes, axis: .vertical)
                         .lineLimit(3...6)
+                } header: {
+                    Text("notes")
+                        .foregroundColor(.secondaryText)
+                        .textCase(.uppercase)
                 }
                 
-                Section("settings") {
+                Section {
                     TextField("Temperature", text: $temperature)
                     TextField("Grind Setting", text: $grindSetting)
+                } header: {
+                    Text("settings")
+                        .foregroundColor(.secondaryText)
+                        .textCase(.uppercase)
                 }
             }
             .scrollContentBackground(.hidden)

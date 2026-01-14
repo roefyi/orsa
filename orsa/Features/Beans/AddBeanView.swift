@@ -24,22 +24,34 @@ struct AddBeanView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("coffee info") {
+                Section {
                     TextField("Coffee Name", text: $coffeeName)
                     TextField("Roaster", text: $roaster)
                     DatePicker("Roast Date", selection: $roastDate, displayedComponents: .date)
                     Toggle("Set as Primary", isOn: $isPrimary)
+                } header: {
+                    Text("coffee info")
+                        .foregroundColor(.secondaryText)
+                        .textCase(.uppercase)
                 }
                 
-                Section("details") {
+                Section {
                     TextField("Origin", text: $origin)
                     TextField("Process", text: $process)
                     TextField("Roast Level", text: $roastLevel)
+                } header: {
+                    Text("details")
+                        .foregroundColor(.secondaryText)
+                        .textCase(.uppercase)
                 }
                 
-                Section("notes") {
+                Section {
                     TextField("Tasting Notes", text: $notes, axis: .vertical)
                         .lineLimit(3...6)
+                } header: {
+                    Text("notes")
+                        .foregroundColor(.secondaryText)
+                        .textCase(.uppercase)
                 }
             }
             .scrollContentBackground(.hidden)

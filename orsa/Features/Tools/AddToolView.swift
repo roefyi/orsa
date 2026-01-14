@@ -26,7 +26,7 @@ struct AddToolView: View {
     var body: some View {
         NavigationStack {
             Form {
-                Section("equipment info") {
+                Section {
                     Picker("Type", selection: $type) {
                         ForEach(EquipmentType.allCases, id: \.self) { type in
                             Text(type.rawValue.capitalized).tag(type)
@@ -35,6 +35,10 @@ struct AddToolView: View {
                     TextField("Brand", text: $brand)
                     TextField("Model", text: $model)
                     Toggle("Set as Primary", isOn: $isPrimary)
+                } header: {
+                    Text("equipment info")
+                        .foregroundColor(.secondaryText)
+                        .textCase(.uppercase)
                 }
             }
             .scrollContentBackground(.hidden)

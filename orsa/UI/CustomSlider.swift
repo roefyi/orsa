@@ -27,9 +27,9 @@ struct CustomSlider: View {
     var body: some View {
         GeometryReader { geometry in
             ZStack(alignment: .leading) {
-                // Background track (entire element) - lighter for unfilled portion
+                // Background track (entire element) - matches card background color
                 RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.cardText.opacity(0.1))
+                    .fill(Color.cardBackground)
                     .frame(height: 44)
                 
                 // Progress indicator (filled portion extends to/past thumb, thumb overlays it)

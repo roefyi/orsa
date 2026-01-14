@@ -75,6 +75,16 @@ struct orsaApp: App {
         UITableView.appearance().backgroundColor = appBackgroundColor
         UITableViewCell.appearance().backgroundColor = cardBackgroundUIColor
         
+        // Configure section header text color
+        UILabel.appearance(whenContainedInInstancesOf: [UITableViewHeaderFooterView.self]).textColor = accentColor.withAlphaComponent(0.6)
+        
+        // Configure text field text color in forms
+        UITextField.appearance(whenContainedInInstancesOf: [UITableViewCell.self]).textColor = accentColor
+        UITextField.appearance(whenContainedInInstancesOf: [UITableViewCell.self]).tintColor = accentColor
+        
+        // Configure label text color in table view cells
+        UILabel.appearance(whenContainedInInstancesOf: [UITableViewCell.self]).textColor = accentColor
+        
         #if DEBUG
         FontBundleChecker.checkFontsInBundle()
         FontDebugHelper.listAllOscineFonts()

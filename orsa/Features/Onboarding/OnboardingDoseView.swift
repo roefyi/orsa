@@ -19,6 +19,7 @@ struct OnboardingDoseView: View {
             VStack(alignment: .leading, spacing: 20) {
                 Text("nice, what's your usual dose?")
                     .font(.oscineLargeTitle)
+                    .foregroundColor(.primaryText)
                     .padding(.horizontal, 32)
                 
                 HStack(spacing: 12) {
@@ -26,11 +27,12 @@ struct OnboardingDoseView: View {
                         .font(.oscineRegular(size: 17))
                         .foregroundColor(.primaryText)
                         .keyboardType(.decimalPad)
-                        .padding()
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 16)
                         .background(Color.clear)
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.primaryText, lineWidth: 1)
+                                .stroke(Color.primaryText, lineWidth: 2)
                         )
                         .focused($isTextFieldFocused)
                     

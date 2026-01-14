@@ -19,16 +19,18 @@ struct OnboardingNameView: View {
             VStack(alignment: .leading, spacing: 20) {
                 Text("What's your name?")
                     .font(.oscineLargeTitle)
+                    .foregroundColor(.primaryText)
                     .padding(.horizontal, 32)
                 
                 TextField("Enter your name", text: $userName)
                     .font(.oscineRegular(size: 17))
                     .foregroundColor(.primaryText)
-                    .padding()
+                    .padding(.vertical, 12)
+                    .padding(.horizontal, 16)
                     .background(Color.clear)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color.primaryText, lineWidth: 1)
+                            .stroke(Color.primaryText, lineWidth: 2)
                     )
                     .padding(.horizontal, 32)
                     .focused($isTextFieldFocused)

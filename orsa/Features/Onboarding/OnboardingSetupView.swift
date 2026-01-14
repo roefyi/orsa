@@ -25,22 +25,24 @@ struct OnboardingSetupView: View {
             VStack(alignment: .leading, spacing: 30) {
                 Text("glad you're here \(userName)")
                     .font(.oscineLargeTitle)
+                    .foregroundColor(.primaryText)
                     .padding(.horizontal, 32)
                 
                 Text("what's your main setup?")
                     .font(.oscineTitle3)
-                    .foregroundColor(.secondary)
+                    .foregroundColor(.secondaryText)
                     .padding(.horizontal, 32)
                 
                 VStack(spacing: 16) {
                     TextField("Machine", text: $machineName)
                         .font(.oscineRegular(size: 17))
                         .foregroundColor(.primaryText)
-                        .padding()
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 16)
                         .background(Color.clear)
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.primaryText, lineWidth: 1)
+                                .stroke(Color.primaryText, lineWidth: 2)
                         )
                         .focused($focusedField, equals: .machine)
                         .submitLabel(.next)
@@ -51,11 +53,12 @@ struct OnboardingSetupView: View {
                     TextField("Grinder", text: $grinderName)
                         .font(.oscineRegular(size: 17))
                         .foregroundColor(.primaryText)
-                        .padding()
+                        .padding(.vertical, 12)
+                        .padding(.horizontal, 16)
                         .background(Color.clear)
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.primaryText, lineWidth: 1)
+                                .stroke(Color.primaryText, lineWidth: 2)
                         )
                         .focused($focusedField, equals: .grinder)
                         .submitLabel(.next)
