@@ -296,6 +296,8 @@ struct BeanDetailView: View {
             }
         .sheet(isPresented: $showingEditBean) {
             EditBeanView(existingBean: bean)
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
         }
         .confirmationDialog("Delete Bean", isPresented: $showingDeleteConfirmation, titleVisibility: .visible) {
             Button("Delete", role: .destructive) {
@@ -320,6 +322,7 @@ struct BeanDetailView: View {
         }
         .sheet(isPresented: $showingImagePicker) {
             ImagePicker(sourceType: imageSourceType, selectedImage: $selectedImage)
+                .ignoresSafeArea()
         }
         .onChange(of: selectedImage) { oldValue, newValue in
             if let image = newValue {

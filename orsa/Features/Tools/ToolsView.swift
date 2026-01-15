@@ -78,6 +78,8 @@ struct ToolsView: View {
             }
             .sheet(isPresented: $showingAddTool) {
                 AddToolView(existingEquipment: selectedEquipment)
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
                     .onDisappear {
                         selectedEquipment = nil
                     }

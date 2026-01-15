@@ -1,42 +1,55 @@
 //
-//  NewBrewView.swift
+//  EditBrewView.swift
 //  orsa
 //
-//  Created by Rome on 1/9/26.
+//  Created by Rome on 1/15/26.
 //
 
 import SwiftUI
 import SwiftData
 
-struct NewBrewView: View {
+struct EditBrewView: View {
+    let brew: Brew
+    
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     
     @Query private var userProfiles: [UserProfile]
     @Query private var beans: [Bean]
     @Query private var equipment: [Equipment]
-    @Query(sort: \Brew.timestamp, order: .reverse) private var brews: [Brew]
     
-    @State private var brewTime: Double = 30.0 // seconds, default 30
-    @State private var yield: Double = 36.0 // grams or ml, default 36
-    @State private var notes = ""
-    @State private var selectedRating: Int? = nil
-    @State private var temperature = ""
-    @State private var grindSetting = ""
-    
-    // This will be auto-populated based on last brew
+    @State private var brewTime: Double
+    @State private var yield: Double
+    @State private var notes: String
+    @State private var selectedRating: Int?
+    @State private var temperature: String
+    @State private var grindSetting: String
     @State private var selectedBean: Bean?
     @State private var selectedMachine: Equipment?
     @State private var selectedGrinder: Equipment?
-    @State private var drinkType = "Single Shot"
-    @State private var milkType = "None"
-    @State private var dose: Double = 18.0
+    @State private var drinkType: String
+    @State private var milkType: String
+    @State private var dose: Double
     @State private var showingEditParameters = false
     @State private var longPressJustCompleted = false
     @State private var showingShareCard = false
-    @State private var shareBrew: Brew?
-    @State private var savedBrewForShare: Brew?
+    
     @AppStorage("yieldUnit") private var yieldUnit: String = "grams"
+    
+    init(brew: Brew) {
+        self.brew = brew
+        
+        // Initialize all state from the brew object
+        _brewTime = State(initialValue: Double(brew.brewTime.replacingOccurrences(of: "s", with: "")) ?? 30.0)
+        _yield = State(initialValue: brew.yield)
+        _notes = State(initialValue: brew.notes ?? "")
+        _selectedRating = State(initialValue: brew.rating)
+        _temperature = State(initialValue: brew.temperature > 0 ? String(Int(brew.temperature)) : "")
+        _grindSetting = State(initialValue: brew.grindSetting)
+        _drinkType = State(initialValue: brew.drinkType)
+        _milkType = State(initialValue: brew.milkType ?? "None")
+        _dose = State(initialValue: brew.dose)
+    }
     
     var userName: String {
         userProfiles.first?.name ?? ""
@@ -128,7 +141,6 @@ struct NewBrewView: View {
                                         longPressJustCompleted = true
                                         HapticFeedback.medium()
                                         selectedRating = nil
-                                        // Reset flag after a short delay to allow tap gestures to work again
                                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                                             longPressJustCompleted = false
                                         }
@@ -141,12 +153,10 @@ struct NewBrewView: View {
                                         Text("😐")
                                             .font(.system(size: 24))
                                     } else {
-                                        // Create a simple neutral face outline
                                         ZStack {
                                             Circle()
                                                 .stroke(Color.secondary, lineWidth: 2)
                                                 .frame(width: 20, height: 20)
-                                            // Eyes
                                             HStack(spacing: 4) {
                                                 Circle()
                                                     .fill(Color.secondary)
@@ -156,7 +166,6 @@ struct NewBrewView: View {
                                                     .frame(width: 2, height: 2)
                                             }
                                             .offset(y: -2)
-                                            // Mouth (straight line)
                                             Rectangle()
                                                 .fill(Color.secondary)
                                                 .frame(width: 8, height: 1.5)
@@ -270,21 +279,13 @@ struct NewBrewView: View {
                         
                         // Action Buttons
                         VStack(spacing: 12) {
-                            // Home button (primary) - submits and saves
+                            // Save button (primary)
                             Button {
                                 HapticFeedback.medium()
-                                // Only save if not already saved for sharing
-                                if savedBrewForShare == nil {
-                                    saveBrew()
-                                } else {
-                                    // Update the already-saved brew
-                                    if let brew = savedBrewForShare {
-                                        updateBrew(brew)
-                                    }
-                                }
+                                saveBrew()
                                 dismiss()
                             } label: {
-                                Text("home")
+                                Text("save")
                                     .font(.oscineHeadline)
                                     .foregroundColor(.buttonText)
                                     .frame(maxWidth: .infinity)
@@ -293,41 +294,11 @@ struct NewBrewView: View {
                                     .cornerRadius(12)
                             }
                             
-                            // Share button (secondary) - always visible
+                            // Share button (secondary)
                             Button {
                                 HapticFeedback.light()
-                                if let brew = savedBrewForShare {
-                                    // Use already-saved brew
-                                    updateBrew(brew)
-                                    shareBrew = brew
-                                    showingShareCard = true
-                                } else {
-                                    // Save new brew first, then share
-                                    let newBrew = Brew(
-                                        beanID: selectedBean?.id,
-                                        machineID: selectedMachine?.id,
-                                        grinderID: selectedGrinder?.id,
-                                        drinkType: drinkType,
-                                        milkType: milkType == "None" ? nil : milkType,
-                                        dose: dose,
-                                        grindSetting: grindSetting,
-                                        temperature: Double(temperature) ?? 0,
-                                        brewTime: "\(Int(brewTime))s",
-                                        yield: yield,
-                                        rating: selectedRating,
-                                        notes: notes.isEmpty ? nil : notes,
-                                        method: drinkType.lowercased()
-                                    )
-                                    modelContext.insert(newBrew)
-                                    do {
-                                        try modelContext.save()
-                                        savedBrewForShare = newBrew
-                                        shareBrew = newBrew
-                                        showingShareCard = true
-                                    } catch {
-                                        print("Error saving brew for share: \(error)")
-                                    }
-                                }
+                                saveBrew()
+                                showingShareCard = true
                             } label: {
                                 Text("share")
                                     .font(.oscineHeadline)
@@ -344,7 +315,7 @@ struct NewBrewView: View {
             .scrollContentBackground(.hidden)
             .scrollDismissesKeyboard(.interactively)
             .background(Color.appBackground.ignoresSafeArea())
-            .navigationTitle("new brew")
+            .navigationTitle("brew details")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.clear, for: .navigationBar)
             .toolbar {
@@ -363,7 +334,10 @@ struct NewBrewView: View {
                 }
             }
             .onAppear {
-                setupAutoPopulation()
+                // Load bean and equipment references from queries
+                selectedBean = beans.first { $0.id == brew.beanID }
+                selectedMachine = equipment.first { $0.id == brew.machineID }
+                selectedGrinder = equipment.first { $0.id == brew.grinderID }
             }
             .fullScreenCover(isPresented: $showingEditParameters) {
                 EditBrewParametersView(
@@ -377,59 +351,13 @@ struct NewBrewView: View {
                     dose: $dose
                 )
             }
-            .fullScreenCover(item: $shareBrew) { brew in
+            .fullScreenCover(isPresented: $showingShareCard) {
                 BrewShareCardView(brew: brew)
             }
         }
     }
     
-    private func setupAutoPopulation() {
-        // Get default dose from user profile
-        if let profile = userProfiles.first {
-            dose = profile.defaultDose
-        }
-        
-        // Get current beans
-        selectedBean = beans.first { $0.status == BeanStatus.current.rawValue }
-        
-        // Load last brew's parameters (drink type, temperature, grind setting)
-        if let lastBrew = brews.first {
-            // Always use last brew's drink type, temperature, and grind setting
-            drinkType = lastBrew.drinkType.isEmpty ? "Single Shot" : lastBrew.drinkType
-            temperature = lastBrew.temperature > 0 ? String(Int(lastBrew.temperature)) : ""
-            grindSetting = lastBrew.grindSetting.isEmpty ? "" : lastBrew.grindSetting
-            milkType = lastBrew.milkType ?? "None"
-            
-            // Also load equipment and dose from last brew
-            if lastBrew.machineID != nil {
-                selectedMachine = equipment.first { $0.id == lastBrew.machineID }
-            } else {
-                // Fallback to primary machine if last brew had none
-                selectedMachine = equipment.first { $0.equipmentType == .machine && $0.isPrimary }
-            }
-            
-            if lastBrew.grinderID != nil {
-                selectedGrinder = equipment.first { $0.id == lastBrew.grinderID }
-            } else {
-                // Fallback to primary grinder if last brew had none
-                selectedGrinder = equipment.first { $0.equipmentType == .grinder && $0.isPrimary }
-            }
-            
-            if lastBrew.dose > 0 {
-                dose = lastBrew.dose
-            }
-        } else {
-            // No previous brews - use defaults
-            drinkType = "Single Shot"
-            milkType = "None"
-            
-            // Use primary equipment
-            selectedMachine = equipment.first { $0.equipmentType == .machine && $0.isPrimary }
-            selectedGrinder = equipment.first { $0.equipmentType == .grinder && $0.isPrimary }
-        }
-    }
-    
-    private func updateBrew(_ brew: Brew) {
+    private func saveBrew() {
         brew.beanID = selectedBean?.id
         brew.machineID = selectedMachine?.id
         brew.grinderID = selectedGrinder?.id
@@ -450,35 +378,17 @@ struct NewBrewView: View {
             print("Error updating brew: \(error)")
         }
     }
-    
-    private func saveBrew() {
-        // Create new brew
-        let brew = Brew(
-            beanID: selectedBean?.id,
-            machineID: selectedMachine?.id,
-            grinderID: selectedGrinder?.id,
-            drinkType: drinkType,
-            milkType: milkType == "None" ? nil : milkType,
-            dose: dose,
-            grindSetting: grindSetting,
-            temperature: Double(temperature) ?? 0,
-            brewTime: "\(Int(brewTime))s",
-            yield: yield,
-            rating: selectedRating,
-            notes: notes.isEmpty ? nil : notes,
-            method: drinkType.lowercased()
-        )
-        modelContext.insert(brew)
-        
-        do {
-            try modelContext.save()
-        } catch {
-            print("Error saving brew: \(error)")
-        }
-    }
 }
 
 #Preview {
-    NewBrewView()
-        .modelContainer(for: [Brew.self, Bean.self, UserProfile.self, Equipment.self])
+    let brew = Brew(
+        drinkType: "Cortado",
+        dose: 18.0,
+        grindSetting: "3.5",
+        temperature: 200.0,
+        brewTime: "28s",
+        yield: 36.0
+    )
+    return EditBrewView(brew: brew)
+        .modelContainer(for: [Brew.self, Bean.self, Equipment.self, UserProfile.self])
 }

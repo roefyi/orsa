@@ -20,7 +20,6 @@ struct BrewShareCardView: View {
     @Query private var userProfiles: [UserProfile]
     
     @State private var shareImage: UIImage?
-    @State private var showingShareSheet = false
     
     var bean: Bean? {
         guard let beanID = brew.beanID else { return nil }
@@ -197,11 +196,10 @@ struct BrewShareCardView: View {
                 VStack(spacing: 12) {
                     Button {
                         HapticFeedback.light()
-                        generateShareImage()
-                        // Share after a brief delay to ensure image is generated
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                            if shareImage != nil {
-                                showingShareSheet = true
+                        generateShareImage { image in
+                            // Directly present the share sheet with the generated image
+                            if let image = image {
+                                self.presentShareSheet(with: image)
                             }
                         }
                     } label: {
@@ -218,14 +216,42 @@ struct BrewShareCardView: View {
                 }
             }
         }
-        .sheet(isPresented: $showingShareSheet) {
-            if let image = shareImage, let pngData = image.pngData() {
-                ShareSheet(activityItems: [pngData])
-            }
-        }
     }
     
-    private func generateShareImage() {
+    private func presentShareSheet(with image: UIImage) {
+        guard let pngData = image.pngData() else {
+            print("Failed to convert image to PNG data")
+            return
+        }
+        
+        let activityVC = UIActivityViewController(activityItems: [pngData], applicationActivities: nil)
+        activityVC.excludedActivityTypes = []
+        
+        // Find the topmost view controller to present from
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first,
+              let rootViewController = window.rootViewController else {
+            print("Failed to find root view controller")
+            return
+        }
+        
+        // Find the topmost presented view controller
+        var topController = rootViewController
+        while let presented = topController.presentedViewController {
+            topController = presented
+        }
+        
+        // For iPad, set popover presentation
+        if let popover = activityVC.popoverPresentationController {
+            popover.sourceView = topController.view
+            popover.sourceRect = CGRect(x: topController.view.bounds.midX, y: topController.view.bounds.midY, width: 0, height: 0)
+            popover.permittedArrowDirections = []
+        }
+        
+        topController.present(activityVC, animated: true)
+    }
+    
+    private func generateShareImage(completion: @escaping (UIImage?) -> Void) {
         // Create a snapshot of the card view - exact dimensions 433h x 362w, card only
         // Must match the main view structure exactly - render full view with all padding
         let cardView = BrewShareCardContent(brew: brew, bean: bean, formattedDate: formattedDate, brewTimeDisplay: brewTimeDisplay, yieldDisplay: yieldDisplay)
@@ -242,21 +268,33 @@ struct BrewShareCardView: View {
         
         // Render the full image first with all padding intact
         let size = CGSize(width: 362, height: 433)
-        let renderer = UIGraphicsImageRenderer(size: size, format: UIGraphicsImageRendererFormat.default())
-        let fullImage = renderer.image { context in
-            let rect = CGRect(origin: .zero, size: size)
-            // Draw the full view hierarchy with all padding
-            hostingController.view.drawHierarchy(in: rect, afterScreenUpdates: true)
-        }
         
-        // Apply border radius to final image (for PNG transparency)
-        let finalRenderer = UIGraphicsImageRenderer(size: size, format: UIGraphicsImageRendererFormat.default())
-        shareImage = finalRenderer.image { context in
-            let rect = CGRect(origin: .zero, size: size)
-            // Apply border radius clipping to final image only
-            let path = UIBezierPath(roundedRect: rect, cornerRadius: 24)
-            path.addClip()
-            fullImage.draw(in: rect)
+        // Use async dispatch to ensure the view hierarchy is fully laid out
+        DispatchQueue.main.async {
+            // Add a small delay to ensure the hosting controller view is fully rendered
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                let renderer = UIGraphicsImageRenderer(size: size, format: UIGraphicsImageRendererFormat.default())
+                let fullImage = renderer.image { context in
+                    let rect = CGRect(origin: .zero, size: size)
+                    // Draw the full view hierarchy with all padding
+                    hostingController.view.drawHierarchy(in: rect, afterScreenUpdates: true)
+                }
+                
+                // Apply border radius to final image (for PNG transparency)
+                let finalRenderer = UIGraphicsImageRenderer(size: size, format: UIGraphicsImageRendererFormat.default())
+                let finalImage = finalRenderer.image { context in
+                    let rect = CGRect(origin: .zero, size: size)
+                    // Apply border radius clipping to final image only
+                    let path = UIBezierPath(roundedRect: rect, cornerRadius: 24)
+                    path.addClip()
+                    fullImage.draw(in: rect)
+                }
+                
+                self.shareImage = finalImage
+                
+                // Call completion handler with the generated image
+                completion(finalImage)
+            }
         }
     }
     

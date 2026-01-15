@@ -51,6 +51,8 @@ struct BeansView: View {
             }
             .sheet(isPresented: $showingAddBeans) {
                 AddBeanView()
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
             }
             .navigationDestination(item: $selectedBean) { bean in
                 BeanDetailView(bean: bean)

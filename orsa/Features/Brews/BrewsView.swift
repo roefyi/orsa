@@ -12,7 +12,7 @@ struct BrewsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Brew.timestamp, order: .reverse) private var brews: [Brew]
     @State private var showingNewBrew = false
-    @State private var selectedBrew: Brew?
+    @State private var brewToEdit: Brew?
     @State private var brewToShare: Brew?
     
     var body: some View {
@@ -34,8 +34,7 @@ struct BrewsView: View {
                         }
                         
                         Button {
-                            selectedBrew = brew
-                            showingNewBrew = true
+                            brewToEdit = brew
                         } label: {
                             Label("Edit", systemImage: "pencil")
                         }
@@ -51,7 +50,6 @@ struct BrewsView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        selectedBrew = nil
                         showingNewBrew = true
                     } label: {
                         Image(systemName: "plus")
@@ -62,10 +60,10 @@ struct BrewsView: View {
                 }
             }
             .fullScreenCover(isPresented: $showingNewBrew) {
-                NewBrewView(existingBrew: selectedBrew)
-                    .onDisappear {
-                        selectedBrew = nil
-                    }
+                NewBrewView()
+            }
+            .fullScreenCover(item: $brewToEdit) { brew in
+                EditBrewView(brew: brew)
             }
             .fullScreenCover(item: $brewToShare) { brew in
                 BrewShareCardView(brew: brew)

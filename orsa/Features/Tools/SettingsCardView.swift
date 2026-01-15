@@ -7,6 +7,7 @@
 
 import SwiftUI
 import StoreKit
+import MessageUI
 
 struct SettingsCardView: View {
     @State private var showingMeasurements = false
@@ -44,6 +45,13 @@ struct SettingsCardView: View {
             Divider()
                 .background(Color.secondary.opacity(0.2))
             
+            SettingsRowView(title: "report a bug", action: {
+                openBugReport()
+            })
+            
+            Divider()
+                .background(Color.secondary.opacity(0.2))
+            
             SettingsRowView(title: "leave a review", action: {
                 if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
                     if #available(iOS 18.0, *) {
@@ -69,15 +77,37 @@ struct SettingsCardView: View {
         )
         .sheet(isPresented: $showingMeasurements) {
             MeasurementsView()
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showingAppearance) {
             AppearanceView()
+                .presentationDetents([.medium, .large])
+                .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showingPrivacyPolicy) {
             WebViewSheet(title: "Privacy Policy", url: "https://example.com/privacy")
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showingTermsOfService) {
             WebViewSheet(title: "Terms of Service", url: "https://example.com/terms")
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
+        }
+    }
+    
+    private func openBugReport() {
+        let email = "romansdenson@gmail.com"
+        let subject = "Orsa Bug"
+        let body = ""
+        
+        // Create mailto URL
+        let subjectEncoded = subject.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        let bodyEncoded = body.addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed) ?? ""
+        
+        if let url = URL(string: "mailto:\(email)?subject=\(subjectEncoded)&body=\(bodyEncoded)") {
+            UIApplication.shared.open(url)
         }
     }
 }
