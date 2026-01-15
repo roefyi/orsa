@@ -25,7 +25,7 @@ struct OnboardingSetupView: View {
             VStack(alignment: .leading, spacing: 30) {
                 Text("glad you're here \(userName)")
                     .font(.oscineLargeTitle)
-                    .foregroundColor(.primaryText)
+                    .foregroundColor(.primary)
                     .padding(.horizontal, 32)
                 
                 Text("what's your main setup?")
@@ -36,13 +36,13 @@ struct OnboardingSetupView: View {
                 VStack(spacing: 16) {
                     TextField("Machine", text: $machineName)
                         .font(.oscineRegular(size: 17))
-                        .foregroundColor(.primaryText)
+                        .foregroundColor(.primary)
                         .padding(.vertical, 12)
                         .padding(.horizontal, 16)
                         .background(Color.clear)
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.primaryText, lineWidth: 2)
+                                .stroke(Color.primary, lineWidth: 2)
                         )
                         .focused($focusedField, equals: .machine)
                         .submitLabel(.next)
@@ -52,13 +52,13 @@ struct OnboardingSetupView: View {
                     
                     TextField("Grinder", text: $grinderName)
                         .font(.oscineRegular(size: 17))
-                        .foregroundColor(.primaryText)
+                        .foregroundColor(.primary)
                         .padding(.vertical, 12)
                         .padding(.horizontal, 16)
                         .background(Color.clear)
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.primaryText, lineWidth: 2)
+                                .stroke(Color.primary, lineWidth: 2)
                         )
                         .focused($focusedField, equals: .grinder)
                         .submitLabel(.next)
@@ -76,7 +76,7 @@ struct OnboardingSetupView: View {
             Button(action: onNext) {
                 Text("Next")
                     .font(.oscineHeadline)
-                    .foregroundColor((machineName.isEmpty || grinderName.isEmpty) ? .primaryText : .buttonText)
+                    .foregroundColor((machineName.isEmpty || grinderName.isEmpty) ? .secondary : .buttonText)
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(machineName.isEmpty || grinderName.isEmpty ? Color.secondaryText.opacity(0.3) : AppColors.buttonYellow)

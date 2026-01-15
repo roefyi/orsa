@@ -111,7 +111,7 @@ struct EditBeanView: View {
                     Button("Cancel") {
                         dismiss()
                     }
-                    .foregroundColor(.primaryText)
+                    .foregroundColor(.primary)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {

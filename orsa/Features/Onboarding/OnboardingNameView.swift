@@ -19,18 +19,18 @@ struct OnboardingNameView: View {
             VStack(alignment: .leading, spacing: 20) {
                 Text("What's your name?")
                     .font(.oscineLargeTitle)
-                    .foregroundColor(.primaryText)
+                    .foregroundColor(.primary)
                     .padding(.horizontal, 32)
                 
                 TextField("Enter your name", text: $userName)
                     .font(.oscineRegular(size: 17))
-                    .foregroundColor(.primaryText)
+                    .foregroundColor(.primary)
                     .padding(.vertical, 12)
                     .padding(.horizontal, 16)
                     .background(Color.clear)
                     .overlay(
                         RoundedRectangle(cornerRadius: 12)
-                            .stroke(Color.primaryText, lineWidth: 2)
+                            .stroke(Color.primary, lineWidth: 2)
                     )
                     .padding(.horizontal, 32)
                     .focused($isTextFieldFocused)
@@ -44,7 +44,7 @@ struct OnboardingNameView: View {
             Button(action: onNext) {
                 Text("Next")
                     .font(.oscineHeadline)
-                    .foregroundColor(userName.isEmpty ? .primaryText : .buttonText)
+                    .foregroundColor(userName.isEmpty ? .secondary : .buttonText)
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(userName.isEmpty ? Color.secondaryText.opacity(0.3) : AppColors.buttonYellow)

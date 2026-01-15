@@ -21,15 +21,6 @@ struct orsaApp: App {
             }
         }
         
-        let textColor = UIColor { traitCollection in
-            switch traitCollection.userInterfaceStyle {
-            case .dark:
-                return UIColor.white // White text for dark mode
-            default:
-                return UIColor(red: 30/255, green: 30/255, blue: 30/255, alpha: 1.0) // Dark text for light mode
-            }
-        }
-        
         let accentColor = UIColor { traitCollection in
             switch traitCollection.userInterfaceStyle {
             case .dark:
@@ -39,57 +30,61 @@ struct orsaApp: App {
             }
         }
         
-        let accentDarkColor = UIColor { traitCollection in
-            switch traitCollection.userInterfaceStyle {
-            case .dark:
-                return UIColor.white // White for dark mode
-            default:
-                return UIColor(red: 20/255, green: 20/255, blue: 20/255, alpha: 1.0) // Darker for light mode
-            }
-        }
+        // Configure navigation bar appearance with custom font
+        // Ensure Oscine font is used for navigation titles
+        let largeTitleFont = UIFont(name: "OscineTrial-XBold", size: 34) ?? UIFont.systemFont(ofSize: 34, weight: .bold)
+        let titleFont = UIFont(name: "OscineTrial-XBold", size: 17) ?? UIFont.systemFont(ofSize: 17, weight: .bold)
         
-        // Configure navigation bar appearance
-        let appearance = UINavigationBarAppearance()
-        appearance.configureWithOpaqueBackground()
-        appearance.backgroundColor = appBackgroundColor
-        appearance.shadowColor = .clear
-        appearance.shadowImage = UIImage()
-        appearance.largeTitleTextAttributes = [
-            .font: UIFont(name: "OscineTrial-XBold", size: 34) ?? UIFont.systemFont(ofSize: 34, weight: .bold),
-            .foregroundColor: textColor
+        // Standard appearance (when scrolled)
+        let standardAppearance = UINavigationBarAppearance()
+        standardAppearance.configureWithDefaultBackground()
+        standardAppearance.largeTitleTextAttributes = [
+            .font: largeTitleFont,
+            .foregroundColor: UIColor.label
         ]
-        appearance.titleTextAttributes = [
-            .font: UIFont(name: "OscineTrial-XBold", size: 17) ?? UIFont.systemFont(ofSize: 17, weight: .bold),
-            .foregroundColor: textColor
+        standardAppearance.titleTextAttributes = [
+            .font: titleFont,
+            .foregroundColor: UIColor.label
         ]
-        UINavigationBar.appearance().standardAppearance = appearance
-        UINavigationBar.appearance().compactAppearance = appearance
-        UINavigationBar.appearance().scrollEdgeAppearance = appearance
-        UINavigationBar.appearance().backgroundColor = appBackgroundColor
-        UINavigationBar.appearance().shadowImage = UIImage()
         
-        // Configure tab bar appearance
+        // Scroll edge appearance (at top, large title visible)
+        let scrollEdgeAppearance = UINavigationBarAppearance()
+        scrollEdgeAppearance.configureWithDefaultBackground()
+        scrollEdgeAppearance.largeTitleTextAttributes = [
+            .font: largeTitleFont,
+            .foregroundColor: UIColor.label
+        ]
+        scrollEdgeAppearance.titleTextAttributes = [
+            .font: titleFont,
+            .foregroundColor: UIColor.label
+        ]
+        
+        UINavigationBar.appearance().standardAppearance = standardAppearance
+        UINavigationBar.appearance().compactAppearance = standardAppearance
+        UINavigationBar.appearance().scrollEdgeAppearance = scrollEdgeAppearance
+        UINavigationBar.appearance().isTranslucent = true
+        
+        // Configure tab bar appearance - transparent to allow SwiftUI materials
         let tabBarAppearance = UITabBarAppearance()
-        tabBarAppearance.configureWithOpaqueBackground()
-        tabBarAppearance.backgroundColor = appBackgroundColor
+        tabBarAppearance.configureWithTransparentBackground()
+        tabBarAppearance.backgroundColor = .clear
         tabBarAppearance.shadowColor = .clear
         tabBarAppearance.shadowImage = UIImage()
         
-        tabBarAppearance.stackedLayoutAppearance.normal.iconColor = accentColor.withAlphaComponent(0.5)
+        tabBarAppearance.stackedLayoutAppearance.normal.iconColor = UIColor.secondaryLabel
         tabBarAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [
-            .foregroundColor: accentColor.withAlphaComponent(0.5)
+            .foregroundColor: UIColor.secondaryLabel
         ]
-        tabBarAppearance.stackedLayoutAppearance.selected.iconColor = accentDarkColor
+        tabBarAppearance.stackedLayoutAppearance.selected.iconColor = UIColor.label
         tabBarAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [
-            .foregroundColor: accentDarkColor
+            .foregroundColor: UIColor.label
         ]
         
         UITabBar.appearance().standardAppearance = tabBarAppearance
         UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
-        UITabBar.appearance().backgroundColor = appBackgroundColor
-        UITabBar.appearance().shadowImage = UIImage()
-        UITabBar.appearance().unselectedItemTintColor = accentColor.withAlphaComponent(0.5)
-        UITabBar.appearance().tintColor = accentDarkColor
+        UITabBar.appearance().isTranslucent = true
+        UITabBar.appearance().unselectedItemTintColor = UIColor.secondaryLabel
+        UITabBar.appearance().tintColor = UIColor.label
         
         // Configure button/control tint color globally
         UIButton.appearance().tintColor = accentColor

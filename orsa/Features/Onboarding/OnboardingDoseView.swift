@@ -19,26 +19,26 @@ struct OnboardingDoseView: View {
             VStack(alignment: .leading, spacing: 20) {
                 Text("nice, what's your usual dose?")
                     .font(.oscineLargeTitle)
-                    .foregroundColor(.primaryText)
+                    .foregroundColor(.primary)
                     .padding(.horizontal, 32)
                 
                 HStack(spacing: 12) {
                     TextField("18.0", text: $defaultDose)
                         .font(.oscineRegular(size: 17))
-                        .foregroundColor(.primaryText)
+                        .foregroundColor(.primary)
                         .keyboardType(.decimalPad)
                         .padding(.vertical, 12)
                         .padding(.horizontal, 16)
                         .background(Color.clear)
                         .overlay(
                             RoundedRectangle(cornerRadius: 12)
-                                .stroke(Color.primaryText, lineWidth: 2)
+                                .stroke(Color.primary, lineWidth: 2)
                         )
                         .focused($isTextFieldFocused)
                     
                     Text("g")
                         .font(.oscineRegular(size: 17))
-                        .foregroundColor(.primaryText.opacity(0.7))
+                        .foregroundColor(.primary.opacity(0.7))
                 }
                 .padding(.horizontal, 32)
             }
@@ -48,7 +48,7 @@ struct OnboardingDoseView: View {
             Button(action: onComplete) {
                 Text("Done")
                     .font(.oscineHeadline)
-                    .foregroundColor(defaultDose.isEmpty ? .primaryText : .buttonText)
+                    .foregroundColor(defaultDose.isEmpty ? .secondary : .buttonText)
                     .frame(maxWidth: .infinity)
                     .padding()
                     .background(defaultDose.isEmpty ? Color.secondaryText.opacity(0.3) : AppColors.buttonYellow)

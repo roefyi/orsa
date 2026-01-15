@@ -11,24 +11,26 @@ struct BeanCardView: View {
     let bean: Bean
     
     var body: some View {
-        HStack {
+        HStack(spacing: 12) {
             VStack(alignment: .leading, spacing: 4) {
                 Text(bean.coffeeName)
                     .font(.oscineHeadline)
-                    .foregroundColor(.cardText)
+                    .foregroundColor(.primary)
                 
                 Text(bean.roaster)
                     .font(.oscineSubheadline)
-                    .foregroundColor(.cardText.opacity(0.7))
+                    .foregroundColor(.secondary)
             }
             Spacer()
             if bean.isPrimary {
                 Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.cardText)
+                    .font(.system(size: 20))
+                    .foregroundColor(.primary)
             }
         }
-        .padding(.vertical, 12)
-        .padding(.horizontal, 16)
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         .contentShape(Rectangle())
     }
 }

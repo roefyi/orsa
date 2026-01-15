@@ -54,18 +54,18 @@ struct BeanDetailView: View {
                                     .resizable()
                                     .aspectRatio(contentMode: .fill)
                             } else {
-                                Rectangle()
-                                    .fill(Color.appBackground)
-                                    .overlay(
-                                        VStack(spacing: 8) {
-                                            Image(systemName: "camera.fill")
-                                                .font(.system(size: 40))
-                                                .foregroundColor(.secondaryText)
-                                            Text("Tap to add photo")
-                                                .font(.oscineCaption)
-                                                .foregroundColor(.secondaryText)
-                                        }
-                                    )
+                                    Rectangle()
+                                        .fill(.ultraThinMaterial)
+                                        .overlay(
+                                            VStack(spacing: 8) {
+                                                Image(systemName: "camera.fill")
+                                                    .font(.system(size: 40))
+                                                    .foregroundColor(.secondary)
+                                                Text("Tap to add photo")
+                                                    .font(.oscineCaption)
+                                                    .foregroundColor(.secondary)
+                                            }
+                                        )
                             }
                         }
                         .frame(maxWidth: .infinity)
@@ -78,16 +78,15 @@ struct BeanDetailView: View {
                     VStack(alignment: .leading, spacing: 4) {
                         Text(bean.coffeeName)
                             .font(.oscineLargeTitle)
-                            .foregroundColor(.cardText)
+                            .foregroundColor(.primary)
                         
                         Text(bean.roaster)
                             .font(.oscineSubheadline)
-                            .foregroundColor(.cardText.opacity(0.7))
+                            .foregroundColor(.secondary)
                     }
                     .padding(16)
                 }
-                .background(Color.cardBackground)
-                .cornerRadius(12)
+                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                 .padding(.horizontal, 20)
                 .padding(.top, 20)
                 
@@ -96,10 +95,10 @@ struct BeanDetailView: View {
                     HStack {
                         Text("Roast")
                             .font(.oscineHeadline)
-                            .foregroundColor(.cardText)
+                            .foregroundColor(.primary)
                         Spacer()
                         Image(systemName: "flame.fill")
-                            .foregroundColor(.cardText)
+                            .foregroundColor(.primary)
                             .font(.system(size: 16))
                     }
                     
@@ -107,15 +106,15 @@ struct BeanDetailView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             HStack(spacing: 6) {
                                 Image(systemName: "calendar")
-                                    .foregroundColor(.cardText)
+                                    .foregroundColor(.primary)
                                     .font(.system(size: 14))
                                 Text("Roast Date")
                                     .font(.oscineSubheadline)
-                                    .foregroundColor(.cardText)
+                                    .foregroundColor(.primary)
                             }
                             Text(roastDateString)
                                 .font(.oscineBody)
-                                .foregroundColor(.cardText.opacity(0.7))
+                                .foregroundColor(.secondary)
                         }
                     }
                     
@@ -123,15 +122,15 @@ struct BeanDetailView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             HStack(spacing: 6) {
                                 Image(systemName: "flame.fill")
-                                    .foregroundColor(.cardText)
+                                    .foregroundColor(.primary)
                                     .font(.system(size: 14))
                                 Text("Roast Level")
                                     .font(.oscineSubheadline)
-                                    .foregroundColor(.cardText)
+                                    .foregroundColor(.primary)
                             }
                             Text(roastLevel.capitalized)
                                 .font(.oscineBody)
-                                .foregroundColor(.cardText.opacity(0.7))
+                                .foregroundColor(.secondary)
                         }
                     }
                     
@@ -139,16 +138,16 @@ struct BeanDetailView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Tasting Notes")
                                 .font(.oscineSubheadline)
-                                .foregroundColor(.cardText)
+                                .foregroundColor(.primary)
                             
                             FlowLayout(spacing: 8) {
                                 ForEach(tastingNoteTags, id: \.self) { tag in
                                     Text(tag)
                                         .font(.oscineCaption)
-                                        .foregroundColor(.cardText)
+                                        .foregroundColor(.primary)
                                         .padding(.horizontal, 12)
                                         .padding(.vertical, 6)
-                                        .background(Color.cardText.opacity(0.2))
+                                        .background(Color.secondary.opacity(0.2))
                                         .cornerRadius(16)
                                 }
                             }
@@ -165,10 +164,10 @@ struct BeanDetailView: View {
                     HStack {
                         Text("Origin")
                             .font(.oscineHeadline)
-                            .foregroundColor(.cardText)
+                            .foregroundColor(.primary)
                         Spacer()
                         Image(systemName: "globe")
-                            .foregroundColor(.cardText)
+                            .foregroundColor(.primary)
                             .font(.system(size: 16))
                     }
                     
@@ -176,15 +175,15 @@ struct BeanDetailView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             HStack(spacing: 6) {
                                 Image(systemName: "globe")
-                                    .foregroundColor(.cardText)
+                                    .foregroundColor(.primary)
                                     .font(.system(size: 14))
                                 Text("Country")
                                     .font(.oscineSubheadline)
-                                    .foregroundColor(.cardText)
+                                    .foregroundColor(.primary)
                             }
                             Text(country)
                                 .font(.oscineBody)
-                                .foregroundColor(.cardText.opacity(0.7))
+                                .foregroundColor(.secondary)
                         }
                     }
                     
@@ -192,15 +191,15 @@ struct BeanDetailView: View {
                         VStack(alignment: .leading, spacing: 4) {
                             HStack(spacing: 6) {
                                 Image(systemName: "sparkles")
-                                    .foregroundColor(.cardText)
+                                    .foregroundColor(.primary)
                                     .font(.system(size: 14))
                                 Text("Processing Method")
                                     .font(.oscineSubheadline)
-                                    .foregroundColor(.cardText)
+                                    .foregroundColor(.primary)
                             }
                             Text(process.capitalized)
                                 .font(.oscineBody)
-                                .foregroundColor(.cardText.opacity(0.7))
+                                .foregroundColor(.secondary)
                         }
                     }
                 }
@@ -215,10 +214,10 @@ struct BeanDetailView: View {
                         HStack {
                             Text("Settings")
                                 .font(.oscineHeadline)
-                                .foregroundColor(.cardText)
+                                .foregroundColor(.primary)
                             Spacer()
                             Image(systemName: "gearshape.fill")
-                                .foregroundColor(.cardText)
+                                .foregroundColor(.primary)
                                 .font(.system(size: 16))
                         }
                         
@@ -226,15 +225,15 @@ struct BeanDetailView: View {
                             VStack(alignment: .leading, spacing: 4) {
                                 HStack(spacing: 6) {
                                     Image(systemName: "thermometer")
-                                        .foregroundColor(.cardText)
+                                        .foregroundColor(.primary)
                                         .font(.system(size: 14))
                                     Text("Temperature")
                                         .font(.oscineSubheadline)
-                                        .foregroundColor(.cardText)
+                                        .foregroundColor(.primary)
                                 }
                                 Text(temp)
                                     .font(.oscineBody)
-                                    .foregroundColor(.cardText.opacity(0.7))
+                                    .foregroundColor(.secondary)
                             }
                         }
                         
@@ -242,15 +241,15 @@ struct BeanDetailView: View {
                             VStack(alignment: .leading, spacing: 4) {
                                 HStack(spacing: 6) {
                                     Image(systemName: "slider.horizontal.3")
-                                        .foregroundColor(.cardText)
+                                        .foregroundColor(.primary)
                                         .font(.system(size: 14))
                                     Text("Grind Setting")
                                         .font(.oscineSubheadline)
-                                        .foregroundColor(.cardText)
+                                        .foregroundColor(.primary)
                                 }
                                 Text(grind)
                                     .font(.oscineBody)
-                                    .foregroundColor(.cardText.opacity(0.7))
+                                    .foregroundColor(.secondary)
                             }
                         }
                     }
@@ -268,7 +267,7 @@ struct BeanDetailView: View {
                     } label: {
                         Text("delete")
                             .font(.oscineHeadline)
-                            .foregroundColor(.primaryText)
+                            .foregroundColor(.primary)
                             .frame(maxWidth: .infinity)
                             .padding()
                     }
@@ -278,20 +277,23 @@ struct BeanDetailView: View {
             }
             .padding(.bottom, 100)
         }
-        .scrollContentBackground(.hidden)
-        .background(Color.appBackground)
-        .navigationBarTitleDisplayMode(.inline)
-        .toolbar {
-            ToolbarItem(placement: .navigationBarTrailing) {
-                Button {
-                    HapticFeedback.light()
-                    showingEditBean = true
-                } label: {
-                    Image(systemName: "ellipsis")
-                        .foregroundColor(.primaryText)
+            .scrollContentBackground(.hidden)
+            .background(Color.appBackground.ignoresSafeArea())
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.clear, for: .navigationBar)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button {
+                        HapticFeedback.light()
+                        showingEditBean = true
+                    } label: {
+                        Image(systemName: "ellipsis")
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(.primary)
+                    }
+                    .buttonStyle(.plain)
                 }
             }
-        }
         .sheet(isPresented: $showingEditBean) {
             EditBeanView(existingBean: bean)
         }

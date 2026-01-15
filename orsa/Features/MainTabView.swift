@@ -12,27 +12,35 @@ struct MainTabView: View {
     @Query private var userProfiles: [UserProfile]
     
     var body: some View {
-        TabView {
-            BrewsView()
-                .tabItem {
-                    Label("Brews", systemImage: "cup.and.saucer")
-                }
+        ZStack {
+            // Base background layer that materials will blur
+            Color.appBackground
+                .ignoresSafeArea(.all)
             
-            BeansView()
-                .tabItem {
-                    Label {
-                        Text("Beans")
-                    } icon: {
-                        Image("BeansIcon")
-                            .renderingMode(.template)
+            TabView {
+                BrewsView()
+                    .tabItem {
+                        Label("Brews", systemImage: "cup.and.saucer")
                     }
-                }
-            
-            ToolsView()
-                .tabItem {
-                    Label("Tools", systemImage: "list.bullet")
-                }
+                
+                BeansView()
+                    .tabItem {
+                        Label {
+                            Text("Beans")
+                        } icon: {
+                            Image("BeansIcon")
+                                .renderingMode(.template)
+                        }
+                    }
+                
+                ToolsView()
+                    .tabItem {
+                        Label("Tools", systemImage: "list.bullet")
+                    }
+            }
         }
+        .toolbarBackground(.visible, for: .tabBar)
+        .toolbarBackground(.ultraThinMaterial, for: .tabBar)
     }
 }
 

@@ -63,7 +63,6 @@ struct OnboardingView: View {
                 isPrimary: true
             )
             modelContext.insert(machine)
-            print("Inserted machine: \(machineName) with id: \(machine.id)")
         }
         
         if !grinderName.isEmpty {
@@ -75,7 +74,6 @@ struct OnboardingView: View {
                 isPrimary: true
             )
             modelContext.insert(grinder)
-            print("Inserted grinder: \(grinderName) with id: \(grinder.id)")
         }
         
         // Get or create user profile
@@ -97,23 +95,13 @@ struct OnboardingView: View {
         // Save everything together
         do {
             try modelContext.save()
-            print("Successfully saved onboarding data - profile and equipment")
-            
-            // Verify equipment was saved by fetching it
-            let descriptor = FetchDescriptor<Equipment>()
-            let savedEquipment = try? modelContext.fetch(descriptor)
-            print("Total equipment in database: \(savedEquipment?.count ?? 0)")
-            savedEquipment?.forEach { eq in
-                print("  - \(eq.displayName) (\(eq.type))")
-            }
             
             // Update AppStorage immediately
             onboardingCompleted = true
             // Call completion handler if provided
             onComplete?()
         } catch {
-            print("Error saving onboarding data: \(error.localizedDescription)")
-            print("Full error: \(error)")
+            print("Error saving onboarding data: \(error)")
         }
     }
 }

@@ -13,6 +13,7 @@ struct BrewsView: View {
     @Query(sort: \Brew.timestamp, order: .reverse) private var brews: [Brew]
     @State private var showingNewBrew = false
     @State private var selectedBrew: Brew?
+    @State private var brewToShare: Brew?
     
     var body: some View {
         NavigationStack {
@@ -20,10 +21,11 @@ struct BrewsView: View {
                 ForEach(brews) { brew in
                     BrewCardView(brew: brew) {
                         HapticFeedback.light()
-                        selectedBrew = brew
+                        brewToShare = brew
                     }
-                    .listRowBackground(AppColors.cardCream)
-                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 8, trailing: 0))
+                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button(role: .destructive) {
                             deleteBrew(brew)
@@ -41,8 +43,9 @@ struct BrewsView: View {
                     }
                 }
             }
+            .listStyle(.plain)
             .scrollContentBackground(.hidden)
-            .background(Color.appBackground)
+            .background(Color.appBackground.ignoresSafeArea())
             .navigationTitle("all brews")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
@@ -52,8 +55,10 @@ struct BrewsView: View {
                         showingNewBrew = true
                     } label: {
                         Image(systemName: "plus")
-                            .foregroundColor(.primaryText)
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(.primary)
                     }
+                    .buttonStyle(.plain)
                 }
             }
             .fullScreenCover(isPresented: $showingNewBrew) {
@@ -62,7 +67,7 @@ struct BrewsView: View {
                         selectedBrew = nil
                     }
             }
-            .fullScreenCover(item: $selectedBrew) { brew in
+            .fullScreenCover(item: $brewToShare) { brew in
                 BrewShareCardView(brew: brew)
             }
         }

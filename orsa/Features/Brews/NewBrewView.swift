@@ -66,7 +66,7 @@ struct NewBrewView: View {
                     // Description text left-aligned with title styling
                     Text(descriptionText)
                         .font(.oscineTitle)
-                        .foregroundColor(.primaryText)
+                        .foregroundColor(.primary)
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.top, 40)
                         .padding(.horizontal, 20)
@@ -76,7 +76,7 @@ struct NewBrewView: View {
                         VStack(alignment: .leading, spacing: 12) {
                             Text("brew details")
                                 .font(.oscineHeadline)
-                                .foregroundColor(.primaryText)
+                                .foregroundColor(.primary)
                                 .textCase(.lowercase)
                             
                             // Time Slider
@@ -87,8 +87,7 @@ struct NewBrewView: View {
                                 step: 1,
                                 suffix: "s"
                             )
-                            .background(Color.cardBackground)
-                            .cornerRadius(8)
+                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                             
                             // Yield Slider
                             CustomSlider(
@@ -98,15 +97,14 @@ struct NewBrewView: View {
                                 step: 1,
                                 suffix: yieldUnit == "ml" ? "ml" : "g"
                             )
-                            .background(Color.cardBackground)
-                            .cornerRadius(8)
+                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                         }
                         
                         // Rating Section
                         VStack(alignment: .leading, spacing: 12) {
                             Text("rating")
                                 .font(.oscineHeadline)
-                                .foregroundColor(.primaryText)
+                                .foregroundColor(.primary)
                                 .textCase(.lowercase)
                             
                             HStack(spacing: 12) {
@@ -118,12 +116,11 @@ struct NewBrewView: View {
                                     } else {
                                         Image(systemName: "hand.thumbsdown")
                                             .font(.system(size: 20, weight: .medium))
-                                            .foregroundColor(.cardText.opacity(0.8))
+                                            .foregroundColor(.secondary)
                                     }
                                 }
                                 .frame(width: 60, height: 60)
-                                .background(Color.cardBackground)
-                                .cornerRadius(12)
+                                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                                 .contentShape(Rectangle())
                                 .onTapGesture {
                                     if !longPressJustCompleted && selectedRating != 1 {
@@ -153,29 +150,28 @@ struct NewBrewView: View {
                                         // Create a simple neutral face outline
                                         ZStack {
                                             Circle()
-                                                .stroke(Color.cardText.opacity(0.8), lineWidth: 2)
+                                                .stroke(Color.secondary, lineWidth: 2)
                                                 .frame(width: 20, height: 20)
                                             // Eyes
                                             HStack(spacing: 4) {
                                                 Circle()
-                                                    .fill(Color.cardText.opacity(0.8))
+                                                    .fill(Color.secondary)
                                                     .frame(width: 2, height: 2)
                                                 Circle()
-                                                    .fill(Color.cardText.opacity(0.8))
+                                                    .fill(Color.secondary)
                                                     .frame(width: 2, height: 2)
                                             }
                                             .offset(y: -2)
                                             // Mouth (straight line)
                                             Rectangle()
-                                                .fill(Color.cardText.opacity(0.8))
+                                                .fill(Color.secondary)
                                                 .frame(width: 8, height: 1.5)
                                                 .offset(y: 4)
                                         }
                                     }
                                 }
                                 .frame(width: 60, height: 60)
-                                .background(Color.cardBackground)
-                                .cornerRadius(12)
+                                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                                 .contentShape(Rectangle())
                                 .onTapGesture {
                                     if !longPressJustCompleted && selectedRating != 3 {
@@ -203,12 +199,11 @@ struct NewBrewView: View {
                                     } else {
                                         Image(systemName: "hand.thumbsup")
                                             .font(.system(size: 20, weight: .medium))
-                                            .foregroundColor(.cardText.opacity(0.8))
+                                            .foregroundColor(.secondary)
                                     }
                                 }
                                 .frame(width: 60, height: 60)
-                                .background(Color.cardBackground)
-                                .cornerRadius(12)
+                                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                                 .contentShape(Rectangle())
                                 .onTapGesture {
                                     if !longPressJustCompleted && selectedRating != 4 {
@@ -236,12 +231,11 @@ struct NewBrewView: View {
                                     } else {
                                         Image(systemName: "heart")
                                             .font(.system(size: 20, weight: .medium))
-                                            .foregroundColor(.cardText.opacity(0.8))
+                                            .foregroundColor(.secondary)
                                     }
                                 }
                                 .frame(width: 60, height: 60)
-                                .background(Color.cardBackground)
-                                .cornerRadius(12)
+                                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                                 .contentShape(Rectangle())
                                 .onTapGesture {
                                     if !longPressJustCompleted && selectedRating != 5 {
@@ -270,15 +264,14 @@ struct NewBrewView: View {
                         VStack(alignment: .leading, spacing: 12) {
                             Text("notes")
                                 .font(.oscineHeadline)
-                                .foregroundColor(.primaryText)
+                                .foregroundColor(.primary)
                                 .textCase(.lowercase)
                             
                             TextField("Notes", text: $notes, axis: .vertical)
                                 .lineLimit(3...6)
                                 .padding()
-                                .background(Color.cardBackground)
-                                .foregroundColor(.cardText)
-                                .cornerRadius(8)
+                                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                .foregroundColor(.primary)
                         }
                         
                         // Action Buttons
@@ -348,7 +341,7 @@ struct NewBrewView: View {
                             } label: {
                                 Text("share")
                                     .font(.oscineHeadline)
-                                    .foregroundColor(.primaryText)
+                                    .foregroundColor(.primary)
                                     .frame(maxWidth: .infinity)
                                     .padding()
                             }
@@ -360,22 +353,23 @@ struct NewBrewView: View {
             }
             .scrollContentBackground(.hidden)
             .scrollDismissesKeyboard(.interactively)
-            .background(Color.appBackground)
+            .background(Color.appBackground.ignoresSafeArea())
             .navigationTitle(existingBrew != nil ? "brew details" : "new brew")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.clear, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
                         dismiss()
                     }
-                    .foregroundColor(.primaryText)
+                    .foregroundColor(.primary)
                 }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Edit") {
                         showingEditParameters = true
                     }
-                    .tint(.accent)
                     .font(.oscineHeadline)
+                    .foregroundColor(.primary)
                 }
             }
             .onAppear {

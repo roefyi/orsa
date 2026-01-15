@@ -26,13 +26,19 @@ struct ContentView: View {
     }
     
     var body: some View {
-        Group {
-            if onboardingCompleted || (userProfiles.first?.onboardingCompleted ?? false) {
-                MainTabView()
-            } else {
-                OnboardingView(onComplete: {
-                    onboardingCompleted = true
-                })
+        ZStack {
+            // Root background layer
+            Color.appBackground
+                .ignoresSafeArea(.all)
+            
+            Group {
+                if onboardingCompleted || (userProfiles.first?.onboardingCompleted ?? false) {
+                    MainTabView()
+                } else {
+                    OnboardingView(onComplete: {
+                        onboardingCompleted = true
+                    })
+                }
             }
         }
         .preferredColorScheme(colorScheme)

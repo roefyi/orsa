@@ -33,8 +33,9 @@ struct ToolsView: View {
                         selectedEquipment = item
                         showingAddTool = true
                     }
-                    .listRowBackground(AppColors.cardCream)
-                    .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 8, trailing: 0))
+                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button(role: .destructive) {
                             deleteEquipment(item)
@@ -47,22 +48,19 @@ struct ToolsView: View {
                 // Settings Section
                 Section {
                     SettingsCardView()
+                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
                         .listRowBackground(Color.clear)
-                        .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 8, trailing: 0))
+                        .listRowSeparator(.hidden)
                 } header: {
                     Text("settings")
-                        .foregroundColor(.secondaryText)
+                        .font(.oscineCaption)
+                        .foregroundColor(.secondary)
                         .textCase(.uppercase)
                 }
             }
-            .onAppear {
-                print("ToolsView appeared - Equipment count: \(equipment.count)")
-                sortedEquipment.forEach { eq in
-                    print("  - \(eq.displayName) (\(eq.type)) - id: \(eq.id) - primary: \(eq.isPrimary)")
-                }
-            }
+            .listStyle(.plain)
             .scrollContentBackground(.hidden)
-            .background(Color.appBackground)
+            .background(Color.appBackground.ignoresSafeArea())
             .navigationTitle("tools")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
@@ -72,8 +70,10 @@ struct ToolsView: View {
                         showingAddTool = true
                     } label: {
                         Image(systemName: "plus")
-                            .foregroundColor(.primaryText)
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(.primary)
                     }
+                    .buttonStyle(.plain)
                 }
             }
             .sheet(isPresented: $showingAddTool) {

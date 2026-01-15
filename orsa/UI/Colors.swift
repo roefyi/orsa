@@ -8,16 +8,6 @@
 import SwiftUI
 
 extension Color {
-    // Primary button color - adaptive yellow
-    static let primaryButton = Color(uiColor: UIColor { traitCollection in
-        switch traitCollection.userInterfaceStyle {
-        case .dark:
-            return UIColor(red: 1.0, green: 0.9, blue: 0.2, alpha: 1.0) // Slightly lighter/more vibrant yellow for dark mode
-        default:
-            return UIColor(red: 1.0, green: 0.85, blue: 0.0, alpha: 1.0) // Bright yellow for light mode
-        }
-    })
-    
     // Background colors - adaptive
     static let appBackground = Color(uiColor: UIColor { traitCollection in
         switch traitCollection.userInterfaceStyle {
@@ -47,15 +37,6 @@ extension Color {
     })
     
     // Text colors - adaptive
-    static let primaryText = Color(uiColor: UIColor { traitCollection in
-        switch traitCollection.userInterfaceStyle {
-        case .dark:
-            return UIColor.white // White for dark mode
-        default:
-            return UIColor(red: 30/255.0, green: 30/255.0, blue: 30/255.0, alpha: 1.0) // Dark gray/black for light mode
-        }
-    })
-    
     static let secondaryText = Color(uiColor: UIColor { traitCollection in
         switch traitCollection.userInterfaceStyle {
         case .dark:
@@ -65,22 +46,13 @@ extension Color {
         }
     })
     
-    // Accent colors - adaptive
+    // Accent color - adaptive
     static let accent = Color(uiColor: UIColor { traitCollection in
         switch traitCollection.userInterfaceStyle {
         case .dark:
             return UIColor.white
         default:
             return UIColor(red: 30/255.0, green: 30/255.0, blue: 30/255.0, alpha: 1.0)
-        }
-    })
-    
-    static let accentDark = Color(uiColor: UIColor { traitCollection in
-        switch traitCollection.userInterfaceStyle {
-        case .dark:
-            return UIColor.white // White for selected tabs in dark mode
-        default:
-            return UIColor(red: 20/255.0, green: 20/255.0, blue: 20/255.0, alpha: 1.0) // Darker for selected tabs in light mode
         }
     })
     

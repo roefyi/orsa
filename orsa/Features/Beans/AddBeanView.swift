@@ -56,15 +56,16 @@ struct AddBeanView: View {
             }
             .scrollContentBackground(.hidden)
             .scrollDismissesKeyboard(.interactively)
-            .background(Color.appBackground)
+            .background(Color.appBackground.ignoresSafeArea())
             .navigationTitle("add beans")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.clear, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
                         dismiss()
                     }
-                    .foregroundColor(.primaryText)
+                    .foregroundColor(.primary)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
@@ -72,7 +73,6 @@ struct AddBeanView: View {
                         dismiss()
                     }
                     .disabled(coffeeName.isEmpty || roaster.isEmpty)
-                    .tint(coffeeName.isEmpty || roaster.isEmpty ? Color.secondaryText : .accent)
                     .font(.oscineHeadline)
                 }
             }

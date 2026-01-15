@@ -27,28 +27,31 @@ struct EquipmentCardView: View {
     }
     
     var body: some View {
-        HStack {
-            VStack(alignment: .leading, spacing: 4) {
-                Text(equipment.displayName)
-                    .font(.oscineHeadline)
-                    .foregroundColor(.cardText)
-                Text(typeDisplay)
-                    .font(.oscineCaption)
-                    .foregroundColor(.cardText.opacity(0.7))
-            }
-            Spacer()
-            if equipment.isPrimary {
-                Image(systemName: "checkmark.circle.fill")
-                    .foregroundColor(.cardText)
-            }
-        }
-        .padding(.vertical, 12)
-        .padding(.horizontal, 16)
-        .contentShape(Rectangle())
-        .onTapGesture {
+        Button(action: {
             HapticFeedback.light()
             onTap()
+        }) {
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(equipment.displayName)
+                        .font(.oscineHeadline)
+                        .foregroundColor(.primary)
+                    Text(typeDisplay)
+                        .font(.oscineCaption)
+                        .foregroundColor(.secondary)
+                }
+                Spacer()
+                if equipment.isPrimary {
+                    Image(systemName: "checkmark.circle.fill")
+                        .font(.system(size: 20))
+                        .foregroundColor(.primary)
+                }
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
+        .buttonStyle(.plain)
     }
 }
 

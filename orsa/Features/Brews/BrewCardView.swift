@@ -31,21 +31,21 @@ struct BrewCardView: View {
                     // Custom neutral face (filled style)
                     ZStack {
                         Circle()
-                            .fill(Color.cardText)
+                            .fill(Color.primary)
                             .frame(width: 16, height: 16)
                         // Eyes
                         HStack(spacing: 3) {
                             Circle()
-                                .fill(Color.cardBackground)
+                                .fill(Color(.systemBackground))
                                 .frame(width: 2, height: 2)
                             Circle()
-                                .fill(Color.cardBackground)
+                                .fill(Color(.systemBackground))
                                 .frame(width: 2, height: 2)
                         }
                         .offset(y: -2)
                         // Mouth (straight line)
                         Rectangle()
-                            .fill(Color.cardBackground)
+                            .fill(Color(.systemBackground))
                             .frame(width: 6, height: 1.5)
                             .offset(y: 3)
                     }
@@ -58,45 +58,49 @@ struct BrewCardView: View {
                 }
             }
             .font(.system(size: 16))
-            .foregroundColor(.cardText)
+            .foregroundColor(.primary)
         }
     }
     
     var body: some View {
-        ZStack(alignment: .bottomTrailing) {
-            VStack(alignment: .leading, spacing: 4) {
-                HStack {
-                    Text(bean?.coffeeName ?? "Unknown Coffee")
-                        .font(.oscineHeadline)
-                        .foregroundColor(.cardText)
-                    Spacer()
-                    Text(brew.timestamp, style: .date)
-                        .font(.oscineCaption)
-                        .foregroundColor(.cardText.opacity(0.7))
-                }
-                
-                if let roaster = bean?.roaster {
-                    Text(roaster)
-                        .font(.oscineSubheadline)
-                        .foregroundColor(.cardText.opacity(0.7))
-                }
-                
-                Text(brew.drinkType)
-                    .font(.oscineCaption)
-                    .foregroundColor(.cardText.opacity(0.7))
-            }
-            .padding(.vertical, 12)
-            .padding(.horizontal, 16)
-            
-            ratingIcon
-                .padding(.trailing, 16)
-                .padding(.bottom, 12)
-        }
-        .contentShape(Rectangle())
-        .onTapGesture {
+        Button(action: {
             HapticFeedback.light()
             onTap()
+        }) {
+            HStack(spacing: 12) {
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Text(bean?.coffeeName ?? "Unknown Coffee")
+                            .font(.oscineHeadline)
+                            .foregroundColor(.primary)
+                        Spacer()
+                        Text(brew.timestamp, style: .date)
+                            .font(.oscineCaption)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    if let roaster = bean?.roaster {
+                        Text(roaster)
+                            .font(.oscineSubheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    HStack {
+                        Text(brew.drinkType)
+                            .font(.oscineCaption)
+                            .foregroundColor(.secondary)
+                        
+                        Spacer()
+                        
+                        ratingIcon
+                    }
+                }
+            }
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
         }
+        .buttonStyle(.plain)
     }
 }
 

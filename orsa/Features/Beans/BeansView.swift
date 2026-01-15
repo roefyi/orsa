@@ -19,19 +19,22 @@ struct BeansView: View {
         NavigationStack {
             List {
                 ForEach(beans) { bean in
-                    BeanCardView(bean: bean)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            HapticFeedback.light()
-                            selectedBean = bean
-                            showingBeanDetail = true
-                        }
-                        .listRowBackground(AppColors.cardCream)
-                        .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 8, trailing: 0))
+                    Button(action: {
+                        HapticFeedback.light()
+                        selectedBean = bean
+                        showingBeanDetail = true
+                    }) {
+                        BeanCardView(bean: bean)
+                    }
+                    .buttonStyle(.plain)
+                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
                 }
             }
+            .listStyle(.plain)
             .scrollContentBackground(.hidden)
-            .background(Color.appBackground)
+            .background(Color.appBackground.ignoresSafeArea())
             .navigationTitle("beans")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
@@ -40,8 +43,10 @@ struct BeansView: View {
                         showingAddBeans = true
                     } label: {
                         Image(systemName: "plus")
-                            .foregroundColor(.primaryText)
+                            .font(.system(size: 18, weight: .semibold))
+                            .foregroundStyle(.primary)
                     }
+                    .buttonStyle(.plain)
                 }
             }
             .sheet(isPresented: $showingAddBeans) {

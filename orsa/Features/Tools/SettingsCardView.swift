@@ -21,28 +21,28 @@ struct SettingsCardView: View {
             })
             
             Divider()
-                .background(Color.cardText.opacity(0.2))
+                .background(Color.secondary.opacity(0.2))
             
             SettingsRowView(title: "appearance", action: {
                 showingAppearance = true
             })
             
             Divider()
-                .background(Color.cardText.opacity(0.2))
+                .background(Color.secondary.opacity(0.2))
             
             SettingsRowView(title: "privacy policy", action: {
                 showingPrivacyPolicy = true
             })
             
             Divider()
-                .background(Color.cardText.opacity(0.2))
+                .background(Color.secondary.opacity(0.2))
             
             SettingsRowView(title: "terms of service", action: {
                 showingTermsOfService = true
             })
             
             Divider()
-                .background(Color.cardText.opacity(0.2))
+                .background(Color.secondary.opacity(0.2))
             
             SettingsRowView(title: "leave a review", action: {
                 if let scene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
@@ -55,7 +55,7 @@ struct SettingsCardView: View {
             })
             
             Divider()
-                .background(Color.cardText.opacity(0.2))
+                .background(Color.secondary.opacity(0.2))
             
             SettingsRowView(title: "meet the builder", action: {
                 if let url = URL(string: "https://twitter.com/roefyi") {
@@ -63,8 +63,10 @@ struct SettingsCardView: View {
                 }
             })
         }
-        .background(Color.cardBackground)
-        .cornerRadius(12)
+        .background(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(.regularMaterial)
+        )
         .sheet(isPresented: $showingMeasurements) {
             MeasurementsView()
         }
@@ -92,13 +94,13 @@ struct SettingsRowView: View {
             HStack {
                 Text(title)
                     .font(.oscineHeadline)
-                    .foregroundColor(.cardText)
+                    .foregroundColor(.primary)
                 Spacer()
                 Image(systemName: "chevron.right")
                     .font(.system(size: 14, weight: .medium))
-                    .foregroundColor(.cardText.opacity(0.5))
+                    .foregroundColor(.secondary)
             }
-            .padding(.vertical, 12)
+            .padding(.vertical, 16)
             .padding(.horizontal, 16)
         }
         .buttonStyle(PlainButtonStyle())
@@ -125,15 +127,16 @@ struct MeasurementsView: View {
                 }
             }
             .scrollContentBackground(.hidden)
-            .background(Color.appBackground)
+            .background(Color.appBackground.ignoresSafeArea())
             .navigationTitle("measurements")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.clear, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Done") {
                         dismiss()
                     }
-                    .foregroundColor(.primaryText)
+                    .foregroundColor(.primary)
                 }
             }
         }
@@ -160,15 +163,16 @@ struct AppearanceView: View {
                 }
             }
             .scrollContentBackground(.hidden)
-            .background(Color.appBackground)
+            .background(Color.appBackground.ignoresSafeArea())
             .navigationTitle("appearance")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.clear, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Done") {
                         dismiss()
                     }
-                    .foregroundColor(.primaryText)
+                    .foregroundColor(.primary)
                 }
             }
         }
@@ -186,19 +190,20 @@ struct WebViewSheet: View {
                 VStack(alignment: .leading, spacing: 16) {
                     Text("\(title) content coming soon")
                         .font(.oscineBody)
-                        .foregroundColor(.primaryText)
+                        .foregroundColor(.primary)
                         .padding()
                 }
             }
-            .background(Color.appBackground)
+            .background(Color.appBackground.ignoresSafeArea())
             .navigationTitle(title)
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.clear, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Done") {
                         dismiss()
                     }
-                    .foregroundColor(.primaryText)
+                    .foregroundStyle(.tint)
                 }
             }
         }

@@ -17,7 +17,7 @@ struct OnboardingIntroView: View {
             VStack(spacing: 20) {
                 Text("this is Orsa")
                     .font(.oscineLargeTitle)
-                    .foregroundColor(.primaryText)
+                    .foregroundColor(.primary)
                 
                 Text("the simple coffee journal")
                     .font(.oscineTitle2)

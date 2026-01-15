@@ -43,15 +43,16 @@ struct AddToolView: View {
             }
             .scrollContentBackground(.hidden)
             .scrollDismissesKeyboard(.interactively)
-            .background(Color.appBackground)
+            .background(Color.appBackground.ignoresSafeArea())
             .navigationTitle(existingEquipment != nil ? "edit tool" : "add tool")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.clear, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
                         dismiss()
                     }
-                    .foregroundColor(.primaryText)
+                    .foregroundColor(.primary)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
@@ -59,7 +60,6 @@ struct AddToolView: View {
                         dismiss()
                     }
                     .disabled(brand.isEmpty && model.isEmpty)
-                    .tint(brand.isEmpty && model.isEmpty ? Color.secondaryText : .accent)
                     .font(.oscineHeadline)
                 }
             }
@@ -91,15 +91,12 @@ struct AddToolView: View {
                 isPrimary: isPrimary
             )
             modelContext.insert(equipment)
-            print("Inserted new equipment: \(equipment.displayName) with id: \(equipment.id)")
         }
         
         do {
             try modelContext.save()
-            print("Successfully saved equipment")
         } catch {
-            print("Error saving equipment: \(error.localizedDescription)")
-            print("Full error: \(error)")
+            print("Error saving equipment: \(error)")
         }
     }
 }
