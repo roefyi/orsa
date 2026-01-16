@@ -28,7 +28,7 @@ struct BrewsView: View {
                         // Divider spanning full width (except for last item)
                         if index < brews.count - 1 {
                             Divider()
-                                .padding(.leading, 20)
+                                .padding(.horizontal, 20)
                         }
                     }
                     .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
