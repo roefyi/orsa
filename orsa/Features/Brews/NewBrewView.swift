@@ -7,7 +7,6 @@
 
 import SwiftUI
 import SwiftData
-import Speech
 
 struct NewBrewView: View {
     @Environment(\.dismiss) private var dismiss
@@ -37,11 +36,6 @@ struct NewBrewView: View {
     @State private var showingShareCard = false
     @State private var shareBrew: Brew?
     @State private var savedBrewForShare: Brew?
-    @State private var isRecording = false
-    @State private var speechRecognizer = SFSpeechRecognizer()
-    @State private var recognitionRequest: SFSpeechAudioBufferRecognitionRequest?
-    @State private var recognitionTask: SFSpeechRecognitionTask?
-    @State private var audioEngine = AVAudioEngine()
     @AppStorage("yieldUnit") private var yieldUnit: String = "grams"
     
     var userName: String {
@@ -262,61 +256,17 @@ struct NewBrewView: View {
                         
                         // Notes Section
                         VStack(alignment: .leading, spacing: 12) {
-                            HStack {
-                                Text("notes")
-                                    .font(.oscineHeadline)
-                                    .foregroundColor(.primary)
-                                    .textCase(.lowercase)
-                                
-                                Spacer()
-                                
-                                if isRecording {
-                                    Button {
-                                        HapticFeedback.light()
-                                        stopRecording()
-                                    } label: {
-                                        Text("Done")
-                                            .font(.oscineHeadline)
-                                            .foregroundColor(.blue)
-                                    }
-                                }
-                            }
+                            Text("notes")
+                                .font(.oscineHeadline)
+                                .foregroundColor(.primary)
+                                .textCase(.lowercase)
                             
-                            ZStack(alignment: .bottomTrailing) {
-                                TextField("Notes", text: $notes, axis: .vertical)
-                                    .lineLimit(3...6)
-                                    .padding()
-                                    .padding(.trailing, 40)
-                                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                                    .foregroundColor(.primary)
-                                    .disabled(isRecording)
-                                
-                                Button {
-                                    HapticFeedback.light()
-                                    if isRecording {
-                                        stopRecording()
-                                    } else {
-                                        startRecording()
-                                    }
-                                } label: {
-                                    ZStack {
-                                        if isRecording {
-                                            Circle()
-                                                .fill(Color.red.opacity(0.2))
-                                                .frame(width: 32, height: 32)
-                                                .scaleEffect(isRecording ? 1.3 : 1.0)
-                                                .opacity(isRecording ? 0.0 : 1.0)
-                                                .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: false), value: isRecording)
-                                        }
-                                        
-                                        Image(systemName: isRecording ? "mic.fill" : "mic")
-                                            .font(.system(size: 18, weight: .medium))
-                                            .foregroundColor(isRecording ? .red : .secondary)
-                                            .frame(width: 32, height: 32)
-                                    }
-                                }
-                                .padding(8)
-                            }
+                            TextField("Notes", text: $notes, axis: .vertical)
+                                .lineLimit(3...6)
+                                .padding()
+                                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                                .foregroundColor(.primary)
+                                .textInputAutocapitalization(.sentences)
                         }
                         
                         // Action Buttons
@@ -526,74 +476,6 @@ struct NewBrewView: View {
         } catch {
             print("Error saving brew: \(error)")
         }
-    }
-    
-    private func startRecording() {
-        // Request speech recognition authorization
-        SFSpeechRecognizer.requestAuthorization { authStatus in
-            DispatchQueue.main.async {
-                guard authStatus == .authorized else {
-                    print("Speech recognition not authorized")
-                    return
-                }
-                
-                do {
-                    // Cancel any ongoing recognition task
-                    recognitionTask?.cancel()
-                    recognitionTask = nil
-                    
-                    // Configure audio session
-                    let audioSession = AVAudioSession.sharedInstance()
-                    try audioSession.setCategory(.record, mode: .measurement, options: .duckOthers)
-                    try audioSession.setActive(true, options: .notifyOthersOnDeactivation)
-                    
-                    // Create recognition request
-                    recognitionRequest = SFSpeechAudioBufferRecognitionRequest()
-                    guard let recognitionRequest = recognitionRequest else { return }
-                    recognitionRequest.shouldReportPartialResults = true
-                    
-                    // Get input node
-                    let inputNode = audioEngine.inputNode
-                    
-                    // Start recognition task
-                    recognitionTask = speechRecognizer?.recognitionTask(with: recognitionRequest) { result, error in
-                        if let result = result {
-                            self.notes = result.bestTranscription.formattedString
-                        }
-                        
-                        if error != nil || result?.isFinal == true {
-                            self.audioEngine.stop()
-                            inputNode.removeTap(onBus: 0)
-                            self.recognitionRequest = nil
-                            self.recognitionTask = nil
-                            self.isRecording = false
-                        }
-                    }
-                    
-                    // Configure microphone input
-                    let recordingFormat = inputNode.outputFormat(forBus: 0)
-                    inputNode.installTap(onBus: 0, bufferSize: 1024, format: recordingFormat) { buffer, _ in
-                        recognitionRequest.append(buffer)
-                    }
-                    
-                    // Start audio engine
-                    audioEngine.prepare()
-                    try audioEngine.start()
-                    isRecording = true
-                    
-                } catch {
-                    print("Error starting recording: \(error)")
-                    isRecording = false
-                }
-            }
-        }
-    }
-    
-    private func stopRecording() {
-        audioEngine.stop()
-        recognitionRequest?.endAudio()
-        audioEngine.inputNode.removeTap(onBus: 0)
-        isRecording = false
     }
 }
 
