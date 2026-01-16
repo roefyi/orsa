@@ -18,14 +18,22 @@ struct BrewsView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(brews) { brew in
-                    BrewCardView(brew: brew) {
-                        HapticFeedback.light()
-                        brewToShare = brew
+                ForEach(Array(brews.enumerated()), id: \.element.id) { index, brew in
+                    VStack(spacing: 0) {
+                        BrewCardView(brew: brew) {
+                            HapticFeedback.light()
+                            brewToShare = brew
+                        }
+                        
+                        // Divider spanning full width (except for last item)
+                        if index < brews.count - 1 {
+                            Divider()
+                                .padding(.leading, 20)
+                        }
                     }
-                    .listRowInsets(EdgeInsets(top: 8, leading: 20, bottom: 8, trailing: 20))
+                    .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
                     .listRowBackground(Color.clear)
-                    .listRowSeparator(.visible)
+                    .listRowSeparator(.hidden)
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button(role: .destructive) {
                             deleteBrew(brew)
