@@ -1,21 +1,33 @@
 //
-//  AddToolView.swift
+//  EditToolView.swift
 //  orsa
 //
-//  Created by Rome on 1/9/26.
+//  Created by Rome on 1/16/26.
 //
 
 import SwiftUI
 import SwiftData
 
-struct AddToolView: View {
+struct EditToolView: View {
+    let equipment: Equipment
+    
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     
-    @State private var type: EquipmentType = .machine
-    @State private var brand = ""
-    @State private var model = ""
-    @State private var isPrimary = false
+    @State private var type: EquipmentType
+    @State private var brand: String
+    @State private var model: String
+    @State private var isPrimary: Bool
+    
+    init(equipment: Equipment) {
+        self.equipment = equipment
+        
+        // Initialize state from equipment object
+        _type = State(initialValue: equipment.equipmentType)
+        _brand = State(initialValue: equipment.brand)
+        _model = State(initialValue: equipment.model)
+        _isPrimary = State(initialValue: equipment.isPrimary)
+    }
     
     var body: some View {
         NavigationStack {
@@ -38,7 +50,7 @@ struct AddToolView: View {
             .scrollContentBackground(.hidden)
             .scrollDismissesKeyboard(.interactively)
             .background(Color.appBackground.ignoresSafeArea())
-            .navigationTitle("add tool")
+            .navigationTitle("edit tool")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.clear, for: .navigationBar)
             .toolbar {
@@ -61,15 +73,11 @@ struct AddToolView: View {
     }
     
     private func saveEquipment() {
-        // Create new equipment
-        let equipment = Equipment(
-            id: UUID(),
-            type: type.rawValue,
-            brand: brand,
-            model: model,
-            isPrimary: isPrimary
-        )
-        modelContext.insert(equipment)
+        // Update existing equipment
+        equipment.equipmentType = type
+        equipment.brand = brand
+        equipment.model = model
+        equipment.isPrimary = isPrimary
         
         do {
             try modelContext.save()
@@ -80,6 +88,13 @@ struct AddToolView: View {
 }
 
 #Preview {
-    AddToolView()
+    let equipment = Equipment(
+        id: UUID(),
+        type: EquipmentType.machine.rawValue,
+        brand: "Lelit",
+        model: "Anna",
+        isPrimary: true
+    )
+    return EditToolView(equipment: equipment)
         .modelContainer(for: [Equipment.self])
 }

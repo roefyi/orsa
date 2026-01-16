@@ -12,7 +12,7 @@ struct ToolsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Equipment.dateAdded, order: .reverse) private var equipment: [Equipment]
     @State private var showingAddTool = false
-    @State private var selectedEquipment: Equipment?
+    @State private var equipmentToEdit: Equipment?
     
     var sortedEquipment: [Equipment] {
         equipment.sorted { first, second in
@@ -30,8 +30,7 @@ struct ToolsView: View {
             List {
                 ForEach(sortedEquipment) { item in
                     EquipmentCardView(equipment: item) {
-                        selectedEquipment = item
-                        showingAddTool = true
+                        equipmentToEdit = item
                     }
                     .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
                     .listRowBackground(Color.clear)
@@ -66,7 +65,6 @@ struct ToolsView: View {
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
-                        selectedEquipment = nil
                         showingAddTool = true
                     } label: {
                         Image(systemName: "plus")
@@ -77,12 +75,14 @@ struct ToolsView: View {
                 }
             }
             .sheet(isPresented: $showingAddTool) {
-                AddToolView(existingEquipment: selectedEquipment)
+                AddToolView()
                     .presentationDetents([.large])
                     .presentationDragIndicator(.visible)
-                    .onDisappear {
-                        selectedEquipment = nil
-                    }
+            }
+            .sheet(item: $equipmentToEdit) { equipment in
+                EditToolView(equipment: equipment)
+                    .presentationDetents([.large])
+                    .presentationDragIndicator(.visible)
             }
         }
     }
