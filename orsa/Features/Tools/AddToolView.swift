@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import PhotosUI
 
 struct AddToolView: View {
     let existingEquipment: Equipment?
@@ -18,6 +19,9 @@ struct AddToolView: View {
     @State private var brand = ""
     @State private var model = ""
     @State private var isPrimary = false
+    @State private var selectedImage: UIImage?
+    @State private var showingImagePicker = false
+    @State private var imageSourceType: UIImagePickerController.SourceType = .photoLibrary
     
     init(existingEquipment: Equipment? = nil) {
         self.existingEquipment = existingEquipment
@@ -26,6 +30,49 @@ struct AddToolView: View {
     var body: some View {
         NavigationStack {
             Form {
+                // Photo Section
+                Section {
+                    if let image = selectedImage {
+                        HStack {
+                            Spacer()
+                            Image(uiImage: image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 200, height: 200)
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                            Spacer()
+                        }
+                    }
+                    
+                    Button {
+                        imageSourceType = .photoLibrary
+                        showingImagePicker = true
+                    } label: {
+                        Label(selectedImage == nil ? "Add Photo" : "Change Photo", systemImage: "photo")
+                    }
+                    
+                    if UIImagePickerController.isSourceTypeAvailable(.camera) {
+                        Button {
+                            imageSourceType = .camera
+                            showingImagePicker = true
+                        } label: {
+                            Label("Take Photo", systemImage: "camera")
+                        }
+                    }
+                    
+                    if selectedImage != nil {
+                        Button(role: .destructive) {
+                            selectedImage = nil
+                        } label: {
+                            Label("Remove Photo", systemImage: "trash")
+                        }
+                    }
+                } header: {
+                    Text("photo")
+                        .foregroundColor(.secondaryText)
+                        .textCase(.uppercase)
+                }
+                
                 Section {
                     Picker("Type", selection: $type) {
                         ForEach(EquipmentType.allCases, id: \.self) { type in
@@ -69,18 +116,28 @@ struct AddToolView: View {
                     brand = equipment.brand
                     model = equipment.model
                     isPrimary = equipment.isPrimary
+                    if let photoData = equipment.photoData {
+                        selectedImage = UIImage(data: photoData)
+                    }
                 }
+            }
+            .sheet(isPresented: $showingImagePicker) {
+                ImagePicker(sourceType: imageSourceType, selectedImage: $selectedImage)
+                    .ignoresSafeArea()
             }
         }
     }
     
     private func saveEquipment() {
+        let photoData = selectedImage?.jpegData(compressionQuality: 0.8)
+        
         if let equipment = existingEquipment {
             // Update existing equipment
             equipment.equipmentType = type
             equipment.brand = brand
             equipment.model = model
             equipment.isPrimary = isPrimary
+            equipment.photoData = photoData
         } else {
             // Create new equipment
             let equipment = Equipment(
@@ -88,7 +145,8 @@ struct AddToolView: View {
                 type: type.rawValue,
                 brand: brand,
                 model: model,
-                isPrimary: isPrimary
+                isPrimary: isPrimary,
+                photoData: photoData
             )
             modelContext.insert(equipment)
         }

@@ -24,6 +24,7 @@ final class Equipment {
     var model: String
     var isPrimary: Bool
     var dateAdded: Date
+    var photoData: Data?
     
     init(
         id: UUID = UUID(),
@@ -31,7 +32,8 @@ final class Equipment {
         brand: String = "",
         model: String = "",
         isPrimary: Bool = false,
-        dateAdded: Date = Date()
+        dateAdded: Date = Date(),
+        photoData: Data? = nil
     ) {
         self.id = id
         self.type = type
@@ -39,6 +41,7 @@ final class Equipment {
         self.model = model
         self.isPrimary = isPrimary
         self.dateAdded = dateAdded
+        self.photoData = photoData
     }
     
     var equipmentType: EquipmentType {
