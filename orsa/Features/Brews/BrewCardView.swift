@@ -31,20 +31,21 @@ struct BrewCardView: View {
                     // Custom neutral face (filled style)
                     ZStack {
                         Circle()
+                            .fill(Color.primary.opacity(0.9))
                             .frame(width: 16, height: 16)
                         // Eyes
                         HStack(spacing: 3) {
                             Circle()
-                                .fill(Color(.systemBackground))
+                                .fill(Color.primary.colorInvert())
                                 .frame(width: 2, height: 2)
                             Circle()
-                                .fill(Color(.systemBackground))
+                                .fill(Color.primary.colorInvert())
                                 .frame(width: 2, height: 2)
                         }
                         .offset(y: -2)
                         // Mouth (straight line)
                         Rectangle()
-                            .fill(Color(.systemBackground))
+                            .fill(Color.primary.colorInvert())
                             .frame(width: 6, height: 1.5)
                             .offset(y: 3)
                     }
