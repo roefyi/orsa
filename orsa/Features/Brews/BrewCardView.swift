@@ -69,7 +69,7 @@ struct BrewCardView: View {
         }) {
             HStack(spacing: 16) {
                 // Square coffee image (Apple Books style)
-                if let imageData = bean?.imageData, let uiImage = UIImage(data: imageData) {
+                if let photoData = bean?.photoData, let uiImage = UIImage(data: photoData) {
                     Image(uiImage: uiImage)
                         .resizable()
                         .aspectRatio(contentMode: .fill)
