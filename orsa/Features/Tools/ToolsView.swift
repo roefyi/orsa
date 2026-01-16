@@ -25,15 +25,25 @@ struct ToolsView: View {
         }
     }
     
+    @State private var showingSettings = false
+    
     var body: some View {
         NavigationStack {
             List {
-                ForEach(sortedEquipment) { item in
-                    EquipmentCardView(equipment: item) {
-                        selectedEquipment = item
-                        showingAddTool = true
+                ForEach(Array(sortedEquipment.enumerated()), id: \.element.id) { index, item in
+                    VStack(spacing: 0) {
+                        EquipmentCardView(equipment: item) {
+                            selectedEquipment = item
+                            showingAddTool = true
+                        }
+                        
+                        // Divider spanning full width (except for last item)
+                        if index < sortedEquipment.count - 1 {
+                            Divider()
+                                .padding(.horizontal, 20)
+                        }
                     }
-                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                    .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
@@ -48,7 +58,7 @@ struct ToolsView: View {
                 // Settings Section
                 Section {
                     SettingsCardView()
-                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                        .listRowInsets(EdgeInsets(top: 16, leading: 0, bottom: 16, trailing: 0))
                         .listRowBackground(Color.clear)
                         .listRowSeparator(.hidden)
                 } header: {
@@ -56,6 +66,8 @@ struct ToolsView: View {
                         .font(.oscineCaption)
                         .foregroundColor(.secondary)
                         .textCase(.uppercase)
+                        .padding(.leading, 20)
+                        .padding(.top, 24)
                 }
             }
             .listStyle(.plain)
@@ -65,15 +77,26 @@ struct ToolsView: View {
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        selectedEquipment = nil
-                        showingAddTool = true
-                    } label: {
-                        Image(systemName: "plus")
-                            .font(.system(size: 18, weight: .semibold))
-                            .foregroundStyle(.primary)
+                    HStack(spacing: 12) {
+                        Button {
+                            showingSettings = true
+                        } label: {
+                            Image(systemName: "gearshape")
+                                .font(.system(size: 18, weight: .semibold))
+                                .foregroundStyle(.primary)
+                        }
+                        .buttonStyle(.plain)
+                        
+                        Button {
+                            selectedEquipment = nil
+                            showingAddTool = true
+                        } label: {
+                            Image(systemName: "plus")
+                                .font(.system(size: 18, weight: .semibold))
+                                .foregroundStyle(.primary)
+                        }
+                        .buttonStyle(.plain)
                     }
-                    .buttonStyle(.plain)
                 }
             }
             .sheet(isPresented: $showingAddTool) {
@@ -83,6 +106,26 @@ struct ToolsView: View {
                     .onDisappear {
                         selectedEquipment = nil
                     }
+            }
+            .sheet(isPresented: $showingSettings) {
+                NavigationStack {
+                    Form {
+                        Section {
+                            SettingsCardView()
+                        }
+                    }
+                    .navigationTitle("Settings")
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Done") {
+                                showingSettings = false
+                            }
+                        }
+                    }
+                }
+                .presentationDetents([.large])
+                .presentationDragIndicator(.visible)
             }
         }
     }

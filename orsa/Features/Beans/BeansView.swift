@@ -18,16 +18,24 @@ struct BeansView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(beans) { bean in
-                    Button(action: {
-                        HapticFeedback.light()
-                        selectedBean = bean
-                        showingBeanDetail = true
-                    }) {
-                        BeanCardView(bean: bean)
+                ForEach(Array(beans.enumerated()), id: \.element.id) { index, bean in
+                    VStack(spacing: 0) {
+                        Button(action: {
+                            HapticFeedback.light()
+                            selectedBean = bean
+                            showingBeanDetail = true
+                        }) {
+                            BeanCardView(bean: bean)
+                        }
+                        .buttonStyle(.plain)
+                        
+                        // Divider spanning full width (except for last item)
+                        if index < beans.count - 1 {
+                            Divider()
+                                .padding(.horizontal, 20)
+                        }
                     }
-                    .buttonStyle(.plain)
-                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                    .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
                 }
