@@ -30,7 +30,7 @@ struct CustomSlider: View {
                 // Background track (entire element) - matches card background color
                 RoundedRectangle(cornerRadius: 8)
                     .fill(Color.cardBackground)
-                    .frame(height: 60)
+                    .frame(height: 44)
                 
                 // Progress indicator (filled portion extends to/past thumb, thumb overlays it)
                 let progress = CGFloat((value - range.lowerBound) / (range.upperBound - range.lowerBound))
@@ -41,7 +41,7 @@ struct CustomSlider: View {
                 // Fill extends to thumb center (darker) - creates seamless look when thumb overlays
                 RoundedRectangle(cornerRadius: 8)
                     .fill(Color.cardText.opacity(0.25))
-                    .frame(width: max(0, thumbCenter + thumbWidth/2), height: 60)
+                    .frame(width: max(0, thumbCenter + thumbWidth/2), height: 44)
                 
                 // Text content inside slider
                 HStack {
@@ -59,17 +59,17 @@ struct CustomSlider: View {
                         .foregroundColor(.cardText)
                         .padding(.trailing, 12)
                 }
-                .frame(height: 60)
+                .frame(height: 44)
                 
                 // Thumb (draggable handle) - overlays the fill seamlessly, matches element height
                 RoundedRectangle(cornerRadius: 6)
                     .fill(Color.cardText.opacity(0.8))
-                    .frame(width: thumbWidth, height: 60)
+                    .frame(width: thumbWidth, height: 44)
                     .scaleEffect(isDragging ? 1.05 : 1.0)
                     .animation(.spring(response: 0.3, dampingFraction: 0.6), value: isDragging)
                     .position(
                         x: thumbCenter,
-                        y: 30
+                        y: 22
                     )
                     .gesture(
                         DragGesture(minimumDistance: 0)
@@ -89,9 +89,9 @@ struct CustomSlider: View {
                             }
                     )
             }
-            .frame(height: 60)
+            .frame(height: 44)
         }
-        .frame(height: 60)
+        .frame(height: 44)
     }
     
     private func formatValue(_ value: Double) -> String {

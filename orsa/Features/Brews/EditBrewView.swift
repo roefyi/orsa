@@ -153,22 +153,25 @@ struct EditBrewView: View {
                                         Text("😐")
                                             .font(.system(size: 24))
                                     } else {
+                                        // Create a simple neutral face outline matching other icons
                                         ZStack {
                                             Circle()
                                                 .stroke(Color.secondary, lineWidth: 2)
                                                 .frame(width: 20, height: 20)
+                                            // Eyes - using primary with opacity to match stroke weight
                                             HStack(spacing: 4) {
                                                 Circle()
-                                                    .fill(Color.secondary)
-                                                    .frame(width: 2, height: 2)
+                                                    .fill(Color.primary.opacity(0.6))
+                                                    .frame(width: 2.5, height: 2.5)
                                                 Circle()
-                                                    .fill(Color.secondary)
-                                                    .frame(width: 2, height: 2)
+                                                    .fill(Color.primary.opacity(0.6))
+                                                    .frame(width: 2.5, height: 2.5)
                                             }
                                             .offset(y: -2)
+                                            // Mouth (straight line) - using primary with opacity to match stroke weight
                                             Rectangle()
-                                                .fill(Color.secondary)
-                                                .frame(width: 8, height: 1.5)
+                                                .fill(Color.primary.opacity(0.6))
+                                                .frame(width: 8, height: 2)
                                                 .offset(y: 4)
                                         }
                                     }

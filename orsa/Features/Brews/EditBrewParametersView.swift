@@ -26,8 +26,8 @@ struct EditBrewParametersView: View {
     @Binding var dose: Double
     
     // Local state for drink type picker
-    @State private var drinkTypeOptions = ["Single Shot", "Double Shot", "Cappuccino", "Latte", "Americano", "Macchiato", "Flat White", "Cortado"]
-    @State private var milkTypeOptions = ["None", "Whole", "Oat", "Almond", "Soy", "Coconut", "2%", "Skim"]
+    @State private var drinkTypeOptions = ["Single Shot", "Double Shot", "Cappuccino", "Latte", "Americano", "Macchiato", "Flat White", "Cortado", "Espresso Tonic", "Lungo", "Ristretto", "Allongé"]
+    @State private var milkTypeOptions = ["None", "Whole", "Oat", "Almond", "Soy", "Coconut", "2%", "Skim", "Tonic Water"]
     
     init(
         selectedBean: Binding<Bean?>,

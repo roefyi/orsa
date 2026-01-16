@@ -28,24 +28,24 @@ struct BrewCardView: View {
                 case 1:
                     Image(systemName: "hand.thumbsdown.fill")
                 case 3:
-                    // Custom neutral face (filled style)
+                    // Custom neutral face (filled style matching other icons)
                     ZStack {
                         Circle()
-                            .fill(Color.primary)
+                            .fill(Color(.label))
                             .frame(width: 16, height: 16)
                         // Eyes
                         HStack(spacing: 3) {
                             Circle()
-                                .fill(Color(uiColor: .systemBackground))
+                                .fill(Color(.systemBackground))
                                 .frame(width: 2, height: 2)
                             Circle()
-                                .fill(Color(uiColor: .systemBackground))
+                                .fill(Color(.systemBackground))
                                 .frame(width: 2, height: 2)
                         }
                         .offset(y: -2)
                         // Mouth (straight line)
                         Rectangle()
-                            .fill(Color(uiColor: .systemBackground))
+                            .fill(Color(.systemBackground))
                             .frame(width: 6, height: 1.5)
                             .offset(y: 3)
                     }
