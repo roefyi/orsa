@@ -28,7 +28,7 @@ struct NewBrewView: View {
     @State private var selectedBean: Bean?
     @State private var selectedMachine: Equipment?
     @State private var selectedGrinder: Equipment?
-    @State private var drinkType = "Single Shot"
+    @State private var drinkType = "Double Shot"
     @State private var milkType = "None"
     @State private var dose: Double = 18.0
     @State private var showingEditParameters = false
@@ -395,7 +395,7 @@ struct NewBrewView: View {
         // Load last brew's parameters (drink type, temperature, grind setting)
         if let lastBrew = brews.first {
             // Always use last brew's drink type, temperature, and grind setting
-            drinkType = lastBrew.drinkType.isEmpty ? "Single Shot" : lastBrew.drinkType
+            drinkType = lastBrew.drinkType.isEmpty ? "Double Shot" : lastBrew.drinkType
             temperature = lastBrew.temperature > 0 ? String(Int(lastBrew.temperature)) : ""
             grindSetting = lastBrew.grindSetting.isEmpty ? "" : lastBrew.grindSetting
             milkType = lastBrew.milkType ?? "None"
@@ -420,7 +420,7 @@ struct NewBrewView: View {
             }
         } else {
             // No previous brews - use defaults
-            drinkType = "Single Shot"
+            drinkType = "Double Shot"
             milkType = "None"
             
             // Use primary equipment

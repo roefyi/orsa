@@ -26,7 +26,7 @@ struct EditBrewParametersView: View {
     @Binding var dose: Double
     
     // Local state for drink type picker
-    @State private var drinkTypeOptions = ["Single Shot", "Double Shot", "Cappuccino", "Latte", "Americano", "Macchiato", "Flat White", "Cortado", "Espresso Tonic", "Lungo", "Ristretto", "Allongé"]
+    @State private var drinkTypeOptions = ["Double Shot", "Cappuccino", "Latte", "Americano", "Macchiato", "Flat White", "Cortado", "Espresso Tonic", "Lungo", "Ristretto", "Allongé"]
     @State private var milkTypeOptions = ["None", "Whole", "Oat", "Almond", "Soy", "Coconut", "2%", "Skim", "Tonic Water"]
     
     init(
@@ -187,7 +187,7 @@ struct EditBrewParametersView: View {
         @State private var selectedGrinder: Equipment? = nil
         @State private var temperature = "200"
         @State private var grindSetting = "5"
-        @State private var drinkType = "Single Shot"
+        @State private var drinkType = "Double Shot"
         @State private var milkType = "None"
         @State private var dose: Double = 18.0
         
