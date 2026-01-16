@@ -32,23 +32,15 @@ struct EquipmentCardView: View {
             onTap()
         }) {
             HStack(spacing: 16) {
-                // Square equipment image/icon (Apple Books style)
-                if let photoData = equipment.photoData, let uiImage = UIImage(data: photoData) {
-                    Image(uiImage: uiImage)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 80, height: 80)
-                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
-                } else {
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 8, style: .continuous)
-                            .fill(Color.secondary.opacity(0.2))
-                        Image(systemName: equipmentIcon)
-                            .font(.system(size: 32))
-                            .foregroundColor(.secondary.opacity(0.5))
-                    }
-                    .frame(width: 80, height: 80)
+                // Square equipment icon (Apple Books style)
+                ZStack {
+                    RoundedRectangle(cornerRadius: 8, style: .continuous)
+                        .fill(Color.secondary.opacity(0.2))
+                    Image(systemName: equipmentIcon)
+                        .font(.system(size: 32))
+                        .foregroundColor(.secondary.opacity(0.5))
                 }
+                .frame(width: 80, height: 80)
                 
                 // Content
                 VStack(alignment: .leading, spacing: 6) {
