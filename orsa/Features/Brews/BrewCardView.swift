@@ -31,7 +31,6 @@ struct BrewCardView: View {
                     // Custom neutral face (filled style)
                     ZStack {
                         Circle()
-                            .fill(Color.primary)
                             .frame(width: 16, height: 16)
                         // Eyes
                         HStack(spacing: 3) {
