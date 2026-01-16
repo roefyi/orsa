@@ -262,10 +262,25 @@ struct NewBrewView: View {
                         
                         // Notes Section
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("notes")
-                                .font(.oscineHeadline)
-                                .foregroundColor(.primary)
-                                .textCase(.lowercase)
+                            HStack {
+                                Text("notes")
+                                    .font(.oscineHeadline)
+                                    .foregroundColor(.primary)
+                                    .textCase(.lowercase)
+                                
+                                Spacer()
+                                
+                                if isRecording {
+                                    Button {
+                                        HapticFeedback.light()
+                                        stopRecording()
+                                    } label: {
+                                        Text("Done")
+                                            .font(.oscineHeadline)
+                                            .foregroundColor(.blue)
+                                    }
+                                }
+                            }
                             
                             ZStack(alignment: .bottomTrailing) {
                                 TextField("Notes", text: $notes, axis: .vertical)
@@ -274,6 +289,7 @@ struct NewBrewView: View {
                                     .padding(.trailing, 40)
                                     .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                                     .foregroundColor(.primary)
+                                    .disabled(isRecording)
                                 
                                 Button {
                                     HapticFeedback.light()
@@ -283,10 +299,21 @@ struct NewBrewView: View {
                                         startRecording()
                                     }
                                 } label: {
-                                    Image(systemName: isRecording ? "mic.fill" : "mic")
-                                        .font(.system(size: 18, weight: .medium))
-                                        .foregroundColor(isRecording ? .red : .secondary)
-                                        .frame(width: 32, height: 32)
+                                    ZStack {
+                                        if isRecording {
+                                            Circle()
+                                                .fill(Color.red.opacity(0.2))
+                                                .frame(width: 32, height: 32)
+                                                .scaleEffect(isRecording ? 1.3 : 1.0)
+                                                .opacity(isRecording ? 0.0 : 1.0)
+                                                .animation(.easeInOut(duration: 1.0).repeatForever(autoreverses: false), value: isRecording)
+                                        }
+                                        
+                                        Image(systemName: isRecording ? "mic.fill" : "mic")
+                                            .font(.system(size: 18, weight: .medium))
+                                            .foregroundColor(isRecording ? .red : .secondary)
+                                            .frame(width: 32, height: 32)
+                                    }
                                 }
                                 .padding(8)
                             }
