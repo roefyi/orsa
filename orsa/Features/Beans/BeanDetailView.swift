@@ -70,7 +70,15 @@ struct BeanDetailView: View {
                         }
                         .frame(maxWidth: .infinity)
                         .aspectRatio(1, contentMode: .fill)
-                        .clipped()
+                        .clipShape(
+                            UnevenRoundedRectangle(
+                                topLeadingRadius: 12,
+                                bottomLeadingRadius: 0,
+                                bottomTrailingRadius: 0,
+                                topTrailingRadius: 12,
+                                style: .continuous
+                            )
+                        )
                     }
                     .buttonStyle(PlainButtonStyle())
                     
