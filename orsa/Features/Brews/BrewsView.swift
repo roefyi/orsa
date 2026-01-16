@@ -23,9 +23,9 @@ struct BrewsView: View {
                         HapticFeedback.light()
                         brewToShare = brew
                     }
-                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                    .listRowInsets(EdgeInsets(top: 8, leading: 20, bottom: 8, trailing: 20))
                     .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
+                    .listRowSeparator(.visible)
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button(role: .destructive) {
                             deleteBrew(brew)

@@ -67,26 +67,55 @@ struct BrewCardView: View {
             HapticFeedback.light()
             onTap()
         }) {
-            HStack(spacing: 12) {
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Text(bean?.coffeeName ?? "Unknown Coffee")
-                            .font(.oscineHeadline)
-                            .foregroundColor(.primary)
-                        Spacer()
-                        Text(brew.timestamp, style: .date)
-                            .font(.oscineCaption)
-                            .foregroundColor(.secondary)
+            HStack(spacing: 16) {
+                // Square coffee image (Apple Books style)
+                if let imageData = bean?.imageData, let uiImage = UIImage(data: imageData) {
+                    Image(uiImage: uiImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fill)
+                        .frame(width: 80, height: 80)
+                        .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                } else {
+                    // Placeholder with coffee icon
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 8, style: .continuous)
+                            .fill(Color.secondary.opacity(0.2))
+                        Image(systemName: "cup.and.saucer.fill")
+                            .font(.system(size: 32))
+                            .foregroundColor(.secondary.opacity(0.5))
                     }
+                    .frame(width: 80, height: 80)
+                }
+                
+                // Content
+                VStack(alignment: .leading, spacing: 6) {
+                    // Coffee name
+                    Text(bean?.coffeeName ?? "Unknown Coffee")
+                        .font(.oscineHeadline)
+                        .foregroundColor(.primary)
+                        .lineLimit(1)
                     
-                    if let roaster = bean?.roaster {
+                    // Roaster
+                    if let roaster = bean?.roaster, !roaster.isEmpty {
                         Text(roaster)
                             .font(.oscineSubheadline)
                             .foregroundColor(.secondary)
+                            .lineLimit(1)
                     }
                     
-                    HStack {
+                    Spacer()
+                    
+                    // Bottom row: drink type, date, rating
+                    HStack(spacing: 8) {
                         Text(brew.drinkType)
+                            .font(.oscineCaption)
+                            .foregroundColor(.secondary)
+                        
+                        Text("•")
+                            .font(.oscineCaption)
+                            .foregroundColor(.secondary)
+                        
+                        Text(brew.timestamp, style: .date)
                             .font(.oscineCaption)
                             .foregroundColor(.secondary)
                         
@@ -95,10 +124,11 @@ struct BrewCardView: View {
                         ratingIcon
                     }
                 }
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
-            .padding(16)
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .padding(12)
+            .frame(height: 104)
+            .background(Color.clear)
         }
         .buttonStyle(.plain)
     }

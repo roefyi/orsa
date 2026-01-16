@@ -266,7 +266,6 @@ struct NewBrewView: View {
                                 .padding()
                                 .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                                 .foregroundColor(.primary)
-                                .textInputAutocapitalization(.sentences)
                         }
                         
                         // Action Buttons

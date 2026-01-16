@@ -34,10 +34,6 @@
 	<string>We need access to your photo library to select photos of your coffee beans.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>We need access to save your brew card images to your photo library.</string>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>We need access to your microphone to use voice-to-text for brew notes.</string>
-	<key>NSSpeechRecognitionUsageDescription</key>
-	<string>We need access to speech recognition to convert your voice to text for brew notes.</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>instagram-stories</string>
