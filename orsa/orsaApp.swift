@@ -124,19 +124,19 @@ struct orsaApp: App {
         // Configure text field cursor globally (including action sheets and pickers)
         UITextField.appearance().tintColor = yellowAccentColor // Yellow cursor everywhere
         
-        // Configure date picker to use yellow
+        // Configure date pickers to use yellow
         UIDatePicker.appearance().tintColor = yellowAccentColor
         
-        // Configure toggle/switch to use yellow
+        // Configure switches/toggles to use yellow
         UISwitch.appearance().onTintColor = yellowAccentColor
         
-        // Configure segmented control to use yellow
+        // Configure segmented controls to use yellow
         UISegmentedControl.appearance().selectedSegmentTintColor = yellowAccentColor
         
-        // Configure stepper to use yellow
+        // Configure steppers to use yellow
         UIStepper.appearance().tintColor = yellowAccentColor
         
-        // Configure progress view to use yellow
+        // Configure progress views to use yellow
         UIProgressView.appearance().progressTintColor = yellowAccentColor
         
         // Configure label text color in table view cells
