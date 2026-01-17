@@ -317,15 +317,28 @@ struct BrewShareCardView: View {
             return
         }
         
-        // Convert image to PNG data - Instagram requires NSData
-        guard let imageData = image.pngData() else {
+        // Resize image to Instagram-friendly dimensions (720x1280 for 9:16 aspect ratio)
+        // Current card is 362x433, scale up proportionally
+        let targetHeight: CGFloat = 1280
+        let targetWidth: CGFloat = 720
+        let scaleFactor = min(targetWidth / image.size.width, targetHeight / image.size.height)
+        let scaledSize = CGSize(width: image.size.width * scaleFactor, height: image.size.height * scaleFactor)
+        
+        // Create scaled image
+        let renderer = UIGraphicsImageRenderer(size: scaledSize)
+        let scaledImage = renderer.image { context in
+            image.draw(in: CGRect(origin: .zero, size: scaledSize))
+        }
+        
+        // Convert to PNG data with proper format
+        guard let imageData = scaledImage.pngData() else {
             print("Failed to convert image to PNG data")
             presentShareSheet(with: image)
             return
         }
         
         // Instagram requires specific pasteboard items
-        // Use backgroundImage for full-size content, stickerImage for smaller stickers
+        // Use stickerImage for resizable stickers
         let pasteboardItems: [[String: Any]] = [
             [
                 "com.instagram.sharedSticker.stickerImage": imageData
@@ -339,13 +352,16 @@ struct BrewShareCardView: View {
         // Set pasteboard items
         UIPasteboard.general.setItems(pasteboardItems, options: pasteboardOptions)
         
-        // Open Instagram
-        UIApplication.shared.open(instagramURL, options: [:]) { success in
-            if !success {
-                print("Failed to open Instagram")
-                // Fallback to regular share sheet
-                DispatchQueue.main.async {
-                    self.presentShareSheet(with: image)
+        // Small delay to ensure pasteboard is set before opening Instagram
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            // Open Instagram
+            UIApplication.shared.open(instagramURL, options: [:]) { success in
+                if !success {
+                    print("Failed to open Instagram")
+                    // Fallback to regular share sheet
+                    DispatchQueue.main.async {
+                        self.presentShareSheet(with: image)
+                    }
                 }
             }
         }
