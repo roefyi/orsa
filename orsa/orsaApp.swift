@@ -30,6 +30,15 @@ struct orsaApp: App {
             }
         }
         
+        let yellowTintColor = UIColor { traitCollection in
+            switch traitCollection.userInterfaceStyle {
+            case .dark:
+                return UIColor(red: 1.0, green: 0.9, blue: 0.2, alpha: 1.0) // Lighter yellow for dark mode
+            default:
+                return UIColor(red: 1.0, green: 0.85, blue: 0.0, alpha: 1.0) // Yellow for light mode
+            }
+        }
+        
         // Configure navigation bar appearance with custom font
         // Ensure Oscine font is used for navigation titles
         let largeTitleFont = UIFont(name: "OscineTrial-XBold", size: 34) ?? UIFont.systemFont(ofSize: 34, weight: .bold)
@@ -118,9 +127,9 @@ struct orsaApp: App {
         // Configure section header text color
         UILabel.appearance(whenContainedInInstancesOf: [UITableViewHeaderFooterView.self]).textColor = accentColor.withAlphaComponent(0.6)
         
-        // Configure text field text color in forms
+        // Configure text field text color and cursor in forms
         UITextField.appearance(whenContainedInInstancesOf: [UITableViewCell.self]).textColor = accentColor
-        UITextField.appearance(whenContainedInInstancesOf: [UITableViewCell.self]).tintColor = accentColor
+        UITextField.appearance(whenContainedInInstancesOf: [UITableViewCell.self]).tintColor = yellowTintColor
         
         // Configure label text color in table view cells
         UILabel.appearance(whenContainedInInstancesOf: [UITableViewCell.self]).textColor = accentColor

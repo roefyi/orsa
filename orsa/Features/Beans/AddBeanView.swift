@@ -28,6 +28,7 @@ struct AddBeanView: View {
                     TextField("Coffee Name", text: $coffeeName)
                     TextField("Roaster", text: $roaster)
                     DatePicker("Roast Date", selection: $roastDate, displayedComponents: .date)
+                        .tint(AppColors.buttonYellow)
                     Toggle("Set as Primary", isOn: $isPrimary)
                 } header: {
                     Text("coffee info")
