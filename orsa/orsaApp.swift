@@ -124,11 +124,23 @@ struct orsaApp: App {
         // Configure text field cursor globally (including action sheets and pickers)
         UITextField.appearance().tintColor = yellowAccentColor // Yellow cursor everywhere
         
-        // Configure date pickers to use yellow
+        // Configure date pickers to use yellow - multiple properties for full coverage
         UIDatePicker.appearance().tintColor = yellowAccentColor
+        if #available(iOS 14.0, *) {
+            UIDatePicker.appearance().backgroundColor = .clear
+        }
         
         // Configure toggles/switches to use yellow
         UISwitch.appearance().onTintColor = yellowAccentColor
+        
+        // Configure segmented control to use yellow
+        UISegmentedControl.appearance().selectedSegmentTintColor = yellowAccentColor
+        
+        // Configure page control to use yellow
+        UIPageControl.appearance().currentPageIndicatorTintColor = yellowAccentColor
+        
+        // Configure stepper to use yellow
+        UIStepper.appearance().tintColor = yellowAccentColor
         
         // Configure label text color in table view cells
         UILabel.appearance(whenContainedInInstancesOf: [UITableViewCell.self]).textColor = standardAccentColor
@@ -144,6 +156,14 @@ struct orsaApp: App {
         WindowGroup {
             ContentView()
                 .modelContainer(createModelContainer())
+                .tint(Color(uiColor: UIColor { traitCollection in
+                    switch traitCollection.userInterfaceStyle {
+                    case .dark:
+                        return UIColor(red: 1.0, green: 0.9, blue: 0.2, alpha: 1.0) // Bright yellow for dark mode
+                    default:
+                        return UIColor(red: 1.0, green: 0.8, blue: 0.0, alpha: 1.0) // Bright yellow for light mode
+                    }
+                }))
         }
     }
     
