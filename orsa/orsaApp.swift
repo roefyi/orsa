@@ -144,6 +144,14 @@ struct orsaApp: App {
         WindowGroup {
             ContentView()
                 .modelContainer(createModelContainer())
+                .tint(Color(uiColor: UIColor { traitCollection in
+                    switch traitCollection.userInterfaceStyle {
+                    case .dark:
+                        return UIColor(red: 1.0, green: 0.9, blue: 0.2, alpha: 1.0) // Yellow for dark mode
+                    default:
+                        return UIColor(red: 1.0, green: 0.8, blue: 0.0, alpha: 1.0) // Yellow for light mode
+                    }
+                }))
         }
     }
     
