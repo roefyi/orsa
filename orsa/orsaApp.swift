@@ -24,16 +24,7 @@ struct orsaApp: App {
         let accentColor = UIColor { traitCollection in
             switch traitCollection.userInterfaceStyle {
             case .dark:
-                return UIColor.white // White for dark mode
-            default:
-                return UIColor(red: 30/255, green: 30/255, blue: 30/255, alpha: 1.0) // Dark for light mode
-            }
-        }
-        
-        let yellowTintColor = UIColor { traitCollection in
-            switch traitCollection.userInterfaceStyle {
-            case .dark:
-                return UIColor(red: 1.0, green: 0.9, blue: 0.2, alpha: 1.0) // Lighter yellow for dark mode
+                return UIColor(red: 1.0, green: 0.9, blue: 0.2, alpha: 1.0) // Yellow for dark mode
             default:
                 return UIColor(red: 1.0, green: 0.85, blue: 0.0, alpha: 1.0) // Yellow for light mode
             }
@@ -127,9 +118,9 @@ struct orsaApp: App {
         // Configure section header text color
         UILabel.appearance(whenContainedInInstancesOf: [UITableViewHeaderFooterView.self]).textColor = accentColor.withAlphaComponent(0.6)
         
-        // Configure text field text color and cursor in forms
+        // Configure text field text color in forms
         UITextField.appearance(whenContainedInInstancesOf: [UITableViewCell.self]).textColor = accentColor
-        UITextField.appearance(whenContainedInInstancesOf: [UITableViewCell.self]).tintColor = yellowTintColor
+        UITextField.appearance(whenContainedInInstancesOf: [UITableViewCell.self]).tintColor = accentColor
         
         // Configure label text color in table view cells
         UILabel.appearance(whenContainedInInstancesOf: [UITableViewCell.self]).textColor = accentColor
@@ -145,6 +136,14 @@ struct orsaApp: App {
         WindowGroup {
             ContentView()
                 .modelContainer(createModelContainer())
+                .tint(Color(uiColor: UIColor { traitCollection in
+                    switch traitCollection.userInterfaceStyle {
+                    case .dark:
+                        return UIColor(red: 1.0, green: 0.9, blue: 0.2, alpha: 1.0) // Yellow for dark mode
+                    default:
+                        return UIColor(red: 1.0, green: 0.85, blue: 0.0, alpha: 1.0) // Yellow for light mode
+                    }
+                }))
         }
     }
     
