@@ -192,22 +192,71 @@ struct BrewShareCardView: View {
                 
                 Spacer()
                 
-                // Share button below card
-                VStack(spacing: 12) {
+                // Share buttons below card
+                HStack(spacing: 16) {
+                    // General share button
                     Button {
                         HapticFeedback.light()
                         generateShareImage { image in
-                            // Directly present the share sheet with the generated image
                             if let image = image {
                                 self.presentShareSheet(with: image)
                             }
                         }
                     } label: {
-                        Text("share")
-                            .font(.oscineHeadline)
-                            .foregroundColor(.primary)
-                            .frame(maxWidth: .infinity)
-                            .padding()
+                        VStack(spacing: 8) {
+                            ZStack {
+                                Circle()
+                                    .fill(Color.primary.opacity(0.1))
+                                    .frame(width: 56, height: 56)
+                                
+                                Image(systemName: "square.and.arrow.up")
+                                    .font(.system(size: 20, weight: .semibold))
+                                    .foregroundColor(.primary)
+                            }
+                            
+                            Text("share")
+                                .font(.oscineRegular(size: 14))
+                                .foregroundColor(.primary)
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                    
+                    // Instagram Story button
+                    Button {
+                        HapticFeedback.light()
+                        generateShareImage { image in
+                            if let image = image {
+                                self.shareToInstagram(image: image)
+                            }
+                        }
+                    } label: {
+                        VStack(spacing: 8) {
+                            ZStack {
+                                Circle()
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [
+                                                Color(red: 0.51, green: 0.09, blue: 0.85),
+                                                Color(red: 0.85, green: 0.09, blue: 0.51),
+                                                Color(red: 0.98, green: 0.45, blue: 0.24),
+                                                Color(red: 0.98, green: 0.75, blue: 0.24)
+                                            ],
+                                            startPoint: .bottomLeading,
+                                            endPoint: .topTrailing
+                                        )
+                                    )
+                                    .frame(width: 56, height: 56)
+                                
+                                Image(systemName: "camera.fill")
+                                    .font(.system(size: 20, weight: .semibold))
+                                    .foregroundColor(.white)
+                            }
+                            
+                            Text("story")
+                                .font(.oscineRegular(size: 14))
+                                .foregroundColor(.primary)
+                        }
+                        .frame(maxWidth: .infinity)
                     }
                 }
                 .padding(.horizontal, 20)
