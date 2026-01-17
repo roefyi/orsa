@@ -127,17 +127,8 @@ struct orsaApp: App {
         // Configure date pickers to use yellow
         UIDatePicker.appearance().tintColor = yellowAccentColor
         
-        // Configure switches/toggles to use yellow
+        // Configure toggles/switches to use yellow
         UISwitch.appearance().onTintColor = yellowAccentColor
-        
-        // Configure segmented controls to use yellow
-        UISegmentedControl.appearance().selectedSegmentTintColor = yellowAccentColor
-        
-        // Configure steppers to use yellow
-        UIStepper.appearance().tintColor = yellowAccentColor
-        
-        // Configure progress views to use yellow
-        UIProgressView.appearance().progressTintColor = yellowAccentColor
         
         // Configure label text color in table view cells
         UILabel.appearance(whenContainedInInstancesOf: [UITableViewCell.self]).textColor = standardAccentColor
