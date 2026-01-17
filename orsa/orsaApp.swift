@@ -24,9 +24,9 @@ struct orsaApp: App {
         let accentColor = UIColor { traitCollection in
             switch traitCollection.userInterfaceStyle {
             case .dark:
-                return UIColor(red: 1.0, green: 0.9, blue: 0.2, alpha: 1.0) // Yellow for dark mode
+                return UIColor(red: 1.0, green: 0.9, blue: 0.2, alpha: 1.0) // Bright yellow for dark mode
             default:
-                return UIColor(red: 1.0, green: 0.85, blue: 0.0, alpha: 1.0) // Yellow for light mode
+                return UIColor(red: 0.85, green: 0.65, blue: 0.0, alpha: 1.0) // Deeper gold for light mode
             }
         }
         
@@ -139,9 +139,9 @@ struct orsaApp: App {
                 .tint(Color(uiColor: UIColor { traitCollection in
                     switch traitCollection.userInterfaceStyle {
                     case .dark:
-                        return UIColor(red: 1.0, green: 0.9, blue: 0.2, alpha: 1.0) // Yellow for dark mode
+                        return UIColor(red: 1.0, green: 0.9, blue: 0.2, alpha: 1.0) // Bright yellow for dark mode
                     default:
-                        return UIColor(red: 1.0, green: 0.85, blue: 0.0, alpha: 1.0) // Yellow for light mode
+                        return UIColor(red: 0.85, green: 0.65, blue: 0.0, alpha: 1.0) // Deeper gold for light mode
                     }
                 }))
         }
