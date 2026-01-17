@@ -359,7 +359,7 @@ struct BrewShareCardLayout2: View {
             
             // Centered drink type
             Text(brew.drinkType)
-                .font(.oscineBold(size: 32))
+                .font(.oscineBold(size: 24))
                 .foregroundColor(.black)
                 .multilineTextAlignment(.center)
             
@@ -429,7 +429,7 @@ struct BrewShareCardLayout2: View {
             
             // Bottom - orsa branding
             Text("orsa")
-                .font(.oscineBold(size: 32))
+                .font(.oscineBold(size: 24))
                 .foregroundColor(.black)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -674,7 +674,7 @@ struct BrewShareCardContent2: View {
             
             // Bottom - orsa branding
             Text("orsa")
-                .font(.oscineBold(size: 32))
+                .font(.oscineBold(size: 24))
                 .foregroundColor(.black)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
