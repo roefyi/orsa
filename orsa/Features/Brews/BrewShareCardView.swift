@@ -8,7 +8,6 @@
 import SwiftUI
 import SwiftData
 import UIKit
-import Photos
 
 struct BrewShareCardView: View {
     let brew: Brew
@@ -18,8 +17,6 @@ struct BrewShareCardView: View {
     @Query private var beans: [Bean]
     @Query private var equipment: [Equipment]
     @Query private var userProfiles: [UserProfile]
-    
-    @State private var shareImage: UIImage?
     
     var bean: Bean? {
         guard let beanID = brew.beanID else { return nil }
@@ -266,68 +263,9 @@ struct BrewShareCardView: View {
         
         DispatchQueue.main.async {
             if let uiImage = renderer.uiImage {
-                self.shareImage = uiImage
                 completion(uiImage)
             } else {
                 completion(nil)
-            }
-        }
-    }
-    
-    private func shareCard(image: UIImage) {
-        // Use PNG data for better quality and Instagram support
-        guard let pngData = image.pngData() else {
-            print("Failed to convert image to PNG data")
-            return
-        }
-        
-        let activityVC = UIActivityViewController(activityItems: [pngData], applicationActivities: nil)
-        // Don't exclude any activity types - let iOS show all available options including Messages and Instagram
-        activityVC.excludedActivityTypes = []
-        
-        // Find the topmost view controller to present from
-        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-              let window = windowScene.windows.first,
-              let rootViewController = window.rootViewController else {
-            print("Failed to find root view controller")
-            return
-        }
-        
-        // Find the topmost presented view controller
-        var topController = rootViewController
-        while let presented = topController.presentedViewController {
-            topController = presented
-        }
-        
-        // For iPad, set popover presentation
-        if let popover = activityVC.popoverPresentationController {
-            popover.sourceView = topController.view
-            popover.sourceRect = CGRect(x: topController.view.bounds.midX, y: topController.view.bounds.midY, width: 0, height: 0)
-            popover.permittedArrowDirections = []
-        }
-        
-        topController.present(activityVC, animated: true)
-    }
-    
-    private func saveToPhotos(image: UIImage) {
-        PHPhotoLibrary.requestAuthorization { status in
-            guard status == .authorized else { return }
-            
-            // Convert to PNG to ensure correct format
-            guard let pngData = image.pngData() else { return }
-            guard let pngImage = UIImage(data: pngData) else { return }
-            
-            PHPhotoLibrary.shared().performChanges({
-                PHAssetChangeRequest.creationRequestForAsset(from: pngImage)
-            }) { success, error in
-                DispatchQueue.main.async {
-                    if success {
-                        // Show success feedback
-                        print("Image saved to photos as PNG")
-                    } else if let error = error {
-                        print("Error saving image: \(error.localizedDescription)")
-                    }
-                }
             }
         }
     }
@@ -460,31 +398,6 @@ struct BrewShareCardContent: View {
                 )
         )
     }
-}
-
-struct ShareSheet: UIViewControllerRepresentable {
-    let activityItems: [Any]
-    
-    func makeUIViewController(context: Context) -> UIActivityViewController {
-        let controller = UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
-        // Don't exclude any activity types - let iOS show all available options including Messages and Instagram
-        controller.excludedActivityTypes = []
-        
-        // Configure for iPad
-        if let popover = controller.popoverPresentationController {
-            // Use a default source view/rect for iPad
-            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-               let window = windowScene.windows.first {
-                popover.sourceView = window
-                popover.sourceRect = CGRect(x: window.bounds.midX, y: window.bounds.midY, width: 0, height: 0)
-                popover.permittedArrowDirections = []
-            }
-        }
-        
-        return controller
-    }
-    
-    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
 #Preview {
