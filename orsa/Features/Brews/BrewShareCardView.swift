@@ -193,7 +193,7 @@ struct BrewShareCardView: View {
                 Spacer()
                 
                 // Share buttons below card
-                HStack(spacing: 16) {
+                HStack(spacing: 20) {
                     // General share button
                     Button {
                         HapticFeedback.light()
@@ -210,18 +210,18 @@ struct BrewShareCardView: View {
                                     .frame(width: 56, height: 56)
                                 
                                 Image(systemName: "square.and.arrow.up")
-                                    .font(.system(size: 20, weight: .semibold))
+                                    .font(.system(size: 22, weight: .medium))
                                     .foregroundColor(.primary)
                             }
                             
-                            Text("share")
-                                .font(.oscineRegular(size: 14))
+                            Text("Share")
+                                .font(.oscineRegular(size: 13))
                                 .foregroundColor(.primary)
                         }
                         .frame(maxWidth: .infinity)
                     }
                     
-                    // Instagram Story button
+                    // Instagram story button
                     Button {
                         HapticFeedback.light()
                         generateShareImage { image in
@@ -237,9 +237,9 @@ struct BrewShareCardView: View {
                                         LinearGradient(
                                             colors: [
                                                 Color(red: 0.51, green: 0.09, blue: 0.85),
-                                                Color(red: 0.85, green: 0.09, blue: 0.51),
-                                                Color(red: 0.98, green: 0.45, blue: 0.24),
-                                                Color(red: 0.98, green: 0.75, blue: 0.24)
+                                                Color(red: 0.89, green: 0.15, blue: 0.44),
+                                                Color(red: 0.99, green: 0.38, blue: 0.27),
+                                                Color(red: 1.0, green: 0.76, blue: 0.13)
                                             ],
                                             startPoint: .bottomLeading,
                                             endPoint: .topTrailing
@@ -248,12 +248,12 @@ struct BrewShareCardView: View {
                                     .frame(width: 56, height: 56)
                                 
                                 Image(systemName: "camera.fill")
-                                    .font(.system(size: 20, weight: .semibold))
+                                    .font(.system(size: 22, weight: .medium))
                                     .foregroundColor(.white)
                             }
                             
-                            Text("story")
-                                .font(.oscineRegular(size: 14))
+                            Text("Story")
+                                .font(.oscineRegular(size: 13))
                                 .foregroundColor(.primary)
                         }
                         .frame(maxWidth: .infinity)
