@@ -52,8 +52,8 @@ struct BrewShareCardView: View {
                 .ignoresSafeArea(.all)
             
             GeometryReader { geometry in
-                let cardWidth = min(geometry.size.width - 48, 400) // Max 400pt, min 48pt margins
-                let cardHeight = cardWidth * 1.195 // Maintain aspect ratio (433/362)
+                let cardWidth = max(min(geometry.size.width - 48, 400), 100) // Max 400pt, min 100pt
+                let cardHeight = max(cardWidth * 1.195, 120) // Maintain aspect ratio (433/362), min 120pt
                 
                 VStack(spacing: 0) {
                     // Top bar with dismiss button only
