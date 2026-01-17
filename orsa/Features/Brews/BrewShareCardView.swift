@@ -494,8 +494,8 @@ struct BrewShareCardLayout3: View {
             
             // Bottom section - drink type and bean info
             VStack(alignment: .leading, spacing: 8) {
-                // Drink type and coffee name in one line
-                HStack(spacing: 4) {
+                // Drink type and coffee name in one line with baseline alignment
+                HStack(alignment: .firstTextBaseline, spacing: 4) {
                     Text(brew.drinkType)
                         .font(.oscineBold(size: 24))
                         .foregroundColor(.black)
@@ -510,44 +510,44 @@ struct BrewShareCardLayout3: View {
                 Spacer()
                     .frame(height: 8)
                 
-                // Parameters in horizontal row with flexible spacing
-                HStack(alignment: .top, spacing: 0) {
+                // Parameters in horizontal row with even spacing
+                HStack(alignment: .top, spacing: 8) {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(brewTimeDisplay)
                             .font(.oscineBold(size: 32))
                             .foregroundColor(.black)
-                            .minimumScaleFactor(0.5)
+                            .minimumScaleFactor(0.6)
                             .lineLimit(1)
                         Text("Time")
                             .font(.oscineRegular(size: 11))
                             .foregroundColor(.black)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                     
                     VStack(alignment: .leading, spacing: 2) {
                         Text(yieldDisplay)
                             .font(.oscineBold(size: 32))
                             .foregroundColor(.black)
-                            .minimumScaleFactor(0.5)
+                            .minimumScaleFactor(0.6)
                             .lineLimit(1)
                         Text("Yield")
                             .font(.oscineRegular(size: 11))
                             .foregroundColor(.black)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                     
                     if brew.dose > 0 {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("\(Int(brew.dose))g")
                                 .font(.oscineBold(size: 32))
                                 .foregroundColor(.black)
-                                .minimumScaleFactor(0.5)
+                                .minimumScaleFactor(0.6)
                                 .lineLimit(1)
                             Text("Dose")
                                 .font(.oscineRegular(size: 11))
                                 .foregroundColor(.black)
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                     }
                     
                     if !brew.grindSetting.isEmpty {
@@ -555,13 +555,13 @@ struct BrewShareCardLayout3: View {
                             Text(brew.grindSetting)
                                 .font(.oscineBold(size: 32))
                                 .foregroundColor(.black)
-                                .minimumScaleFactor(0.5)
+                                .minimumScaleFactor(0.6)
                                 .lineLimit(1)
                             Text("Grind")
                                 .font(.oscineRegular(size: 11))
                                 .foregroundColor(.black)
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                     }
                     
                     if brew.temperature > 0 {
@@ -569,13 +569,13 @@ struct BrewShareCardLayout3: View {
                             Text("\(Int(brew.temperature))°")
                                 .font(.oscineBold(size: 32))
                                 .foregroundColor(.black)
-                                .minimumScaleFactor(0.5)
+                                .minimumScaleFactor(0.6)
                                 .lineLimit(1)
                             Text("Temp")
                                 .font(.oscineRegular(size: 11))
                                 .foregroundColor(.black)
                         }
-                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                     }
                 }
             }
