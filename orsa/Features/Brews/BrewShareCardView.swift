@@ -152,6 +152,7 @@ struct BrewShareCardView: View {
                     }
                     
                     Spacer()
+                        .frame(height: 12)
                     
                     // Bottom section - drink type
                     VStack(alignment: .leading, spacing: 4) {
@@ -414,6 +415,7 @@ struct BrewShareCardContent: View {
             }
             
             Spacer()
+                .frame(height: 12)
             
             // Bottom section - drink type
             VStack(alignment: .leading, spacing: 4) {
