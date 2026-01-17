@@ -9,6 +9,11 @@ import SwiftUI
 import SwiftData
 import UIKit
 
+enum CardStyle: Int, CaseIterable {
+    case detailed = 0
+    case minimal = 1
+}
+
 struct BrewShareCardView: View {
     let brew: Brew
     @Environment(\.dismiss) private var dismiss
@@ -17,6 +22,8 @@ struct BrewShareCardView: View {
     @Query private var beans: [Bean]
     @Query private var equipment: [Equipment]
     @Query private var userProfiles: [UserProfile]
+    
+    @State private var currentCardStyle: CardStyle = .detailed
     
     var bean: Bean? {
         guard let beanID = brew.beanID else { return nil }
@@ -29,7 +36,7 @@ struct BrewShareCardView: View {
     
     var formattedDate: String {
         let formatter = DateFormatter()
-        formatter.dateStyle = .medium
+        formatter.dateFormat = "MMM d, yyyy"
         return formatter.string(from: brew.timestamp)
     }
     
@@ -75,122 +82,249 @@ struct BrewShareCardView: View {
                 
                 Spacer()
                 
-                VStack(alignment: .leading, spacing: 0) {
-                    // Top header - orsa and date
-                    HStack {
+                // Card Carousel
+                TabView(selection: $currentCardStyle) {
+                    // Detailed Card Style
+                    VStack(alignment: .leading, spacing: 0) {
+                        // Top header - orsa and date
+                        HStack {
+                            Text("orsa")
+                                .font(.oscineBold(size: 24))
+                                .foregroundColor(.black)
+                            
+                            Spacer()
+                            
+                            Text(formattedDate)
+                                .font(.oscineRegular(size: 14))
+                                .foregroundColor(.black)
+                        }
+                        
+                        Spacer()
+                        
+                        // Parameters in grid
+                        HStack(alignment: .top, spacing: 16) {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(brewTimeDisplay)
+                                    .font(.oscineBold(size: 32))
+                                    .foregroundColor(.black)
+                                Text("Time")
+                                    .font(.oscineRegular(size: 11))
+                                    .foregroundColor(.black)
+                            }
+                            
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(yieldDisplay)
+                                    .font(.oscineBold(size: 32))
+                                    .foregroundColor(.black)
+                                Text("Yield")
+                                    .font(.oscineRegular(size: 11))
+                                    .foregroundColor(.black)
+                            }
+                            
+                            if brew.dose > 0 {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("\(Int(brew.dose))g")
+                                        .font(.oscineBold(size: 32))
+                                        .foregroundColor(.black)
+                                    Text("Dose")
+                                        .font(.oscineRegular(size: 11))
+                                        .foregroundColor(.black)
+                                }
+                            }
+                            
+                            Spacer()
+                        }
+                        
+                        HStack(alignment: .top, spacing: 16) {
+                            if brew.temperature > 0 {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("\(Int(brew.temperature))°")
+                                        .font(.oscineBold(size: 32))
+                                        .foregroundColor(.black)
+                                    Text("Temp")
+                                        .font(.oscineRegular(size: 11))
+                                        .foregroundColor(.black)
+                                }
+                            }
+                            
+                            if !brew.grindSetting.isEmpty {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(brew.grindSetting)
+                                        .font(.oscineBold(size: 32))
+                                        .foregroundColor(.black)
+                                    Text("Grind")
+                                        .font(.oscineRegular(size: 11))
+                                        .foregroundColor(.black)
+                                }
+                            }
+                            
+                            Spacer()
+                        }
+                        
+                        Spacer()
+                            .frame(height: 12)
+                        
+                        // Bottom section - drink type
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text(brew.drinkType)
+                                .font(.oscineBold(size: 24))
+                                .foregroundColor(.black)
+                            
+                            // Coffee name
+                            if let bean = bean {
+                                Text(bean.coffeeName)
+                                    .font(.oscineBold(size: 32))
+                                    .foregroundColor(.black)
+                                
+                                if !bean.roaster.isEmpty {
+                                    Text("by \(bean.roaster)")
+                                        .font(.oscineRegular(size: 16))
+                                        .foregroundColor(.black)
+                                }
+                            }
+                        }
+                    }
+                    .padding(24)
+                    .frame(width: cardWidth, height: cardHeight)
+                    .background(
+                        RoundedRectangle(cornerRadius: 24)
+                            .fill(
+                                LinearGradient(
+                                    colors: [
+                                        Color(red: 1.0, green: 0.75, blue: 0.0),
+                                        Color(red: 1.0, green: 0.85, blue: 0.0),
+                                        Color(red: 1.0, green: 0.95, blue: 0.3)
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                    )
+                    .tag(CardStyle.detailed)
+                    
+                    // Minimal Card Style
+                    VStack(alignment: .leading, spacing: 0) {
+                        // Top header - date
+                        HStack {
+                            Spacer()
+                            Text(formattedDate)
+                                .font(.oscineRegular(size: 14))
+                                .foregroundColor(.black)
+                        }
+                        
+                        Spacer()
+                        
+                        // Centered drink type
+                        Text(brew.drinkType)
+                            .font(.oscineBold(size: 48))
+                            .foregroundColor(.black)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                        
+                        Spacer()
+                            .frame(height: 24)
+                        
+                        // Parameters in horizontal row
+                        HStack(alignment: .top, spacing: 20) {
+                            VStack(alignment: .center, spacing: 2) {
+                                Text(brewTimeDisplay)
+                                    .font(.oscineBold(size: 32))
+                                    .foregroundColor(.black)
+                                Text("Time")
+                                    .font(.oscineRegular(size: 11))
+                                    .foregroundColor(.black)
+                            }
+                            
+                            VStack(alignment: .center, spacing: 2) {
+                                Text(yieldDisplay)
+                                    .font(.oscineBold(size: 32))
+                                    .foregroundColor(.black)
+                                Text("Yield")
+                                    .font(.oscineRegular(size: 11))
+                                    .foregroundColor(.black)
+                            }
+                            
+                            if brew.dose > 0 {
+                                VStack(alignment: .center, spacing: 2) {
+                                    Text("\(Int(brew.dose))g")
+                                        .font(.oscineBold(size: 32))
+                                        .foregroundColor(.black)
+                                    Text("Dose")
+                                        .font(.oscineRegular(size: 11))
+                                        .foregroundColor(.black)
+                                }
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                        
+                        Spacer()
+                            .frame(height: 16)
+                        
+                        // Second row of parameters
+                        HStack(alignment: .top, spacing: 20) {
+                            if brew.temperature > 0 {
+                                VStack(alignment: .center, spacing: 2) {
+                                    Text("\(Int(brew.temperature))°")
+                                        .font(.oscineBold(size: 32))
+                                        .foregroundColor(.black)
+                                    Text("Temp")
+                                        .font(.oscineRegular(size: 11))
+                                        .foregroundColor(.black)
+                                }
+                            }
+                            
+                            if !brew.grindSetting.isEmpty {
+                                VStack(alignment: .center, spacing: 2) {
+                                    Text(brew.grindSetting)
+                                        .font(.oscineBold(size: 32))
+                                        .foregroundColor(.black)
+                                    Text("Grind")
+                                        .font(.oscineRegular(size: 11))
+                                        .foregroundColor(.black)
+                                }
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                        
+                        Spacer()
+                        
+                        // Bottom - orsa branding
                         Text("orsa")
                             .font(.oscineBold(size: 24))
                             .foregroundColor(.black)
-                        
-                        Spacer()
-                        
-                        Text(formattedDate)
-                            .font(.oscineRegular(size: 14))
-                            .foregroundColor(.black)
+                            .frame(maxWidth: .infinity, alignment: .center)
                     }
-                    
-                    Spacer()
-                    
-                    // Parameters in grid
-                    HStack(alignment: .top, spacing: 16) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(brewTimeDisplay)
-                                .font(.oscineBold(size: 32))
-                                .foregroundColor(.black)
-                            Text("Time")
-                                .font(.oscineRegular(size: 11))
-                                .foregroundColor(.black)
-                        }
-                        
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(yieldDisplay)
-                                .font(.oscineBold(size: 32))
-                                .foregroundColor(.black)
-                            Text("Yield")
-                                .font(.oscineRegular(size: 11))
-                                .foregroundColor(.black)
-                        }
-                        
-                        if brew.dose > 0 {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("\(Int(brew.dose))g")
-                                    .font(.oscineBold(size: 32))
-                                    .foregroundColor(.black)
-                                Text("Dose")
-                                    .font(.oscineRegular(size: 11))
-                                    .foregroundColor(.black)
-                            }
-                        }
-                        
-                        Spacer()
-                    }
-                    
-                    HStack(alignment: .top, spacing: 16) {
-                        if brew.temperature > 0 {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text("\(Int(brew.temperature))°")
-                                    .font(.oscineBold(size: 32))
-                                    .foregroundColor(.black)
-                                Text("Temp")
-                                    .font(.oscineRegular(size: 11))
-                                    .foregroundColor(.black)
-                            }
-                        }
-                        
-                        if !brew.grindSetting.isEmpty {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(brew.grindSetting)
-                                    .font(.oscineBold(size: 32))
-                                    .foregroundColor(.black)
-                                Text("Grind")
-                                    .font(.oscineRegular(size: 11))
-                                    .foregroundColor(.black)
-                            }
-                        }
-                        
-                        Spacer()
-                    }
-                    
-                    Spacer()
-                        .frame(height: 12)
-                    
-                    // Bottom section - drink type
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text(brew.drinkType)
-                            .font(.oscineBold(size: 24))
-                            .foregroundColor(.black)
-                        
-                        // Coffee name
-                        if let bean = bean {
-                            Text(bean.coffeeName)
-                                .font(.oscineBold(size: 32))
-                                .foregroundColor(.black)
-                            
-                            if !bean.roaster.isEmpty {
-                                Text("by \(bean.roaster)")
-                                    .font(.oscineRegular(size: 16))
-                                    .foregroundColor(.black)
-                            }
-                        }
+                    .padding(24)
+                    .frame(width: cardWidth, height: cardHeight)
+                    .background(
+                        RoundedRectangle(cornerRadius: 24)
+                            .fill(
+                                LinearGradient(
+                                    colors: [
+                                        Color(red: 1.0, green: 0.75, blue: 0.0),
+                                        Color(red: 1.0, green: 0.85, blue: 0.0),
+                                        Color(red: 1.0, green: 0.95, blue: 0.3)
+                                    ],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
+                            )
+                    )
+                    .tag(CardStyle.minimal)
+                }
+                .tabViewStyle(.page(indexDisplayMode: .never))
+                .frame(width: cardWidth, height: cardHeight)
+                .frame(maxWidth: .infinity) // Center the TabView
+                
+                // Custom Page Indicator Dots
+                HStack(spacing: 8) {
+                    ForEach(CardStyle.allCases, id: \.self) { style in
+                        Circle()
+                            .fill(currentCardStyle == style ? Color.primary : Color.secondary.opacity(0.3))
+                            .frame(width: 8, height: 8)
+                            .animation(.easeInOut(duration: 0.2), value: currentCardStyle)
                     }
                 }
-                .padding(24)
-                .frame(width: cardWidth, height: cardHeight)
-                .background(
-                    RoundedRectangle(cornerRadius: 24)
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    Color(red: 1.0, green: 0.75, blue: 0.0),
-                                    Color(red: 1.0, green: 0.85, blue: 0.0),
-                                    Color(red: 1.0, green: 0.95, blue: 0.3)
-                                ],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
-                            )
-                        )
-                )
-                .frame(maxWidth: .infinity) // Center the card
+                .padding(.top, 16)
                 
                 Spacer()
                 
@@ -252,12 +386,26 @@ struct BrewShareCardView: View {
     
     private func generateShareImage(completion: @escaping (UIImage?) -> Void) {
         // Create a snapshot of the card view - exact dimensions 433h x 362w, no corner radius for export
-        let cardView = BrewShareCardContent(brew: brew, bean: bean, formattedDate: formattedDate, brewTimeDisplay: brewTimeDisplay, yieldDisplay: yieldDisplay, cornerRadius: 0)
-            .frame(width: 362, height: 433)
+        let cardView: AnyView
+        
+        switch currentCardStyle {
+        case .detailed:
+            cardView = AnyView(
+                BrewShareCardContent(brew: brew, bean: bean, formattedDate: formattedDate, brewTimeDisplay: brewTimeDisplay, yieldDisplay: yieldDisplay, cornerRadius: 0)
+                    .frame(width: 362, height: 433)
+            )
+        case .minimal:
+            cardView = AnyView(
+                BrewShareCardContentMinimal(brew: brew, bean: bean, formattedDate: formattedDate, brewTimeDisplay: brewTimeDisplay, yieldDisplay: yieldDisplay, cornerRadius: 0)
+                    .frame(width: 362, height: 433)
+            )
+        }
+        
+        let finalView = cardView
             .environment(\.colorScheme, .light) // Force light mode for consistent rendering
         
         // Use ImageRenderer for proper SwiftUI rendering (iOS 16+)
-        let renderer = ImageRenderer(content: cardView)
+        let renderer = ImageRenderer(content: finalView)
         // Use display scale (3x for retina, 2x for standard) - defaults to screen scale automatically
         renderer.scale = 3.0 // High quality for sharing
         
@@ -271,7 +419,127 @@ struct BrewShareCardView: View {
     }
 }
 
-// Card content for rendering
+// Minimal card content for rendering
+struct BrewShareCardContentMinimal: View {
+    let brew: Brew
+    let bean: Bean?
+    let formattedDate: String
+    let brewTimeDisplay: String
+    let yieldDisplay: String
+    let cornerRadius: CGFloat
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 0) {
+            // Top header - date
+            HStack {
+                Spacer()
+                Text(formattedDate)
+                    .font(.oscineRegular(size: 14))
+                    .foregroundColor(.black)
+            }
+            
+            Spacer()
+            
+            // Centered drink type
+            Text(brew.drinkType)
+                .font(.oscineBold(size: 48))
+                .foregroundColor(.black)
+                .frame(maxWidth: .infinity, alignment: .center)
+            
+            Spacer()
+                .frame(height: 24)
+            
+            // Parameters in horizontal row
+            HStack(alignment: .top, spacing: 20) {
+                VStack(alignment: .center, spacing: 2) {
+                    Text(brewTimeDisplay)
+                        .font(.oscineBold(size: 32))
+                        .foregroundColor(.black)
+                    Text("Time")
+                        .font(.oscineRegular(size: 11))
+                        .foregroundColor(.black)
+                }
+                
+                VStack(alignment: .center, spacing: 2) {
+                    Text(yieldDisplay)
+                        .font(.oscineBold(size: 32))
+                        .foregroundColor(.black)
+                    Text("Yield")
+                        .font(.oscineRegular(size: 11))
+                        .foregroundColor(.black)
+                }
+                
+                if brew.dose > 0 {
+                    VStack(alignment: .center, spacing: 2) {
+                        Text("\(Int(brew.dose))g")
+                            .font(.oscineBold(size: 32))
+                            .foregroundColor(.black)
+                        Text("Dose")
+                            .font(.oscineRegular(size: 11))
+                            .foregroundColor(.black)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity)
+            
+            Spacer()
+                .frame(height: 16)
+            
+            // Second row of parameters
+            HStack(alignment: .top, spacing: 20) {
+                if brew.temperature > 0 {
+                    VStack(alignment: .center, spacing: 2) {
+                        Text("\(Int(brew.temperature))°")
+                            .font(.oscineBold(size: 32))
+                            .foregroundColor(.black)
+                        Text("Temp")
+                            .font(.oscineRegular(size: 11))
+                            .foregroundColor(.black)
+                    }
+                }
+                
+                if !brew.grindSetting.isEmpty {
+                    VStack(alignment: .center, spacing: 2) {
+                        Text(brew.grindSetting)
+                            .font(.oscineBold(size: 32))
+                            .foregroundColor(.black)
+                        Text("Grind")
+                            .font(.oscineRegular(size: 11))
+                            .foregroundColor(.black)
+                    }
+                }
+            }
+            .frame(maxWidth: .infinity)
+            
+            Spacer()
+            
+            // Bottom - orsa branding
+            Text("orsa")
+                .font(.oscineBold(size: 24))
+                .foregroundColor(.black)
+                .frame(maxWidth: .infinity, alignment: .center)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+        .padding(24)
+        .frame(width: 362, height: 433)
+        .background(
+            RoundedRectangle(cornerRadius: cornerRadius)
+                .fill(
+                    LinearGradient(
+                        colors: [
+                            Color(red: 1.0, green: 0.75, blue: 0.0),
+                            Color(red: 1.0, green: 0.85, blue: 0.0),
+                            Color(red: 1.0, green: 0.95, blue: 0.3)
+                        ],
+                        startPoint: .topLeading,
+                        endPoint: .bottomTrailing
+                    )
+                )
+        )
+    }
+}
+
+// Detailed card content for rendering
 struct BrewShareCardContent: View {
     let brew: Brew
     let bean: Bean?

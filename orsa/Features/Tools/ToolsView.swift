@@ -57,6 +57,20 @@ struct ToolsView: View {
                         .foregroundColor(.secondary)
                         .textCase(.uppercase)
                 }
+                
+                // Version Footer
+                Section {
+                    HStack {
+                        Spacer()
+                        Text("version 0.1.0")
+                            .font(.oscineRegular(size: 12))
+                            .foregroundColor(.secondary)
+                        Spacer()
+                    }
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 16, trailing: 16))
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                }
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
