@@ -124,8 +124,12 @@ struct orsaApp: App {
         // Configure text field cursor globally (including action sheets and pickers)
         UITextField.appearance().tintColor = yellowAccentColor // Yellow cursor everywhere
         
-        // Configure date picker tint color - yellow for selections
+        // Configure date picker colors - yellow for selections and accents
         UIDatePicker.appearance().tintColor = yellowAccentColor
+        // Set the overall accent color for date picker components
+        if #available(iOS 14.0, *) {
+            UIDatePicker.appearance().overrideUserInterfaceStyle = .unspecified
+        }
         
         // Configure toggle/switch tint color - yellow when on
         UISwitch.appearance().onTintColor = yellowAccentColor
