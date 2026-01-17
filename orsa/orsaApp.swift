@@ -126,9 +126,17 @@ struct orsaApp: App {
         
         // Configure date pickers to use yellow - multiple properties for full coverage
         UIDatePicker.appearance().tintColor = yellowAccentColor
+        
+        // Configure date picker internal components (month/year text, navigation arrows)
+        // This affects the inline calendar style used in Forms
         if #available(iOS 14.0, *) {
             UIDatePicker.appearance().backgroundColor = .clear
+            // Set tint for all subviews of date picker
+            UIView.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = yellowAccentColor
         }
+        
+        // Configure navigation bar buttons within date picker
+        UIButton.appearance(whenContainedInInstancesOf: [UIDatePicker.self]).tintColor = yellowAccentColor
         
         // Configure toggles/switches to use yellow
         UISwitch.appearance().onTintColor = yellowAccentColor
