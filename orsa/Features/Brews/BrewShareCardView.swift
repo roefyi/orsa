@@ -481,8 +481,8 @@ struct BrewShareCardContent: View {
                 }
             }
         }
+        .frame(width: 362 - 48, height: 433 - 48) // Subtract padding from dimensions
         .padding(24)
-        .frame(width: 362, height: 433)
         .background(
             RoundedRectangle(cornerRadius: 24)
                 .fill(
@@ -496,6 +496,7 @@ struct BrewShareCardContent: View {
                     )
                 )
         )
+        .frame(width: 362, height: 433) // Final frame size
     }
 }
 
