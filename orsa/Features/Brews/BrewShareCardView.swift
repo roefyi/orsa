@@ -383,107 +383,8 @@ struct BrewShareCardContent: View {
     let yieldDisplay: String
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Top header - orsa and date
-            HStack {
-                Text("orsa")
-                    .font(.oscineBold(size: 24))
-                    .foregroundColor(.black)
-                
-                Spacer()
-                
-                Text(formattedDate)
-                    .font(.oscineRegular(size: 14))
-                    .foregroundColor(.black)
-            }
-            
-            Spacer()
-            
-            // Parameters in grid
-            HStack(alignment: .top, spacing: 16) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(brewTimeDisplay)
-                        .font(.oscineBold(size: 32))
-                        .foregroundColor(.black)
-                    Text("Time")
-                        .font(.oscineRegular(size: 11))
-                        .foregroundColor(.black)
-                }
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(yieldDisplay)
-                        .font(.oscineBold(size: 32))
-                        .foregroundColor(.black)
-                    Text("Yield")
-                        .font(.oscineRegular(size: 11))
-                        .foregroundColor(.black)
-                }
-                
-                if brew.dose > 0 {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("\(Int(brew.dose))g")
-                            .font(.oscineBold(size: 32))
-                            .foregroundColor(.black)
-                        Text("Dose")
-                            .font(.oscineRegular(size: 11))
-                            .foregroundColor(.black)
-                    }
-                }
-                
-                Spacer()
-            }
-            
-            HStack(alignment: .top, spacing: 16) {
-                if brew.temperature > 0 {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("\(Int(brew.temperature))°")
-                            .font(.oscineBold(size: 32))
-                            .foregroundColor(.black)
-                        Text("Temp")
-                            .font(.oscineRegular(size: 11))
-                            .foregroundColor(.black)
-                    }
-                }
-                
-                if !brew.grindSetting.isEmpty {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(brew.grindSetting)
-                            .font(.oscineBold(size: 32))
-                            .foregroundColor(.black)
-                        Text("Grind")
-                            .font(.oscineRegular(size: 11))
-                            .foregroundColor(.black)
-                    }
-                }
-                
-                Spacer()
-            }
-            
-            Spacer()
-            
-            // Bottom section - drink type
-            VStack(alignment: .leading, spacing: 4) {
-                Text(brew.drinkType)
-                    .font(.oscineBold(size: 24))
-                    .foregroundColor(.black)
-                
-                // Coffee name
-                if let bean = bean {
-                    Text(bean.coffeeName)
-                        .font(.oscineBold(size: 32))
-                        .foregroundColor(.black)
-                    
-                    if !bean.roaster.isEmpty {
-                        Text("by \(bean.roaster)")
-                            .font(.oscineRegular(size: 16))
-                            .foregroundColor(.black)
-                    }
-                }
-            }
-        }
-        .frame(width: 362 - 48, height: 433 - 48) // Subtract padding from dimensions
-        .padding(24)
-        .background(
+        ZStack {
+            // Background
             RoundedRectangle(cornerRadius: 24)
                 .fill(
                     LinearGradient(
@@ -495,8 +396,109 @@ struct BrewShareCardContent: View {
                         endPoint: .bottomTrailing
                     )
                 )
-        )
-        .frame(width: 362, height: 433) // Final frame size
+            
+            // Content
+            VStack(alignment: .leading, spacing: 0) {
+                // Top header - orsa and date
+                HStack {
+                    Text("orsa")
+                        .font(.oscineBold(size: 24))
+                        .foregroundColor(.black)
+                    
+                    Spacer()
+                    
+                    Text(formattedDate)
+                        .font(.oscineRegular(size: 14))
+                        .foregroundColor(.black)
+                }
+                
+                Spacer()
+                
+                // Parameters in grid
+                HStack(alignment: .top, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(brewTimeDisplay)
+                            .font(.oscineBold(size: 32))
+                            .foregroundColor(.black)
+                        Text("Time")
+                            .font(.oscineRegular(size: 11))
+                            .foregroundColor(.black)
+                    }
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(yieldDisplay)
+                            .font(.oscineBold(size: 32))
+                            .foregroundColor(.black)
+                        Text("Yield")
+                            .font(.oscineRegular(size: 11))
+                            .foregroundColor(.black)
+                    }
+                    
+                    if brew.dose > 0 {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("\(Int(brew.dose))g")
+                                .font(.oscineBold(size: 32))
+                                .foregroundColor(.black)
+                            Text("Dose")
+                                .font(.oscineRegular(size: 11))
+                                .foregroundColor(.black)
+                        }
+                    }
+                    
+                    Spacer()
+                }
+                
+                HStack(alignment: .top, spacing: 16) {
+                    if brew.temperature > 0 {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text("\(Int(brew.temperature))°")
+                                .font(.oscineBold(size: 32))
+                                .foregroundColor(.black)
+                            Text("Temp")
+                                .font(.oscineRegular(size: 11))
+                                .foregroundColor(.black)
+                        }
+                    }
+                    
+                    if !brew.grindSetting.isEmpty {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(brew.grindSetting)
+                                .font(.oscineBold(size: 32))
+                                .foregroundColor(.black)
+                            Text("Grind")
+                                .font(.oscineRegular(size: 11))
+                                .foregroundColor(.black)
+                        }
+                    }
+                    
+                    Spacer()
+                }
+                
+                Spacer()
+                
+                // Bottom section - drink type
+                VStack(alignment: .leading, spacing: 4) {
+                    Text(brew.drinkType)
+                        .font(.oscineBold(size: 24))
+                        .foregroundColor(.black)
+                    
+                    // Coffee name
+                    if let bean = bean {
+                        Text(bean.coffeeName)
+                            .font(.oscineBold(size: 32))
+                            .foregroundColor(.black)
+                        
+                        if !bean.roaster.isEmpty {
+                            Text("by \(bean.roaster)")
+                                .font(.oscineRegular(size: 16))
+                                .foregroundColor(.black)
+                        }
+                    }
+                }
+            }
+            .padding(24)
+        }
+        .frame(width: 362, height: 433)
     }
 }
 
