@@ -90,7 +90,6 @@ struct BrewShareCardView: View {
                     }
                     
                     Spacer()
-                        .frame(height: 80)
                     
                     // Parameters in grid
                     VStack(alignment: .leading, spacing: 8) {
@@ -178,7 +177,7 @@ struct BrewShareCardView: View {
                     }
                 }
                 .padding(24)
-                .frame(width: 362, height: 433, alignment: .top)
+                .frame(width: 362, height: 433)
                 .background(
                     RoundedRectangle(cornerRadius: 24)
                         .fill(
@@ -417,7 +416,6 @@ struct BrewShareCardContent: View {
                 }
                 
                 Spacer()
-                    .frame(height: 80)
                 
                 // Parameters in grid
                 VStack(alignment: .leading, spacing: 8) {
@@ -505,7 +503,6 @@ struct BrewShareCardContent: View {
                 }
             }
             .padding(24)
-            .frame(width: 362, height: 433, alignment: .top)
         }
         .frame(width: 362, height: 433)
     }
