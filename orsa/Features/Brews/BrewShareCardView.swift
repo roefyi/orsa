@@ -254,8 +254,8 @@ struct BrewShareCardView: View {
     }
     
     private func generateShareImage(completion: @escaping (UIImage?) -> Void) {
-        // Create a snapshot of the card view - exact dimensions 433h x 362w, card only
-        let cardView = BrewShareCardContent(brew: brew, bean: bean, formattedDate: formattedDate, brewTimeDisplay: brewTimeDisplay, yieldDisplay: yieldDisplay)
+        // Create a snapshot of the card view - exact dimensions 433h x 362w, no corner radius for export
+        let cardView = BrewShareCardContent(brew: brew, bean: bean, formattedDate: formattedDate, brewTimeDisplay: brewTimeDisplay, yieldDisplay: yieldDisplay, cornerRadius: 0)
             .frame(width: 362, height: 433)
             .environment(\.colorScheme, .light) // Force light mode for consistent rendering
         
@@ -340,6 +340,7 @@ struct BrewShareCardContent: View {
     let formattedDate: String
     let brewTimeDisplay: String
     let yieldDisplay: String
+    let cornerRadius: CGFloat
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -445,7 +446,7 @@ struct BrewShareCardContent: View {
         .padding(24)
         .frame(width: 362, height: 433)
         .background(
-            RoundedRectangle(cornerRadius: 24)
+            RoundedRectangle(cornerRadius: cornerRadius)
                 .fill(
                     LinearGradient(
                         colors: [

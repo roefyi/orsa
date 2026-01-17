@@ -53,7 +53,6 @@ struct BrewsView: View {
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
-            .background(Color.appBackground.ignoresSafeArea())
             .navigationTitle("all brews")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
@@ -63,9 +62,7 @@ struct BrewsView: View {
                     } label: {
                         Image(systemName: "plus")
                             .font(.system(size: 18, weight: .semibold))
-                            .foregroundStyle(.primary)
                     }
-                    .buttonStyle(.plain)
                 }
             }
             .fullScreenCover(isPresented: $showingNewBrew) {

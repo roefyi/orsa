@@ -60,7 +60,6 @@ struct ToolsView: View {
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
-            .background(Color.appBackground.ignoresSafeArea())
             .navigationTitle("tools")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
@@ -70,9 +69,7 @@ struct ToolsView: View {
                     } label: {
                         Image(systemName: "plus")
                             .font(.system(size: 18, weight: .semibold))
-                            .foregroundStyle(.primary)
                     }
-                    .buttonStyle(.plain)
                 }
             }
             .sheet(isPresented: $showingAddTool) {

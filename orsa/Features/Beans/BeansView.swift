@@ -15,10 +15,24 @@ struct BeansView: View {
     @State private var selectedBean: Bean?
     @State private var showingBeanDetail = false
     
+    // Sort beans with primary/current bean at the top
+    var sortedBeans: [Bean] {
+        beans.sorted { bean1, bean2 in
+            // Primary bean always comes first
+            if bean1.isPrimary && !bean2.isPrimary {
+                return true
+            } else if !bean1.isPrimary && bean2.isPrimary {
+                return false
+            }
+            // If both or neither are primary, sort by date added (newest first)
+            return bean1.dateAdded > bean2.dateAdded
+        }
+    }
+    
     var body: some View {
         NavigationStack {
             List {
-                ForEach(Array(beans.enumerated()), id: \.element.id) { index, bean in
+                ForEach(Array(sortedBeans.enumerated()), id: \.element.id) { index, bean in
                     VStack(spacing: 0) {
                         Button(action: {
                             HapticFeedback.light()
@@ -30,7 +44,7 @@ struct BeansView: View {
                         .buttonStyle(.plain)
                         
                         // Divider spanning full width (except for last item)
-                        if index < beans.count - 1 {
+                        if index < sortedBeans.count - 1 {
                             Divider()
                                 .padding(.horizontal, 20)
                         }
@@ -42,7 +56,6 @@ struct BeansView: View {
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
-            .background(Color.appBackground.ignoresSafeArea())
             .navigationTitle("beans")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
@@ -52,9 +65,7 @@ struct BeansView: View {
                     } label: {
                         Image(systemName: "plus")
                             .font(.system(size: 18, weight: .semibold))
-                            .foregroundStyle(.primary)
                     }
-                    .buttonStyle(.plain)
                 }
             }
             .sheet(isPresented: $showingAddBeans) {
