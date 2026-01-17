@@ -176,7 +176,10 @@ struct BrewShareCardView: View {
                             }
                         }
                     }
+                    
+                    Spacer()
                 }
+                .frame(maxHeight: .infinity, alignment: .top)
                 .padding(24)
                 .frame(width: 362, height: 433)
                 .background(
@@ -503,7 +506,10 @@ struct BrewShareCardContent: View {
                         }
                     }
                 }
+                
+                Spacer()
             }
+            .frame(maxHeight: .infinity, alignment: .top)
             .padding(24)
         }
         .frame(width: 362, height: 433)
