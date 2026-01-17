@@ -40,6 +40,7 @@ struct BrewsView: View {
                         } label: {
                             Label("Delete", systemImage: "trash")
                         }
+                        .tint(.red)
                         
                         Button {
                             brewToEdit = brew

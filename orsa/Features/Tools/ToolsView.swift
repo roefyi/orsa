@@ -41,6 +41,7 @@ struct ToolsView: View {
                         } label: {
                             Label("Delete", systemImage: "trash")
                         }
+                        .tint(.red)
                     }
                 }
                 
