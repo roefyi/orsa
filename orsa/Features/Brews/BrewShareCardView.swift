@@ -261,7 +261,8 @@ struct BrewShareCardView: View {
         
         // Use ImageRenderer for proper SwiftUI rendering (iOS 16+)
         let renderer = ImageRenderer(content: cardView)
-        renderer.scale = UIScreen.main.scale // Use device scale for crisp images
+        // Use display scale (3x for retina, 2x for standard) - defaults to screen scale automatically
+        renderer.scale = 3.0 // High quality for sharing
         
         DispatchQueue.main.async {
             if let uiImage = renderer.uiImage {
