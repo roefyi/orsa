@@ -105,6 +105,7 @@ struct EditBeanView: View {
             .scrollContentBackground(.hidden)
             .scrollDismissesKeyboard(.interactively)
             .background(Color.appBackground)
+            .accentColor(Color(uiColor: UIColor(red: 1.0, green: 0.8, blue: 0.0, alpha: 1.0)))
             .navigationTitle("edit beans")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
