@@ -51,7 +51,6 @@ struct EditToolView: View {
             .scrollContentBackground(.hidden)
             .scrollDismissesKeyboard(.interactively)
             .background(Color.appBackground.ignoresSafeArea())
-            .tint(Color(red: 1.0, green: 0.8, blue: 0.0))
             .navigationTitle("edit tool")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.clear, for: .navigationBar)

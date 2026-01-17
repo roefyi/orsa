@@ -263,6 +263,7 @@ struct NewBrewView: View {
                             
                             TextField("Notes", text: $notes, axis: .vertical)
                                 .lineLimit(3...6)
+                                .tint(Color(red: 1.0, green: 0.8, blue: 0.0))
                                 .padding()
                                 .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                                 .foregroundColor(.primary)
