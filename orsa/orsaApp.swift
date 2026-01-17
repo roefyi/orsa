@@ -127,6 +127,9 @@ struct orsaApp: App {
         // Configure date picker tint color - yellow for selections
         UIDatePicker.appearance().tintColor = yellowAccentColor
         
+        // Configure toggle/switch tint color - yellow when on
+        UISwitch.appearance().onTintColor = yellowAccentColor
+        
         // Configure label text color in table view cells
         UILabel.appearance(whenContainedInInstancesOf: [UITableViewCell.self]).textColor = standardAccentColor
         
