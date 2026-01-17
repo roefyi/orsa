@@ -20,6 +20,7 @@ struct AddBeanView: View {
     @State private var roastLevel = ""
     @State private var notes = ""
     @State private var isPrimary = false
+    @State private var status: BeanStatus = .current
     
     var body: some View {
         NavigationStack {
@@ -29,6 +30,11 @@ struct AddBeanView: View {
                     TextField("Roaster", text: $roaster)
                     DatePicker("Roast Date", selection: $roastDate, displayedComponents: .date)
                         .tint(Color(red: 1.0, green: 0.8, blue: 0.0))
+                    Picker("Status", selection: $status) {
+                        ForEach(BeanStatus.allCases, id: \.self) { status in
+                            Text(status.rawValue.capitalized).tag(status)
+                        }
+                    }
                     Toggle("Set as Primary", isOn: $isPrimary)
                         .tint(Color(red: 1.0, green: 0.8, blue: 0.0))
                 } header: {
@@ -90,7 +96,7 @@ struct AddBeanView: View {
             origin: origin.isEmpty ? nil : origin,
             roastLevel: roastLevel.isEmpty ? nil : roastLevel,
             tastingNotes: notes.isEmpty ? nil : notes,
-            status: BeanStatus.current.rawValue,
+            status: status.rawValue,
             isPrimary: isPrimary
         )
         modelContext.insert(bean)

@@ -24,6 +24,7 @@ struct EditBeanView: View {
     @State private var roastLevel = ""
     @State private var notes = ""
     @State private var isPrimary = false
+    @State private var status: BeanStatus = .current
     @State private var temperature = ""
     @State private var grindSetting = ""
     
@@ -67,6 +68,11 @@ struct EditBeanView: View {
                     TextField("Roaster", text: $roaster)
                     DatePicker("Roast Date", selection: $roastDate, displayedComponents: .date)
                         .tint(Color(red: 1.0, green: 0.8, blue: 0.0))
+                    Picker("Status", selection: $status) {
+                        ForEach(BeanStatus.allCases, id: \.self) { status in
+                            Text(status.rawValue.capitalized).tag(status)
+                        }
+                    }
                     Toggle("Set as Primary", isOn: $isPrimary)
                         .tint(Color(red: 1.0, green: 0.8, blue: 0.0))
                 } header: {
@@ -141,6 +147,7 @@ struct EditBeanView: View {
             roastLevel = bean.roastLevel ?? ""
             notes = bean.tastingNotes ?? ""
             isPrimary = bean.isPrimary
+            status = bean.beanStatus
             temperature = bean.temperature ?? ""
             grindSetting = bean.grindSetting ?? ""
         } else if existingBean == nil {
@@ -153,6 +160,7 @@ struct EditBeanView: View {
             roastLevel = ""
             notes = ""
             isPrimary = false
+            status = .current
             temperature = ""
             grindSetting = ""
         }
@@ -170,6 +178,7 @@ struct EditBeanView: View {
         bean.roastLevel = roastLevel.isEmpty ? nil : roastLevel
         bean.tastingNotes = notes.isEmpty ? nil : notes
         bean.isPrimary = isPrimary
+        bean.status = status.rawValue
         bean.temperature = temperature.isEmpty ? nil : temperature
         bean.grindSetting = grindSetting.isEmpty ? nil : grindSetting
         

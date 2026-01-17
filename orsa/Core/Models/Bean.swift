@@ -10,7 +10,7 @@ import SwiftData
 
 enum BeanStatus: String, Codable, CaseIterable {
     case current = "current"
-    case next = "next"
+    case onTheShelf = "on the shelf"
     case archived = "archived"
 }
 
