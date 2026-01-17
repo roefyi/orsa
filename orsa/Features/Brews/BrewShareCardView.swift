@@ -90,68 +90,72 @@ struct BrewShareCardView: View {
                     }
                     
                     Spacer()
+                        .frame(height: 80)
                     
                     // Parameters in grid
-                    HStack(alignment: .top, spacing: 16) {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(brewTimeDisplay)
-                                .font(.oscineBold(size: 32))
-                                .foregroundColor(.black)
-                            Text("Time")
-                                .font(.oscineRegular(size: 11))
-                                .foregroundColor(.black)
-                        }
-                        
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(yieldDisplay)
-                                .font(.oscineBold(size: 32))
-                                .foregroundColor(.black)
-                            Text("Yield")
-                                .font(.oscineRegular(size: 11))
-                                .foregroundColor(.black)
-                        }
-                        
-                        if brew.dose > 0 {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack(alignment: .top, spacing: 16) {
                             VStack(alignment: .leading, spacing: 2) {
-                                Text("\(Int(brew.dose))g")
+                                Text(brewTimeDisplay)
                                     .font(.oscineBold(size: 32))
                                     .foregroundColor(.black)
-                                Text("Dose")
+                                Text("Time")
                                     .font(.oscineRegular(size: 11))
                                     .foregroundColor(.black)
                             }
-                        }
-                        
-                        Spacer()
-                    }
-                    
-                    HStack(alignment: .top, spacing: 16) {
-                        if brew.temperature > 0 {
+                            
                             VStack(alignment: .leading, spacing: 2) {
-                                Text("\(Int(brew.temperature))°")
+                                Text(yieldDisplay)
                                     .font(.oscineBold(size: 32))
                                     .foregroundColor(.black)
-                                Text("Temp")
+                                Text("Yield")
                                     .font(.oscineRegular(size: 11))
                                     .foregroundColor(.black)
                             }
-                        }
-                        
-                        if !brew.grindSetting.isEmpty {
-                            VStack(alignment: .leading, spacing: 2) {
-                                Text(brew.grindSetting)
-                                    .font(.oscineBold(size: 32))
-                                    .foregroundColor(.black)
-                                Text("Grind")
-                                    .font(.oscineRegular(size: 11))
-                                    .foregroundColor(.black)
+                            
+                            if brew.dose > 0 {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("\(Int(brew.dose))g")
+                                        .font(.oscineBold(size: 32))
+                                        .foregroundColor(.black)
+                                    Text("Dose")
+                                        .font(.oscineRegular(size: 11))
+                                        .foregroundColor(.black)
+                                }
                             }
+                            
+                            Spacer()
                         }
                         
-                        Spacer()
+                        HStack(alignment: .top, spacing: 16) {
+                            if brew.temperature > 0 {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text("\(Int(brew.temperature))°")
+                                        .font(.oscineBold(size: 32))
+                                        .foregroundColor(.black)
+                                    Text("Temp")
+                                        .font(.oscineRegular(size: 11))
+                                        .foregroundColor(.black)
+                                }
+                            }
+                            
+                            if !brew.grindSetting.isEmpty {
+                                VStack(alignment: .leading, spacing: 2) {
+                                    Text(brew.grindSetting)
+                                        .font(.oscineBold(size: 32))
+                                        .foregroundColor(.black)
+                                    Text("Grind")
+                                        .font(.oscineRegular(size: 11))
+                                        .foregroundColor(.black)
+                                }
+                            }
+                            
+                            Spacer()
+                        }
                     }
                     
                     Spacer()
+                        .frame(height: 12)
                     
                     // Bottom section - drink type
                     VStack(alignment: .leading, spacing: 4) {
@@ -413,68 +417,72 @@ struct BrewShareCardContent: View {
                 }
                 
                 Spacer()
+                    .frame(height: 80)
                 
                 // Parameters in grid
-                HStack(alignment: .top, spacing: 16) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(brewTimeDisplay)
-                            .font(.oscineBold(size: 32))
-                            .foregroundColor(.black)
-                        Text("Time")
-                            .font(.oscineRegular(size: 11))
-                            .foregroundColor(.black)
-                    }
-                    
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(yieldDisplay)
-                            .font(.oscineBold(size: 32))
-                            .foregroundColor(.black)
-                        Text("Yield")
-                            .font(.oscineRegular(size: 11))
-                            .foregroundColor(.black)
-                    }
-                    
-                    if brew.dose > 0 {
+                VStack(alignment: .leading, spacing: 8) {
+                    HStack(alignment: .top, spacing: 16) {
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("\(Int(brew.dose))g")
+                            Text(brewTimeDisplay)
                                 .font(.oscineBold(size: 32))
                                 .foregroundColor(.black)
-                            Text("Dose")
+                            Text("Time")
                                 .font(.oscineRegular(size: 11))
                                 .foregroundColor(.black)
                         }
-                    }
-                    
-                    Spacer()
-                }
-                
-                HStack(alignment: .top, spacing: 16) {
-                    if brew.temperature > 0 {
+                        
                         VStack(alignment: .leading, spacing: 2) {
-                            Text("\(Int(brew.temperature))°")
+                            Text(yieldDisplay)
                                 .font(.oscineBold(size: 32))
                                 .foregroundColor(.black)
-                            Text("Temp")
+                            Text("Yield")
                                 .font(.oscineRegular(size: 11))
                                 .foregroundColor(.black)
                         }
-                    }
-                    
-                    if !brew.grindSetting.isEmpty {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(brew.grindSetting)
-                                .font(.oscineBold(size: 32))
-                                .foregroundColor(.black)
-                            Text("Grind")
-                                .font(.oscineRegular(size: 11))
-                                .foregroundColor(.black)
+                        
+                        if brew.dose > 0 {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("\(Int(brew.dose))g")
+                                    .font(.oscineBold(size: 32))
+                                    .foregroundColor(.black)
+                                Text("Dose")
+                                    .font(.oscineRegular(size: 11))
+                                    .foregroundColor(.black)
+                            }
                         }
+                        
+                        Spacer()
                     }
                     
-                    Spacer()
+                    HStack(alignment: .top, spacing: 16) {
+                        if brew.temperature > 0 {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("\(Int(brew.temperature))°")
+                                    .font(.oscineBold(size: 32))
+                                    .foregroundColor(.black)
+                                Text("Temp")
+                                    .font(.oscineRegular(size: 11))
+                                    .foregroundColor(.black)
+                            }
+                        }
+                        
+                        if !brew.grindSetting.isEmpty {
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text(brew.grindSetting)
+                                    .font(.oscineBold(size: 32))
+                                    .foregroundColor(.black)
+                                Text("Grind")
+                                    .font(.oscineRegular(size: 11))
+                                    .foregroundColor(.black)
+                            }
+                        }
+                        
+                        Spacer()
+                    }
                 }
                 
                 Spacer()
+                    .frame(height: 12)
                 
                 // Bottom section - drink type
                 VStack(alignment: .leading, spacing: 4) {
