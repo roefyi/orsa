@@ -28,7 +28,9 @@ struct AddBeanView: View {
                     TextField("Coffee Name", text: $coffeeName)
                     TextField("Roaster", text: $roaster)
                     DatePicker("Roast Date", selection: $roastDate, displayedComponents: .date)
+                        .tint(Color(red: 1.0, green: 0.8, blue: 0.0))
                     Toggle("Set as Primary", isOn: $isPrimary)
+                        .tint(Color(red: 1.0, green: 0.8, blue: 0.0))
                 } header: {
                     Text("coffee info")
                         .foregroundColor(.secondaryText)
@@ -57,7 +59,7 @@ struct AddBeanView: View {
             .scrollContentBackground(.hidden)
             .scrollDismissesKeyboard(.interactively)
             .background(Color.appBackground.ignoresSafeArea())
-            .accentColor(Color(uiColor: UIColor(red: 1.0, green: 0.8, blue: 0.0, alpha: 1.0)))
+            .tint(Color(red: 1.0, green: 0.8, blue: 0.0))
             .navigationTitle("add beans")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.clear, for: .navigationBar)
