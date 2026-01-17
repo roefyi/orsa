@@ -310,16 +310,44 @@ struct BrewShareCardView: View {
         // Instagram Stories URL scheme
         guard let instagramURL = URL(string: "instagram-stories://share") else { return }
         
-        if UIApplication.shared.canOpenURL(instagramURL) {
-            // Save image to pasteboard for Instagram
-            let pasteboard = UIPasteboard.general
-            pasteboard.image = image
-            
-            // Open Instagram
-            UIApplication.shared.open(instagramURL)
-        } else {
-            // Fallback to share sheet
-            shareCard(image: image)
+        // Check if Instagram is installed
+        guard UIApplication.shared.canOpenURL(instagramURL) else {
+            print("Instagram not installed")
+            presentShareSheet(with: image)
+            return
+        }
+        
+        // Convert image to PNG data - Instagram requires NSData
+        guard let imageData = image.pngData() else {
+            print("Failed to convert image to PNG data")
+            presentShareSheet(with: image)
+            return
+        }
+        
+        // Instagram requires specific pasteboard items
+        // Use backgroundImage for full-size content, stickerImage for smaller stickers
+        let pasteboardItems: [[String: Any]] = [
+            [
+                "com.instagram.sharedSticker.stickerImage": imageData
+            ]
+        ]
+        
+        let pasteboardOptions: [UIPasteboard.OptionsKey: Any] = [
+            .expirationDate: Date().addingTimeInterval(60 * 5) // 5 minutes expiration per HIG
+        ]
+        
+        // Set pasteboard items
+        UIPasteboard.general.setItems(pasteboardItems, options: pasteboardOptions)
+        
+        // Open Instagram
+        UIApplication.shared.open(instagramURL, options: [:]) { success in
+            if !success {
+                print("Failed to open Instagram")
+                // Fallback to regular share sheet
+                DispatchQueue.main.async {
+                    self.presentShareSheet(with: image)
+                }
+            }
         }
     }
     
