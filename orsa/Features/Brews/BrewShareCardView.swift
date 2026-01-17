@@ -192,72 +192,20 @@ struct BrewShareCardView: View {
                 
                 Spacer()
                 
-                // Share buttons below card
-                HStack(spacing: 20) {
-                    // General share button
-                    Button {
-                        HapticFeedback.light()
-                        generateShareImage { image in
-                            if let image = image {
-                                self.presentShareSheet(with: image)
-                            }
+                // Share button below card
+                Button {
+                    HapticFeedback.light()
+                    generateShareImage { image in
+                        if let image = image {
+                            self.presentShareSheet(with: image)
                         }
-                    } label: {
-                        VStack(spacing: 8) {
-                            ZStack {
-                                Circle()
-                                    .fill(Color.primary.opacity(0.1))
-                                    .frame(width: 56, height: 56)
-                                
-                                Image(systemName: "square.and.arrow.up")
-                                    .font(.system(size: 22, weight: .medium))
-                                    .foregroundColor(.primary)
-                            }
-                            
-                            Text("Share")
-                                .font(.oscineRegular(size: 13))
-                                .foregroundColor(.primary)
-                        }
-                        .frame(maxWidth: .infinity)
                     }
-                    
-                    // Instagram story button
-                    Button {
-                        HapticFeedback.light()
-                        generateShareImage { image in
-                            if let image = image {
-                                self.shareToInstagram(image: image)
-                            }
-                        }
-                    } label: {
-                        VStack(spacing: 8) {
-                            ZStack {
-                                Circle()
-                                    .fill(
-                                        LinearGradient(
-                                            colors: [
-                                                Color(red: 0.51, green: 0.09, blue: 0.85),
-                                                Color(red: 0.89, green: 0.15, blue: 0.44),
-                                                Color(red: 0.99, green: 0.38, blue: 0.27),
-                                                Color(red: 1.0, green: 0.76, blue: 0.13)
-                                            ],
-                                            startPoint: .bottomLeading,
-                                            endPoint: .topTrailing
-                                        )
-                                    )
-                                    .frame(width: 56, height: 56)
-                                
-                                Image(systemName: "camera.fill")
-                                    .font(.system(size: 22, weight: .medium))
-                                    .foregroundColor(.white)
-                            }
-                            
-                            Text("Story")
-                                .font(.oscineRegular(size: 13))
-                                .foregroundColor(.primary)
-                        }
+                } label: {
+                    Text("share")
+                        .font(.oscineHeadline)
+                        .foregroundColor(.primary)
                         .frame(maxWidth: .infinity)
-                    }
+                        .padding()
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 24)
@@ -353,67 +301,6 @@ struct BrewShareCardView: View {
         }
         
         topController.present(activityVC, animated: true)
-    }
-    
-    private func shareToInstagram(image: UIImage) {
-        // Instagram Stories URL scheme
-        guard let instagramURL = URL(string: "instagram-stories://share") else { return }
-        
-        // Check if Instagram is installed
-        guard UIApplication.shared.canOpenURL(instagramURL) else {
-            print("Instagram not installed")
-            presentShareSheet(with: image)
-            return
-        }
-        
-        // Resize image to Instagram-friendly dimensions (720x1280 for 9:16 aspect ratio)
-        // Current card is 362x433, scale up proportionally
-        let targetHeight: CGFloat = 1280
-        let targetWidth: CGFloat = 720
-        let scaleFactor = min(targetWidth / image.size.width, targetHeight / image.size.height)
-        let scaledSize = CGSize(width: image.size.width * scaleFactor, height: image.size.height * scaleFactor)
-        
-        // Create scaled image
-        let renderer = UIGraphicsImageRenderer(size: scaledSize)
-        let scaledImage = renderer.image { context in
-            image.draw(in: CGRect(origin: .zero, size: scaledSize))
-        }
-        
-        // Convert to PNG data with proper format
-        guard let imageData = scaledImage.pngData() else {
-            print("Failed to convert image to PNG data")
-            presentShareSheet(with: image)
-            return
-        }
-        
-        // Instagram requires specific pasteboard items
-        // Use stickerImage for resizable stickers
-        let pasteboardItems: [[String: Any]] = [
-            [
-                "com.instagram.sharedSticker.stickerImage": imageData
-            ]
-        ]
-        
-        let pasteboardOptions: [UIPasteboard.OptionsKey: Any] = [
-            .expirationDate: Date().addingTimeInterval(60 * 5) // 5 minutes expiration per HIG
-        ]
-        
-        // Set pasteboard items
-        UIPasteboard.general.setItems(pasteboardItems, options: pasteboardOptions)
-        
-        // Small delay to ensure pasteboard is set before opening Instagram
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-            // Open Instagram
-            UIApplication.shared.open(instagramURL, options: [:]) { success in
-                if !success {
-                    print("Failed to open Instagram")
-                    // Fallback to regular share sheet
-                    DispatchQueue.main.async {
-                        self.presentShareSheet(with: image)
-                    }
-                }
-            }
-        }
     }
     
     private func saveToPhotos(image: UIImage) {
