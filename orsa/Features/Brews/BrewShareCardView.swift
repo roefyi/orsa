@@ -177,9 +177,8 @@ struct BrewShareCardView: View {
                         }
                     }
                 }
-                .frame(maxHeight: .infinity, alignment: .top)
                 .padding(24)
-                .frame(width: 362, height: 433)
+                .frame(width: 362, height: 433, alignment: .top)
                 .background(
                     RoundedRectangle(cornerRadius: 24)
                         .fill(
@@ -505,8 +504,8 @@ struct BrewShareCardContent: View {
                     }
                 }
             }
-            .frame(maxHeight: .infinity, alignment: .top)
             .padding(24)
+            .frame(width: 362, height: 433, alignment: .top)
         }
         .frame(width: 362, height: 433)
     }
