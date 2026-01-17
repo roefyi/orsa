@@ -124,6 +124,9 @@ struct orsaApp: App {
         // Configure text field cursor globally (including action sheets and pickers)
         UITextField.appearance().tintColor = yellowAccentColor // Yellow cursor everywhere
         
+        // Configure date picker tint color - yellow for selections
+        UIDatePicker.appearance().tintColor = yellowAccentColor
+        
         // Configure label text color in table view cells
         UILabel.appearance(whenContainedInInstancesOf: [UITableViewCell.self]).textColor = standardAccentColor
         
