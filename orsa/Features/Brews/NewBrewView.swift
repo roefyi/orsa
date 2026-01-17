@@ -266,6 +266,14 @@ struct NewBrewView: View {
                                 .padding()
                                 .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
                                 .foregroundColor(.primary)
+                                .tint(Color(uiColor: UIColor { traitCollection in
+                                    switch traitCollection.userInterfaceStyle {
+                                    case .dark:
+                                        return UIColor(red: 1.0, green: 0.9, blue: 0.2, alpha: 1.0)
+                                    default:
+                                        return UIColor(red: 1.0, green: 0.8, blue: 0.0, alpha: 1.0)
+                                    }
+                                }))
                         }
                         
                         // Action Buttons
