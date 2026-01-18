@@ -70,12 +70,33 @@ struct orsaApp: App {
         tabBarAppearance.backgroundColor = .clear // Let material show through
         tabBarAppearance.shadowColor = .clear // No separator line
         
+        // Configure stacked layout (iPhone portrait)
         tabBarAppearance.stackedLayoutAppearance.normal.iconColor = UIColor.secondaryLabel
         tabBarAppearance.stackedLayoutAppearance.normal.titleTextAttributes = [
             .foregroundColor: UIColor.secondaryLabel
         ]
         tabBarAppearance.stackedLayoutAppearance.selected.iconColor = UIColor.label
         tabBarAppearance.stackedLayoutAppearance.selected.titleTextAttributes = [
+            .foregroundColor: UIColor.label
+        ]
+        
+        // Configure inline layout (iPhone landscape)
+        tabBarAppearance.inlineLayoutAppearance.normal.iconColor = UIColor.secondaryLabel
+        tabBarAppearance.inlineLayoutAppearance.normal.titleTextAttributes = [
+            .foregroundColor: UIColor.secondaryLabel
+        ]
+        tabBarAppearance.inlineLayoutAppearance.selected.iconColor = UIColor.label
+        tabBarAppearance.inlineLayoutAppearance.selected.titleTextAttributes = [
+            .foregroundColor: UIColor.label
+        ]
+        
+        // Configure compact inline layout (iPad)
+        tabBarAppearance.compactInlineLayoutAppearance.normal.iconColor = UIColor.secondaryLabel
+        tabBarAppearance.compactInlineLayoutAppearance.normal.titleTextAttributes = [
+            .foregroundColor: UIColor.secondaryLabel
+        ]
+        tabBarAppearance.compactInlineLayoutAppearance.selected.iconColor = UIColor.label
+        tabBarAppearance.compactInlineLayoutAppearance.selected.titleTextAttributes = [
             .foregroundColor: UIColor.label
         ]
         
