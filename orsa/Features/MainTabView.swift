@@ -38,6 +38,7 @@ struct MainTabView: View {
                         Label("Tools", systemImage: "list.bullet")
                     }
             }
+            .tint(.primary)
         }
         .toolbarBackground(.visible, for: .tabBar)
         .toolbarBackground(.ultraThinMaterial, for: .tabBar)
