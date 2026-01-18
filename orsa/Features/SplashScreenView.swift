@@ -18,12 +18,13 @@ struct SplashScreenView: View {
                     .ignoresSafeArea()
                 
                 VStack(spacing: 20) {
-                    // App Icon placeholder - using coffee beans icon
-                    Image("BeansIcon")
+                    // App Icon
+                    Image("AppIconImage")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 120, height: 120)
-                        .foregroundColor(.primary)
+                        .cornerRadius(26.4) // iOS app icon corner radius
+                        .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
                     
                     Text("orsa")
                         .font(.oscineBold(size: 34))

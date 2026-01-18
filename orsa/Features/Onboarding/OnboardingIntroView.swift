@@ -13,12 +13,13 @@ struct OnboardingIntroView: View {
     var body: some View {
         VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 30) {
-                // App Icon placeholder - using coffee beans icon
-                Image("BeansIcon")
+                // App Icon
+                Image("AppIconImage")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .frame(width: 80, height: 80)
-                    .foregroundColor(.primary)
+                    .cornerRadius(17.6) // iOS app icon corner radius scaled
+                    .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
                 
                 VStack(alignment: .leading, spacing: 20) {
                     Text("this is Orsa")
