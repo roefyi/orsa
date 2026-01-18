@@ -19,19 +19,15 @@ struct OnboardingSetupView: View {
     }
     
     var body: some View {
-        VStack(spacing: 40) {
-            Spacer()
-            
+        VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 30) {
                 Text("glad you're here \(userName)")
                     .font(.oscineLargeTitle)
                     .foregroundColor(.primary)
-                    .padding(.horizontal, 32)
                 
                 Text("what's your main setup?")
                     .font(.oscineTitle3)
                     .foregroundColor(.secondaryText)
-                    .padding(.horizontal, 32)
                 
                 VStack(spacing: 16) {
                     TextField("Machine", text: $machineName)
@@ -68,8 +64,10 @@ struct OnboardingSetupView: View {
                             }
                         }
                 }
-                .padding(.horizontal, 32)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 32)
+            .padding(.top, 60)
             
             Spacer()
             

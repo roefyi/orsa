@@ -13,14 +13,11 @@ struct OnboardingNameView: View {
     @FocusState private var isTextFieldFocused: Bool
     
     var body: some View {
-        VStack(spacing: 40) {
-            Spacer()
-            
+        VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 20) {
                 Text("What's your name?")
                     .font(.oscineLargeTitle)
                     .foregroundColor(.primary)
-                    .padding(.horizontal, 32)
                 
                 TextField("Enter your name", text: $userName)
                     .font(.oscineRegular(size: 17))
@@ -32,12 +29,14 @@ struct OnboardingNameView: View {
                         RoundedRectangle(cornerRadius: 12)
                             .stroke(Color.primary, lineWidth: 2)
                     )
-                    .padding(.horizontal, 32)
                     .focused($isTextFieldFocused)
                     .onAppear {
                         isTextFieldFocused = true
                     }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 32)
+            .padding(.top, 60)
             
             Spacer()
             

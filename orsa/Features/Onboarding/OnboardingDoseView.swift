@@ -13,14 +13,11 @@ struct OnboardingDoseView: View {
     @FocusState private var isTextFieldFocused: Bool
     
     var body: some View {
-        VStack(spacing: 40) {
-            Spacer()
-            
+        VStack(spacing: 0) {
             VStack(alignment: .leading, spacing: 20) {
                 Text("nice, what's your usual dose?")
                     .font(.oscineLargeTitle)
                     .foregroundColor(.primary)
-                    .padding(.horizontal, 32)
                 
                 HStack(spacing: 12) {
                     TextField("18.0", text: $defaultDose)
@@ -40,8 +37,10 @@ struct OnboardingDoseView: View {
                         .font(.oscineRegular(size: 17))
                         .foregroundColor(.primary.opacity(0.7))
                 }
-                .padding(.horizontal, 32)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 32)
+            .padding(.top, 60)
             
             Spacer()
             

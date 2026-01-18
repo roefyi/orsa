@@ -11,10 +11,8 @@ struct OnboardingIntroView: View {
     let onNext: () -> Void
     
     var body: some View {
-        VStack(spacing: 40) {
-            Spacer()
-            
-            VStack(spacing: 20) {
+        VStack(spacing: 0) {
+            VStack(alignment: .leading, spacing: 20) {
                 Text("this is Orsa")
                     .font(.oscineLargeTitle)
                     .foregroundColor(.primary)
@@ -23,6 +21,9 @@ struct OnboardingIntroView: View {
                     .font(.oscineTitle2)
                     .foregroundColor(.secondaryText)
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal, 32)
+            .padding(.top, 60)
             
             Spacer()
             
