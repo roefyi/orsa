@@ -12,14 +12,23 @@ struct OnboardingIntroView: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            VStack(alignment: .leading, spacing: 20) {
-                Text("this is Orsa")
-                    .font(.oscineLargeTitle)
+            VStack(alignment: .leading, spacing: 30) {
+                // App Icon placeholder - using coffee beans icon
+                Image("BeansIcon")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 80, height: 80)
                     .foregroundColor(.primary)
                 
-                Text("the simple coffee journal")
-                    .font(.oscineTitle2)
-                    .foregroundColor(.secondaryText)
+                VStack(alignment: .leading, spacing: 20) {
+                    Text("this is Orsa")
+                        .font(.oscineLargeTitle)
+                        .foregroundColor(.primary)
+                    
+                    Text("the simple coffee journal")
+                        .font(.oscineTitle2)
+                        .foregroundColor(.secondaryText)
+                }
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             .padding(.horizontal, 32)

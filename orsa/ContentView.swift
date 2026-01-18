@@ -13,6 +13,7 @@ struct ContentView: View {
     @AppStorage("onboardingCompleted") private var onboardingCompleted = false
     @AppStorage("appearanceMode") private var appearanceMode: String = "system"
     @Environment(\.modelContext) private var modelContext
+    @State private var showSplash = true
     
     var colorScheme: ColorScheme? {
         switch appearanceMode {
@@ -39,6 +40,13 @@ struct ContentView: View {
                         onboardingCompleted = true
                     })
                 }
+            }
+            
+            // Splash screen overlay
+            if showSplash {
+                SplashScreenView(showSplash: $showSplash)
+                    .transition(.opacity)
+                    .zIndex(1)
             }
         }
         .preferredColorScheme(colorScheme)
