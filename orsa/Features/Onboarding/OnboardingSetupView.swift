@@ -26,7 +26,7 @@ struct OnboardingSetupView: View {
                     .foregroundColor(.primary)
                 
                 Text("what's your main setup?")
-                    .font(.oscineTitle3)
+                    .font(.oscineRegular(size: 20))
                     .foregroundColor(.secondaryText)
                 
                 VStack(spacing: 16) {

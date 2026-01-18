@@ -18,7 +18,7 @@ struct OnboardingIntroView: View {
                     .foregroundColor(.primary)
                 
                 Text("the simple coffee journal")
-                    .font(.oscineTitle2)
+                    .font(.oscineRegular(size: 22))
                     .foregroundColor(.secondaryText)
             }
             .frame(maxWidth: .infinity, alignment: .leading)
