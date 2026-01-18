@@ -24,11 +24,11 @@ extension Font {
         return .custom("OscineTrial-XBold", size: size)  // Confirmed PostScript name
     }
     
-    // Titles (ExtraBold)
+    // Titles (ExtraBold for main titles, Regular for subtitles)
     static let oscineLargeTitle = oscineExtraBold(size: 34)
     static let oscineTitle = oscineExtraBold(size: 28)
-    static let oscineTitle2 = oscineExtraBold(size: 22)
-    static let oscineTitle3 = oscineExtraBold(size: 20)
+    static let oscineTitle2 = oscineRegular(size: 22)
+    static let oscineTitle3 = oscineRegular(size: 20)
     
     // Headings (Bold)
     static let oscineHeadline = oscineBold(size: 17)
