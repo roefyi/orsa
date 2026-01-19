@@ -17,18 +17,12 @@ struct SplashScreenView: View {
                 Color.appBackground
                     .ignoresSafeArea()
                 
-                VStack(spacing: 20) {
-                    // App Icon
-                    Image("AppIconImage")
+                VStack(spacing: 0) {
+                    // Splash Screen Icon
+                    Image("orsasplashscreen")
                         .resizable()
                         .aspectRatio(contentMode: .fit)
                         .frame(width: 120, height: 120)
-                        .cornerRadius(26.4) // iOS app icon corner radius
-                        .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: 5)
-                    
-                    Text("orsa")
-                        .font(.oscineBold(size: 34))
-                        .foregroundColor(.primary)
                 }
                 .scaleEffect(isActive ? 1.0 : 0.8)
                 .opacity(isActive ? 1.0 : 0.0)
