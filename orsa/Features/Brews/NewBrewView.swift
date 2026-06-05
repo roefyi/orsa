@@ -67,23 +67,12 @@ struct NewBrewView: View {
                     
                     VStack(spacing: 16) {
                         // Brew Details Section
-                        VStack(alignment: .leading, spacing: 12) {
+                        VStack(alignment: .leading, spacing: 16) {
                             Text("brew details")
                                 .font(.oscineHeadline)
                                 .foregroundColor(.primary)
                                 .textCase(.lowercase)
                             
-                            // Time Slider
-                            CustomSlider(
-                                title: "Time",
-                                value: $brewTime,
-                                in: 15...75,
-                                step: 1,
-                                suffix: "s"
-                            )
-                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                            
-                            // Yield Slider
                             CustomSlider(
                                 title: "Yield",
                                 value: $yield,
@@ -91,7 +80,14 @@ struct NewBrewView: View {
                                 step: 1,
                                 suffix: yieldUnit == "ml" ? "ml" : "g"
                             )
-                            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+                            
+                            CustomSlider(
+                                title: "Time",
+                                value: $brewTime,
+                                in: 15...75,
+                                step: 1,
+                                suffix: "s"
+                            )
                         }
                         
                         // Rating Section
@@ -101,157 +97,10 @@ struct NewBrewView: View {
                                 .foregroundColor(.primary)
                                 .textCase(.lowercase)
                             
-                            HStack(spacing: 12) {
-                                // Thumbs down
-                                Group {
-                                    if selectedRating == 1 {
-                                        Text("👎")
-                                            .font(.system(size: 24))
-                                    } else {
-                                        Image(systemName: "hand.thumbsdown")
-                                            .font(.system(size: 20, weight: .medium))
-                                            .foregroundColor(.secondary)
-                                    }
-                                }
-                                .frame(width: 60, height: 60)
-                                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    if !longPressJustCompleted && selectedRating != 1 {
-                                        HapticFeedback.light()
-                                        selectedRating = 1
-                                    }
-                                    longPressJustCompleted = false
-                                }
-                                .onLongPressGesture(minimumDuration: 0.5) {
-                                    if selectedRating == 1 {
-                                        longPressJustCompleted = true
-                                        HapticFeedback.medium()
-                                        selectedRating = nil
-                                        // Reset flag after a short delay to allow tap gestures to work again
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                            longPressJustCompleted = false
-                                        }
-                                    }
-                                }
-                                
-                                // Neutral face
-                                Group {
-                                    if selectedRating == 3 {
-                                        Text("😐")
-                                            .font(.system(size: 24))
-                                    } else {
-                                        // Create a simple neutral face outline matching other icons
-                                        ZStack {
-                                            Circle()
-                                                .stroke(Color.secondary, lineWidth: 2)
-                                                .frame(width: 20, height: 20)
-                                            // Eyes - using primary with opacity to match stroke weight
-                                            HStack(spacing: 4) {
-                                                Circle()
-                                                    .fill(Color.primary.opacity(0.6))
-                                                    .frame(width: 2.5, height: 2.5)
-                                                Circle()
-                                                    .fill(Color.primary.opacity(0.6))
-                                                    .frame(width: 2.5, height: 2.5)
-                                            }
-                                            .offset(y: -2)
-                                            // Mouth (straight line) - using primary with opacity to match stroke weight
-                                            Rectangle()
-                                                .fill(Color.primary.opacity(0.6))
-                                                .frame(width: 8, height: 2)
-                                                .offset(y: 4)
-                                        }
-                                    }
-                                }
-                                .frame(width: 60, height: 60)
-                                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    if !longPressJustCompleted && selectedRating != 3 {
-                                        HapticFeedback.light()
-                                        selectedRating = 3
-                                    }
-                                    longPressJustCompleted = false
-                                }
-                                .onLongPressGesture(minimumDuration: 0.5) {
-                                    if selectedRating == 3 {
-                                        longPressJustCompleted = true
-                                        HapticFeedback.medium()
-                                        selectedRating = nil
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                            longPressJustCompleted = false
-                                        }
-                                    }
-                                }
-                                
-                                // Thumbs up
-                                Group {
-                                    if selectedRating == 4 {
-                                        Text("👍")
-                                            .font(.system(size: 24))
-                                    } else {
-                                        Image(systemName: "hand.thumbsup")
-                                            .font(.system(size: 20, weight: .medium))
-                                            .foregroundColor(.secondary)
-                                    }
-                                }
-                                .frame(width: 60, height: 60)
-                                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    if !longPressJustCompleted && selectedRating != 4 {
-                                        HapticFeedback.light()
-                                        selectedRating = 4
-                                    }
-                                    longPressJustCompleted = false
-                                }
-                                .onLongPressGesture(minimumDuration: 0.5) {
-                                    if selectedRating == 4 {
-                                        longPressJustCompleted = true
-                                        HapticFeedback.medium()
-                                        selectedRating = nil
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                            longPressJustCompleted = false
-                                        }
-                                    }
-                                }
-                                
-                                // Heart
-                                Group {
-                                    if selectedRating == 5 {
-                                        Text("❤️")
-                                            .font(.system(size: 24))
-                                    } else {
-                                        Image(systemName: "heart")
-                                            .font(.system(size: 20, weight: .medium))
-                                            .foregroundColor(.secondary)
-                                    }
-                                }
-                                .frame(width: 60, height: 60)
-                                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                                .contentShape(Rectangle())
-                                .onTapGesture {
-                                    if !longPressJustCompleted && selectedRating != 5 {
-                                        HapticFeedback.light()
-                                        selectedRating = 5
-                                    }
-                                    longPressJustCompleted = false
-                                }
-                                .onLongPressGesture(minimumDuration: 0.5) {
-                                    if selectedRating == 5 {
-                                        longPressJustCompleted = true
-                                        HapticFeedback.medium()
-                                        selectedRating = nil
-                                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                                            longPressJustCompleted = false
-                                        }
-                                    }
-                                }
-                                
-                                Spacer()
-                            }
-                            .frame(maxWidth: .infinity, alignment: .leading)
+                            BrewRatingPickerRow(
+                                selectedRating: $selectedRating,
+                                longPressJustCompleted: $longPressJustCompleted
+                            )
                         }
                         
                         // Notes Section

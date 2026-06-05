@@ -86,7 +86,7 @@ struct OnboardingSetupView: View {
         }
         .background(Color.appBackground)
         .onTapGesture {
-            focusedField = nil
+            KeyboardDismissal.dismiss()
         }
     }
 }

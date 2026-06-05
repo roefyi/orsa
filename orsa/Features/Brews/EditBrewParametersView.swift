@@ -128,7 +128,7 @@ struct EditBrewParametersView: View {
                 
                 // Temperature
                 TextField("Temperature", text: $temperature)
-                    .keyboardType(.decimalPad)
+                    .keyboardType(.numberPad)
                 
                 // Grind Size
                 TextField("Grind Size", text: $grindSetting)

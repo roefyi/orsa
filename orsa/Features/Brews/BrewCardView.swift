@@ -23,42 +23,7 @@ struct BrewCardView: View {
     @ViewBuilder
     private var ratingIcon: some View {
         if let rating = brew.rating {
-            Group {
-                switch rating {
-                case 1:
-                    Image(systemName: "hand.thumbsdown.fill")
-                case 3:
-                    // Custom neutral face (filled style matching other icons)
-                    ZStack {
-                        Circle()
-                            .fill(Color(.label))
-                            .frame(width: 16, height: 16)
-                        // Eyes
-                        HStack(spacing: 3) {
-                            Circle()
-                                .fill(Color(.systemBackground))
-                                .frame(width: 2, height: 2)
-                            Circle()
-                                .fill(Color(.systemBackground))
-                                .frame(width: 2, height: 2)
-                        }
-                        .offset(y: -2)
-                        // Mouth (straight line)
-                        Rectangle()
-                            .fill(Color(.systemBackground))
-                            .frame(width: 6, height: 1.5)
-                            .offset(y: 3)
-                    }
-                case 4:
-                    Image(systemName: "hand.thumbsup.fill")
-                case 5:
-                    Image(systemName: "heart.fill")
-                default:
-                    EmptyView()
-                }
-            }
-            .font(.system(size: 16))
-            .foregroundColor(.primary)
+            BrewRatingListIcon(rating: rating)
         }
     }
     
