@@ -8,6 +8,292 @@
 import SwiftUI
 import SwiftData
 import UIKit
+import PhotosUI
+
+enum BrewShareExport {
+    static let canvasWidth: CGFloat = 360
+    static let canvasHeight: CGFloat = 640
+    static let renderScale: CGFloat = 3.0
+    static let cardAspectRatio: CGFloat = 433.0 / 362.0
+    static let cardHorizontalPadding: CGFloat = 24
+}
+
+enum BrewShareChrome {
+    static let horizontalPadding: CGFloat = 20
+    static let topPadding: CGFloat = 8
+    static let topBarBottomPadding: CGFloat = 16
+    static let bottomActionTopPadding: CGFloat = 24
+    static let bottomActionBottomPadding: CGFloat = 12
+}
+
+struct BrewShareDismissButton: View {
+    let action: () -> Void
+    
+    var body: some View {
+        Button {
+            HapticFeedback.light()
+            action()
+        } label: {
+            Image(systemName: "xmark")
+                .font(.system(size: 16, weight: .semibold))
+                .foregroundColor(.primary)
+                .frame(width: 32, height: 32)
+                .background(.ultraThinMaterial, in: Circle())
+        }
+    }
+}
+
+struct BrewShareTopBar: View {
+    let onDismiss: () -> Void
+    
+    var body: some View {
+        HStack {
+            BrewShareDismissButton(action: onDismiss)
+            Spacer()
+        }
+        .padding(.horizontal, BrewShareChrome.horizontalPadding)
+    }
+}
+
+struct BrewShareBottomActionButton: View {
+    let title: String
+    let action: () -> Void
+    
+    var body: some View {
+        Button(action: action) {
+            Text(title)
+        }
+        .buttonStyle(.secondary)
+        .padding(.horizontal, BrewShareChrome.horizontalPadding)
+        .padding(.top, BrewShareChrome.bottomActionTopPadding)
+        .padding(.bottom, BrewShareChrome.bottomActionBottomPadding)
+    }
+}
+
+enum ShareDefaultCardStyle {
+    case yellow
+    case inverted
+    
+    var textColor: Color {
+        switch self {
+        case .yellow:
+            return Color(red: 30/255.0, green: 30/255.0, blue: 30/255.0)
+        case .inverted:
+            return AppColors.buttonYellow
+        }
+    }
+    
+    var gradient: LinearGradient {
+        switch self {
+        case .yellow:
+            return AppGradients.shareYellow
+        case .inverted:
+            return AppGradients.shareBlack
+        }
+    }
+    
+    var toggled: ShareDefaultCardStyle {
+        self == .yellow ? .inverted : .yellow
+    }
+}
+
+enum ShareOverlayTextColor: String, CaseIterable, Identifiable {
+    case black
+    case white
+    case yellow
+    
+    var id: String { rawValue }
+    
+    var color: Color {
+        switch self {
+        case .black:
+            return Color(red: 30/255.0, green: 30/255.0, blue: 30/255.0)
+        case .white:
+            return .white
+        case .yellow:
+            return AppColors.buttonYellow
+        }
+    }
+    
+    var swatchColor: Color { color }
+    
+    var next: ShareOverlayTextColor {
+        let options = Self.allCases
+        let index = options.firstIndex(of: self) ?? 0
+        return options[(index + 1) % options.count]
+    }
+}
+
+private extension View {
+    @ViewBuilder
+    func brewShareCardBackground(
+        style: ShareDefaultCardStyle,
+        cornerRadius: CGFloat,
+        isVisible: Bool
+    ) -> some View {
+        if isVisible {
+            background(
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .fill(style.gradient)
+            )
+        } else {
+            self
+        }
+    }
+}
+
+struct BrewSharePhotoCardView: View {
+    let image: UIImage
+    let layoutIndex: Int
+    let brew: Brew
+    let bean: Bean?
+    let formattedDate: String
+    let brewTimeDisplay: String
+    let yieldDisplay: String
+    var textColor: Color = .white
+    
+    private static let designWidth: CGFloat = 362
+    private static let designHeight: CGFloat = 433
+    private static let cornerRadius: CGFloat = 24
+    
+    var body: some View {
+        GeometryReader { proxy in
+            let scale = min(
+                proxy.size.width / Self.designWidth,
+                proxy.size.height / Self.designHeight
+            )
+            
+            ZStack {
+                Image(uiImage: image)
+                    .resizable()
+                    .scaledToFill()
+                    .frame(width: proxy.size.width, height: proxy.size.height)
+                
+                BrewShareLayoutView(
+                    layoutIndex: layoutIndex,
+                    brew: brew,
+                    bean: bean,
+                    formattedDate: formattedDate,
+                    brewTimeDisplay: brewTimeDisplay,
+                    yieldDisplay: yieldDisplay,
+                    textColor: textColor,
+                    showsCardBackground: false
+                )
+                .frame(width: Self.designWidth, height: Self.designHeight)
+                .scaleEffect(scale)
+            }
+            .frame(width: proxy.size.width, height: proxy.size.height)
+            .clipShape(RoundedRectangle(cornerRadius: Self.cornerRadius, style: .continuous))
+        }
+    }
+}
+
+struct BrewShareLayoutPager<Card: View>: View {
+    @Binding var selection: Int
+    let pageCount: Int
+    let cardWidth: CGFloat
+    let cardHeight: CGFloat
+    @ViewBuilder let card: (Int) -> Card
+    
+    @State private var scrollPosition: Int?
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                LazyHStack(spacing: 0) {
+                    ForEach(0..<pageCount, id: \.self) { index in
+                        HStack(spacing: 0) {
+                            Spacer(minLength: 0)
+                            card(index)
+                                .frame(width: cardWidth, height: cardHeight)
+                            Spacer(minLength: 0)
+                        }
+                        .containerRelativeFrame(.horizontal)
+                        .id(index)
+                    }
+                }
+                .scrollTargetLayout()
+            }
+            .scrollTargetBehavior(.paging)
+            .scrollPosition(id: $scrollPosition)
+            .scrollClipDisabled(false)
+            .frame(height: cardHeight)
+            .onAppear {
+                scrollPosition = selection
+            }
+            .onChange(of: scrollPosition) { _, newValue in
+                guard let newValue, newValue != selection else { return }
+                selection = newValue
+                HapticFeedback.light()
+            }
+            .onChange(of: selection) { _, newValue in
+                guard scrollPosition != newValue else { return }
+                withAnimation(.smooth(duration: 0.35)) {
+                    scrollPosition = newValue
+                }
+            }
+            
+            HStack(spacing: 8) {
+                ForEach(0..<pageCount, id: \.self) { index in
+                    Circle()
+                        .fill(selection == index ? Color.primary : Color.secondary.opacity(0.3))
+                        .frame(width: 8, height: 8)
+                        .animation(.smooth(duration: 0.2), value: selection)
+                }
+            }
+        }
+    }
+}
+
+struct BrewShareLayoutView: View {
+    let layoutIndex: Int
+    let brew: Brew
+    let bean: Bean?
+    let formattedDate: String
+    let brewTimeDisplay: String
+    let yieldDisplay: String
+    var textColor: Color = .black
+    var cardStyle: ShareDefaultCardStyle = .yellow
+    var showsCardBackground: Bool = true
+    
+    var body: some View {
+        switch layoutIndex {
+        case 0:
+            BrewShareCardLayout1(
+                brew: brew,
+                bean: bean,
+                formattedDate: formattedDate,
+                brewTimeDisplay: brewTimeDisplay,
+                yieldDisplay: yieldDisplay,
+                textColor: textColor,
+                cardStyle: cardStyle,
+                showsCardBackground: showsCardBackground
+            )
+        case 1:
+            BrewShareCardLayout2(
+                brew: brew,
+                bean: bean,
+                formattedDate: formattedDate,
+                brewTimeDisplay: brewTimeDisplay,
+                yieldDisplay: yieldDisplay,
+                textColor: textColor,
+                cardStyle: cardStyle,
+                showsCardBackground: showsCardBackground
+            )
+        default:
+            BrewShareCardLayout3(
+                brew: brew,
+                bean: bean,
+                formattedDate: formattedDate,
+                brewTimeDisplay: brewTimeDisplay,
+                yieldDisplay: yieldDisplay,
+                textColor: textColor,
+                cardStyle: cardStyle,
+                showsCardBackground: showsCardBackground
+            )
+        }
+    }
+}
 
 struct BrewShareCardView: View {
     let brew: Brew
@@ -19,6 +305,17 @@ struct BrewShareCardView: View {
     @Query private var userProfiles: [UserProfile]
     
     @State private var currentCardIndex = 0
+    @State private var showingMediaPicker = false
+    @State private var customBackgroundImage: UIImage?
+    @State private var customLayoutIndex = 0
+    @State private var customTextColorOption: ShareOverlayTextColor = .white
+    @State private var defaultCardStyle: ShareDefaultCardStyle = .yellow
+    @Environment(\.colorScheme) private var colorScheme
+    
+    private static let cardCount = 4
+    private static let customLayoutCount = 3
+    private var isCustomMediaCard: Bool { currentCardIndex == Self.cardCount - 1 }
+    private var isComposingCustom: Bool { customBackgroundImage != nil }
     
     var bean: Bean? {
         guard let beanID = brew.beanID else { return nil }
@@ -51,105 +348,163 @@ struct BrewShareCardView: View {
             Color.appBackground
                 .ignoresSafeArea(.all)
             
-            GeometryReader { geometry in
-                let cardWidth = max(min(geometry.size.width - 48, 400), 100) // Max 400pt, min 100pt
-                let cardHeight = max(cardWidth * 1.195, 120) // Maintain aspect ratio (433/362), min 120pt
+            VStack(spacing: 0) {
+                BrewShareTopBar(onDismiss: { dismiss() })
+                    .padding(.top, BrewShareChrome.topPadding)
+                    .padding(.bottom, BrewShareChrome.topBarBottomPadding)
                 
-                VStack(spacing: 0) {
-                    // Top bar with dismiss button only
-                    HStack {
-                        Button {
-                            HapticFeedback.light()
-                            dismiss()
-                        } label: {
-                            Image(systemName: "xmark")
-                                .font(.system(size: 16, weight: .semibold))
-                                .foregroundColor(.primary)
-                                .frame(width: 32, height: 32)
-                                .background(.ultraThinMaterial, in: Circle())
+                GeometryReader { geometry in
+                    let cardWidth = max(min(geometry.size.width - 48, 400), 100)
+                    let cardHeight = cardWidth * BrewShareExport.cardAspectRatio
+                    
+                    VStack(spacing: 0) {
+                        Spacer(minLength: 0)
+                        
+                        if isComposingCustom, let customBackgroundImage {
+                            BrewShareLayoutPager(
+                                selection: $customLayoutIndex,
+                                pageCount: Self.customLayoutCount,
+                                cardWidth: cardWidth,
+                                cardHeight: cardHeight
+                            ) { index in
+                                BrewSharePhotoCardView(
+                                    image: customBackgroundImage,
+                                    layoutIndex: index,
+                                    brew: brew,
+                                    bean: bean,
+                                    formattedDate: formattedDate,
+                                    brewTimeDisplay: brewTimeDisplay,
+                                    yieldDisplay: yieldDisplay,
+                                    textColor: customTextColorOption.color
+                                )
+                                .contentShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                                .onTapGesture {
+                                    HapticFeedback.light()
+                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                        customTextColorOption = customTextColorOption.next
+                                    }
+                                }
+                            }
+                        } else {
+                            BrewShareLayoutPager(
+                                selection: $currentCardIndex,
+                                pageCount: Self.cardCount,
+                                cardWidth: cardWidth,
+                                cardHeight: cardHeight
+                            ) { index in
+                                Group {
+                                    switch index {
+                                    case 0:
+                                        BrewShareCardLayout1(
+                                            brew: brew,
+                                            bean: bean,
+                                            formattedDate: formattedDate,
+                                            brewTimeDisplay: brewTimeDisplay,
+                                            yieldDisplay: yieldDisplay,
+                                            textColor: defaultCardStyle.textColor,
+                                            cardStyle: defaultCardStyle
+                                        )
+                                    case 1:
+                                        BrewShareCardLayout2(
+                                            brew: brew,
+                                            bean: bean,
+                                            formattedDate: formattedDate,
+                                            brewTimeDisplay: brewTimeDisplay,
+                                            yieldDisplay: yieldDisplay,
+                                            textColor: defaultCardStyle.textColor,
+                                            cardStyle: defaultCardStyle
+                                        )
+                                    case 2:
+                                        BrewShareCardLayout3(
+                                            brew: brew,
+                                            bean: bean,
+                                            formattedDate: formattedDate,
+                                            brewTimeDisplay: brewTimeDisplay,
+                                            yieldDisplay: yieldDisplay,
+                                            textColor: defaultCardStyle.textColor,
+                                            cardStyle: defaultCardStyle
+                                        )
+                                    default:
+                                        BrewShareCardLayout4()
+                                    }
+                                }
+                                .contentShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                                .onTapGesture {
+                                    guard index < Self.cardCount - 1 else { return }
+                                    HapticFeedback.light()
+                                    withAnimation(.easeInOut(duration: 0.2)) {
+                                        defaultCardStyle = defaultCardStyle.toggled
+                                    }
+                                }
+                            }
                         }
                         
-                        Spacer()
+                        Spacer(minLength: 0)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.top, geometry.safeAreaInsets.top + 8)
-                    .padding(.bottom, 16)
-                
-                Spacer()
-                
-                // Carousel
-                TabView(selection: $currentCardIndex) {
-                    // Card Layout 1 - Original
-                    BrewShareCardLayout1(
-                        brew: brew,
-                        bean: bean,
-                        formattedDate: formattedDate,
-                        brewTimeDisplay: brewTimeDisplay,
-                        yieldDisplay: yieldDisplay
-                    )
-                    .frame(width: cardWidth, height: cardHeight)
-                    .tag(0)
-                    
-                    // Card Layout 2 - Centered
-                    BrewShareCardLayout2(
-                        brew: brew,
-                        bean: bean,
-                        formattedDate: formattedDate,
-                        brewTimeDisplay: brewTimeDisplay,
-                        yieldDisplay: yieldDisplay
-                    )
-                    .frame(width: cardWidth, height: cardHeight)
-                    .tag(1)
-                    
-                    // Card Layout 3 - Bottom Aligned
-                    BrewShareCardLayout3(
-                        brew: brew,
-                        bean: bean,
-                        formattedDate: formattedDate,
-                        brewTimeDisplay: brewTimeDisplay,
-                        yieldDisplay: yieldDisplay
-                    )
-                    .frame(width: cardWidth, height: cardHeight)
-                    .tag(2)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                 }
-                .tabViewStyle(.page(indexDisplayMode: .never))
-                .frame(height: cardHeight)
-                .frame(maxWidth: .infinity)
                 
-                Spacer()
-                
-                // Page indicator dots
-                HStack(spacing: 8) {
-                    ForEach(0..<3, id: \.self) { index in
-                        Circle()
-                            .fill(currentCardIndex == index ? Color.primary : Color.secondary.opacity(0.3))
-                            .frame(width: 8, height: 8)
-                            .animation(.easeInOut(duration: 0.2), value: currentCardIndex)
+                if isComposingCustom {
+                    BrewShareBottomActionButton(title: "done") {
+                        HapticFeedback.medium()
+                        exportCustomComposition()
                     }
-                }
-                .padding(.top, 16)
-                
-                Spacer()
-                
-                // Share button below card
-                Button {
-                    HapticFeedback.light()
-                    generateShareImage { image in
-                        if let image = image {
-                            self.presentShareSheet(with: image)
+                } else if isCustomMediaCard {
+                    BrewShareBottomActionButton(title: "create") {
+                        HapticFeedback.light()
+                        showingMediaPicker = true
+                    }
+                } else {
+                    BrewShareBottomActionButton(title: "share") {
+                        HapticFeedback.light()
+                        generateShareImage { image in
+                            if let image = image {
+                                self.presentShareSheet(with: image)
+                            }
                         }
                     }
-                } label: {
-                    Text("share")
-                        .font(.oscineHeadline)
-                        .foregroundColor(.primary)
-                        .frame(maxWidth: .infinity)
-                        .padding()
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 24)
-                .padding(.bottom, geometry.safeAreaInsets.bottom + 20)
-                }
+            }
+        }
+        .sheet(isPresented: $showingMediaPicker) {
+            BrewSharePhotoPicker { image in
+                customBackgroundImage = image
+                customLayoutIndex = 0
+                customTextColorOption = .white
+            }
+        }
+    }
+    
+    private func exportCustomComposition() {
+        guard let customBackgroundImage else { return }
+        
+        let cardWidth = BrewShareExport.canvasWidth - BrewShareExport.cardHorizontalPadding * 2
+        let cardHeight = cardWidth * BrewShareExport.cardAspectRatio
+        
+        let finalView = ZStack {
+            Color.appBackground
+            
+            BrewSharePhotoCardView(
+                image: customBackgroundImage,
+                layoutIndex: customLayoutIndex,
+                brew: brew,
+                bean: bean,
+                formattedDate: formattedDate,
+                brewTimeDisplay: brewTimeDisplay,
+                yieldDisplay: yieldDisplay,
+                textColor: customTextColorOption.color
+            )
+            .frame(width: cardWidth, height: cardHeight)
+        }
+        .frame(width: BrewShareExport.canvasWidth, height: BrewShareExport.canvasHeight)
+        .environment(\.colorScheme, colorScheme)
+        
+        let renderer = ImageRenderer(content: finalView)
+        renderer.scale = BrewShareExport.renderScale
+        
+        DispatchQueue.main.async {
+            if let image = renderer.uiImage {
+                self.presentShareSheet(with: image)
             }
         }
     }
@@ -159,8 +514,11 @@ struct BrewShareCardView: View {
             print("Failed to convert image to PNG data")
             return
         }
-        
-        let activityVC = UIActivityViewController(activityItems: [pngData], applicationActivities: nil)
+        presentShareSheet(items: [pngData])
+    }
+    
+    private func presentShareSheet(items: [Any]) {
+        let activityVC = UIActivityViewController(activityItems: items, applicationActivities: nil)
         activityVC.excludedActivityTypes = []
         
         // Find the topmost view controller to present from
@@ -188,38 +546,108 @@ struct BrewShareCardView: View {
     }
     
     private func generateShareImage(completion: @escaping (UIImage?) -> Void) {
-        // Create a snapshot of the current card layout - exact dimensions 433h x 362w, no corner radius for export
-        let cardView: AnyView
+        let cardWidth = BrewShareExport.canvasWidth - BrewShareExport.cardHorizontalPadding * 2
+        let cardHeight = cardWidth * BrewShareExport.cardAspectRatio
         
-        if currentCardIndex == 0 {
-            cardView = AnyView(
-                BrewShareCardContent(brew: brew, bean: bean, formattedDate: formattedDate, brewTimeDisplay: brewTimeDisplay, yieldDisplay: yieldDisplay, cornerRadius: 0)
-                    .frame(width: 362, height: 433)
-            )
-        } else if currentCardIndex == 1 {
-            cardView = AnyView(
-                BrewShareCardContent2(brew: brew, bean: bean, formattedDate: formattedDate, brewTimeDisplay: brewTimeDisplay, yieldDisplay: yieldDisplay, cornerRadius: 0)
-                    .frame(width: 362, height: 433)
-            )
-        } else {
-            cardView = AnyView(
-                BrewShareCardContent3(brew: brew, bean: bean, formattedDate: formattedDate, brewTimeDisplay: brewTimeDisplay, yieldDisplay: yieldDisplay, cornerRadius: 0)
-                    .frame(width: 362, height: 433)
-            )
+        let cardView = BrewShareLayoutView(
+            layoutIndex: currentCardIndex,
+            brew: brew,
+            bean: bean,
+            formattedDate: formattedDate,
+            brewTimeDisplay: brewTimeDisplay,
+            yieldDisplay: yieldDisplay,
+            textColor: defaultCardStyle.textColor,
+            cardStyle: defaultCardStyle
+        )
+        .frame(width: cardWidth, height: cardHeight)
+        
+        let finalView = ZStack {
+            Color.appBackground
+            cardView
         }
+        .frame(width: BrewShareExport.canvasWidth, height: BrewShareExport.canvasHeight)
+        .environment(\.colorScheme, colorScheme)
         
-        let finalView = cardView.environment(\.colorScheme, .light) // Force light mode for consistent rendering
-        
-        // Use ImageRenderer for proper SwiftUI rendering (iOS 16+)
         let renderer = ImageRenderer(content: finalView)
-        // Use display scale (3x for retina, 2x for standard) - defaults to screen scale automatically
-        renderer.scale = 3.0 // High quality for sharing
+        renderer.scale = BrewShareExport.renderScale
         
         DispatchQueue.main.async {
-            if let uiImage = renderer.uiImage {
-                completion(uiImage)
-            } else {
-                completion(nil)
+            completion(renderer.uiImage)
+        }
+    }
+}
+
+// Card Layout 4 - Custom image/video
+struct BrewShareCardLayout4: View {
+    var body: some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 24, style: .continuous)
+                .fill(Color.cardBackground)
+            
+            VStack(spacing: 16) {
+                Image(systemName: "photo.on.rectangle.angled")
+                    .font(.system(size: 44, weight: .light))
+                    .foregroundColor(.primary)
+                
+                Text("use your own image/video")
+                    .font(.oscineHeadline)
+                    .foregroundColor(.primary)
+                    .multilineTextAlignment(.center)
+            }
+            .padding(.horizontal, 28)
+            .padding(.vertical, 40)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .overlay {
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .stroke(
+                        Color.primary.opacity(0.35),
+                        style: StrokeStyle(lineWidth: 2, dash: [10, 8])
+                    )
+                    .padding(20)
+            }
+        }
+    }
+}
+
+struct BrewSharePhotoPicker: UIViewControllerRepresentable {
+    let onImage: (UIImage) -> Void
+    @Environment(\.dismiss) private var dismiss
+    
+    func makeUIViewController(context: Context) -> PHPickerViewController {
+        var configuration = PHPickerConfiguration(photoLibrary: .shared())
+        configuration.filter = .images
+        configuration.selectionLimit = 1
+        let picker = PHPickerViewController(configuration: configuration)
+        picker.delegate = context.coordinator
+        return picker
+    }
+    
+    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
+    
+    func makeCoordinator() -> Coordinator {
+        Coordinator(self)
+    }
+    
+    final class Coordinator: NSObject, PHPickerViewControllerDelegate {
+        let parent: BrewSharePhotoPicker
+        
+        init(_ parent: BrewSharePhotoPicker) {
+            self.parent = parent
+        }
+        
+        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+            parent.dismiss()
+            
+            guard let itemProvider = results.first?.itemProvider,
+                  itemProvider.canLoadObject(ofClass: UIImage.self) else {
+                return
+            }
+            
+            itemProvider.loadObject(ofClass: UIImage.self) { object, _ in
+                guard let image = object as? UIImage else { return }
+                DispatchQueue.main.async {
+                    self.parent.onImage(image)
+                }
             }
         }
     }
@@ -232,6 +660,9 @@ struct BrewShareCardLayout1: View {
     let formattedDate: String
     let brewTimeDisplay: String
     let yieldDisplay: String
+    var textColor: Color = .black
+    var cardStyle: ShareDefaultCardStyle = .yellow
+    var showsCardBackground: Bool = true
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -239,13 +670,13 @@ struct BrewShareCardLayout1: View {
             HStack {
                 Text("orsa")
                     .font(.oscineBold(size: 24))
-                    .foregroundColor(.black)
+                    .foregroundColor(textColor)
                 
                 Spacer()
                 
                 Text(formattedDate)
                     .font(.oscineRegular(size: 14))
-                    .foregroundColor(.black)
+                    .foregroundColor(textColor)
             }
             
             Spacer()
@@ -255,29 +686,29 @@ struct BrewShareCardLayout1: View {
                 VStack(alignment: .leading, spacing: 2) {
                     Text(brewTimeDisplay)
                         .font(.oscineBold(size: 32))
-                        .foregroundColor(.black)
+                        .foregroundColor(textColor)
                     Text("Time")
                         .font(.oscineRegular(size: 11))
-                        .foregroundColor(.black)
+                        .foregroundColor(textColor)
                 }
                 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(yieldDisplay)
                         .font(.oscineBold(size: 32))
-                        .foregroundColor(.black)
+                        .foregroundColor(textColor)
                     Text("Yield")
                         .font(.oscineRegular(size: 11))
-                        .foregroundColor(.black)
+                        .foregroundColor(textColor)
                 }
                 
                 if brew.dose > 0 {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("\(Int(brew.dose))g")
                             .font(.oscineBold(size: 32))
-                            .foregroundColor(.black)
+                            .foregroundColor(textColor)
                         Text("Dose")
                             .font(.oscineRegular(size: 11))
-                            .foregroundColor(.black)
+                            .foregroundColor(textColor)
                     }
                 }
                 
@@ -289,10 +720,10 @@ struct BrewShareCardLayout1: View {
                     VStack(alignment: .leading, spacing: 2) {
                         Text("\(Int(brew.temperature))°")
                             .font(.oscineBold(size: 32))
-                            .foregroundColor(.black)
+                            .foregroundColor(textColor)
                         Text("Temp")
                             .font(.oscineRegular(size: 11))
-                            .foregroundColor(.black)
+                            .foregroundColor(textColor)
                     }
                 }
                 
@@ -300,10 +731,10 @@ struct BrewShareCardLayout1: View {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(brew.grindSetting)
                             .font(.oscineBold(size: 32))
-                            .foregroundColor(.black)
+                            .foregroundColor(textColor)
                         Text("Grind")
                             .font(.oscineRegular(size: 11))
-                            .foregroundColor(.black)
+                            .foregroundColor(textColor)
                     }
                 }
                 
@@ -317,38 +748,25 @@ struct BrewShareCardLayout1: View {
             VStack(alignment: .leading, spacing: 4) {
                 Text(brew.drinkType)
                     .font(.oscineBold(size: 24))
-                    .foregroundColor(.black)
+                    .foregroundColor(textColor)
                 
                 // Coffee name
                 if let bean = bean {
                     Text(bean.coffeeName)
                         .font(.oscineBold(size: 32))
-                        .foregroundColor(.black)
+                        .foregroundColor(textColor)
                     
                     if !bean.roaster.isEmpty {
                         Text("by \(bean.roaster)")
                             .font(.oscineRegular(size: 16))
-                            .foregroundColor(.black)
+                            .foregroundColor(textColor)
                     }
                 }
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding(24)
-        .background(
-            RoundedRectangle(cornerRadius: 24)
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            Color(red: 1.0, green: 0.75, blue: 0.0),
-                            Color(red: 1.0, green: 0.85, blue: 0.0),
-                            Color(red: 1.0, green: 0.95, blue: 0.3)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-        )
+        .brewShareCardBackground(style: cardStyle, cornerRadius: 24, isVisible: showsCardBackground)
     }
 }
 
@@ -359,6 +777,9 @@ struct BrewShareCardLayout2: View {
     let formattedDate: String
     let brewTimeDisplay: String
     let yieldDisplay: String
+    var textColor: Color = .black
+    var cardStyle: ShareDefaultCardStyle = .yellow
+    var showsCardBackground: Bool = true
     
     var body: some View {
         VStack(alignment: .center, spacing: 0) {
@@ -367,7 +788,7 @@ struct BrewShareCardLayout2: View {
                 Spacer()
                 Text(formattedDate)
                     .font(.oscineRegular(size: 14))
-                    .foregroundColor(.black)
+                    .foregroundColor(textColor)
                 Spacer()
             }
             
@@ -376,7 +797,7 @@ struct BrewShareCardLayout2: View {
             // Centered drink type
             Text(brew.drinkType)
                 .font(.oscineBold(size: 24))
-                .foregroundColor(.black)
+                .foregroundColor(textColor)
                 .multilineTextAlignment(.center)
             
             Spacer()
@@ -387,29 +808,29 @@ struct BrewShareCardLayout2: View {
                 VStack(alignment: .center, spacing: 2) {
                     Text(brewTimeDisplay)
                         .font(.oscineBold(size: 32))
-                        .foregroundColor(.black)
+                        .foregroundColor(textColor)
                     Text("Time")
                         .font(.oscineRegular(size: 11))
-                        .foregroundColor(.black)
+                        .foregroundColor(textColor)
                 }
                 
                 VStack(alignment: .center, spacing: 2) {
                     Text(yieldDisplay)
                         .font(.oscineBold(size: 32))
-                        .foregroundColor(.black)
+                        .foregroundColor(textColor)
                     Text("Yield")
                         .font(.oscineRegular(size: 11))
-                        .foregroundColor(.black)
+                        .foregroundColor(textColor)
                 }
                 
                 if brew.dose > 0 {
                     VStack(alignment: .center, spacing: 2) {
                         Text("\(Int(brew.dose))g")
                             .font(.oscineBold(size: 32))
-                            .foregroundColor(.black)
+                            .foregroundColor(textColor)
                         Text("Dose")
                             .font(.oscineRegular(size: 11))
-                            .foregroundColor(.black)
+                            .foregroundColor(textColor)
                     }
                 }
             }
@@ -422,10 +843,10 @@ struct BrewShareCardLayout2: View {
                     VStack(alignment: .center, spacing: 2) {
                         Text("\(Int(brew.temperature))°")
                             .font(.oscineBold(size: 32))
-                            .foregroundColor(.black)
+                            .foregroundColor(textColor)
                         Text("Temp")
                             .font(.oscineRegular(size: 11))
-                            .foregroundColor(.black)
+                            .foregroundColor(textColor)
                     }
                 }
                 
@@ -433,10 +854,10 @@ struct BrewShareCardLayout2: View {
                     VStack(alignment: .center, spacing: 2) {
                         Text(brew.grindSetting)
                             .font(.oscineBold(size: 32))
-                            .foregroundColor(.black)
+                            .foregroundColor(textColor)
                         Text("Grind")
                             .font(.oscineRegular(size: 11))
-                            .foregroundColor(.black)
+                            .foregroundColor(textColor)
                     }
                 }
             }
@@ -446,24 +867,11 @@ struct BrewShareCardLayout2: View {
             // Bottom - orsa branding
             Text("orsa")
                 .font(.oscineBold(size: 24))
-                .foregroundColor(.black)
+                .foregroundColor(textColor)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .padding(24)
-        .background(
-            RoundedRectangle(cornerRadius: 24)
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            Color(red: 1.0, green: 0.75, blue: 0.0),
-                            Color(red: 1.0, green: 0.85, blue: 0.0),
-                            Color(red: 1.0, green: 0.95, blue: 0.3)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-        )
+        .brewShareCardBackground(style: cardStyle, cornerRadius: 24, isVisible: showsCardBackground)
     }
 }
 
@@ -474,6 +882,9 @@ struct BrewShareCardLayout3: View {
     let formattedDate: String
     let brewTimeDisplay: String
     let yieldDisplay: String
+    var textColor: Color = .black
+    var cardStyle: ShareDefaultCardStyle = .yellow
+    var showsCardBackground: Bool = true
     
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
@@ -481,13 +892,13 @@ struct BrewShareCardLayout3: View {
             HStack {
                 Text("orsa")
                     .font(.oscineBold(size: 24))
-                    .foregroundColor(.black)
+                    .foregroundColor(textColor)
                 
                 Spacer()
                 
                 Text(formattedDate)
                     .font(.oscineRegular(size: 14))
-                    .foregroundColor(.black)
+                    .foregroundColor(textColor)
             }
             
             Spacer()
@@ -498,12 +909,12 @@ struct BrewShareCardLayout3: View {
                 HStack(alignment: .firstTextBaseline, spacing: 4) {
                     Text(brew.drinkType)
                         .font(.oscineBold(size: 24))
-                        .foregroundColor(.black)
+                        .foregroundColor(textColor)
                     
                     if let bean = bean {
                         Text(bean.coffeeName)
                             .font(.oscineRegular(size: 16))
-                            .foregroundColor(.black)
+                            .foregroundColor(textColor)
                     }
                 }
                 
@@ -515,24 +926,24 @@ struct BrewShareCardLayout3: View {
                     VStack(alignment: .leading, spacing: 2) {
                         Text(brewTimeDisplay)
                             .font(.oscineBold(size: 24))
-                            .foregroundColor(.black)
+                            .foregroundColor(textColor)
                             .minimumScaleFactor(0.6)
                             .lineLimit(1)
                         Text("Time")
                             .font(.oscineRegular(size: 11))
-                            .foregroundColor(.black)
+                            .foregroundColor(textColor)
                     }
                     .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                     
                     VStack(alignment: .leading, spacing: 2) {
                         Text(yieldDisplay)
                             .font(.oscineBold(size: 24))
-                            .foregroundColor(.black)
+                            .foregroundColor(textColor)
                             .minimumScaleFactor(0.6)
                             .lineLimit(1)
                         Text("Yield")
                             .font(.oscineRegular(size: 11))
-                            .foregroundColor(.black)
+                            .foregroundColor(textColor)
                     }
                     .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                     
@@ -540,12 +951,12 @@ struct BrewShareCardLayout3: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("\(Int(brew.dose))g")
                                 .font(.oscineBold(size: 24))
-                                .foregroundColor(.black)
+                                .foregroundColor(textColor)
                                 .minimumScaleFactor(0.6)
                                 .lineLimit(1)
                             Text("Dose")
                                 .font(.oscineRegular(size: 11))
-                                .foregroundColor(.black)
+                                .foregroundColor(textColor)
                         }
                         .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                     }
@@ -554,12 +965,12 @@ struct BrewShareCardLayout3: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(brew.grindSetting)
                                 .font(.oscineBold(size: 24))
-                                .foregroundColor(.black)
+                                .foregroundColor(textColor)
                                 .minimumScaleFactor(0.6)
                                 .lineLimit(1)
                             Text("Grind")
                                 .font(.oscineRegular(size: 11))
-                                .foregroundColor(.black)
+                                .foregroundColor(textColor)
                         }
                         .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                     }
@@ -568,12 +979,12 @@ struct BrewShareCardLayout3: View {
                         VStack(alignment: .leading, spacing: 2) {
                             Text("\(Int(brew.temperature))°")
                                 .font(.oscineBold(size: 24))
-                                .foregroundColor(.black)
+                                .foregroundColor(textColor)
                                 .minimumScaleFactor(0.6)
                                 .lineLimit(1)
                             Text("Temp")
                                 .font(.oscineRegular(size: 11))
-                                .foregroundColor(.black)
+                                .foregroundColor(textColor)
                         }
                         .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
                     }
@@ -582,400 +993,7 @@ struct BrewShareCardLayout3: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
         .padding(24)
-        .background(
-            RoundedRectangle(cornerRadius: 24)
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            Color(red: 1.0, green: 0.75, blue: 0.0),
-                            Color(red: 1.0, green: 0.85, blue: 0.0),
-                            Color(red: 1.0, green: 0.95, blue: 0.3)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-        )
-    }
-}
-
-// Card content for rendering
-struct BrewShareCardContent: View {
-    let brew: Brew
-    let bean: Bean?
-    let formattedDate: String
-    let brewTimeDisplay: String
-    let yieldDisplay: String
-    let cornerRadius: CGFloat
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Top header - orsa and date
-            HStack {
-                Text("orsa")
-                    .font(.oscineBold(size: 24))
-                    .foregroundColor(.black)
-                
-                Spacer()
-                
-                Text(formattedDate)
-                    .font(.oscineRegular(size: 14))
-                    .foregroundColor(.black)
-            }
-            
-            Spacer()
-            
-            // Parameters in grid
-            HStack(alignment: .top, spacing: 16) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(brewTimeDisplay)
-                        .font(.oscineBold(size: 32))
-                        .foregroundColor(.black)
-                    Text("Time")
-                        .font(.oscineRegular(size: 11))
-                        .foregroundColor(.black)
-                }
-                
-                VStack(alignment: .leading, spacing: 2) {
-                    Text(yieldDisplay)
-                        .font(.oscineBold(size: 32))
-                        .foregroundColor(.black)
-                    Text("Yield")
-                        .font(.oscineRegular(size: 11))
-                        .foregroundColor(.black)
-                }
-                
-                if brew.dose > 0 {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("\(Int(brew.dose))g")
-                            .font(.oscineBold(size: 32))
-                            .foregroundColor(.black)
-                        Text("Dose")
-                            .font(.oscineRegular(size: 11))
-                            .foregroundColor(.black)
-                    }
-                }
-                
-                Spacer()
-            }
-            
-            HStack(alignment: .top, spacing: 16) {
-                if brew.temperature > 0 {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text("\(Int(brew.temperature))°")
-                            .font(.oscineBold(size: 32))
-                            .foregroundColor(.black)
-                        Text("Temp")
-                            .font(.oscineRegular(size: 11))
-                            .foregroundColor(.black)
-                    }
-                }
-                
-                if !brew.grindSetting.isEmpty {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(brew.grindSetting)
-                            .font(.oscineBold(size: 32))
-                            .foregroundColor(.black)
-                        Text("Grind")
-                            .font(.oscineRegular(size: 11))
-                            .foregroundColor(.black)
-                    }
-                }
-                
-                Spacer()
-            }
-            
-            Spacer()
-                .frame(height: 12)
-            
-            // Bottom section - drink type
-            VStack(alignment: .leading, spacing: 4) {
-                Text(brew.drinkType)
-                    .font(.oscineBold(size: 24))
-                    .foregroundColor(.black)
-                
-                // Coffee name
-                if let bean = bean {
-                    Text(bean.coffeeName)
-                        .font(.oscineBold(size: 32))
-                        .foregroundColor(.black)
-                    
-                    if !bean.roaster.isEmpty {
-                        Text("by \(bean.roaster)")
-                            .font(.oscineRegular(size: 16))
-                            .foregroundColor(.black)
-                    }
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .padding(24)
-        .frame(width: 362, height: 433)
-        .background(
-            RoundedRectangle(cornerRadius: cornerRadius)
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            Color(red: 1.0, green: 0.75, blue: 0.0),
-                            Color(red: 1.0, green: 0.85, blue: 0.0),
-                            Color(red: 1.0, green: 0.95, blue: 0.3)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-        )
-    }
-}
-
-// Card content 2 for rendering (centered layout, no corner radius for export)
-struct BrewShareCardContent2: View {
-    let brew: Brew
-    let bean: Bean?
-    let formattedDate: String
-    let brewTimeDisplay: String
-    let yieldDisplay: String
-    let cornerRadius: CGFloat
-    
-    var body: some View {
-        VStack(alignment: .center, spacing: 0) {
-            // Top header - date
-            HStack {
-                Spacer()
-                Text(formattedDate)
-                    .font(.oscineRegular(size: 14))
-                    .foregroundColor(.black)
-                Spacer()
-            }
-            
-            Spacer()
-            
-            // Centered drink type
-            Text(brew.drinkType)
-                .font(.oscineBold(size: 24))
-                .foregroundColor(.black)
-                .multilineTextAlignment(.center)
-            
-            Spacer()
-                .frame(height: 24)
-            
-            // Parameters in centered layout
-            HStack(alignment: .top, spacing: 16) {
-                VStack(alignment: .center, spacing: 2) {
-                    Text(brewTimeDisplay)
-                        .font(.oscineBold(size: 32))
-                        .foregroundColor(.black)
-                    Text("Time")
-                        .font(.oscineRegular(size: 11))
-                        .foregroundColor(.black)
-                }
-                
-                VStack(alignment: .center, spacing: 2) {
-                    Text(yieldDisplay)
-                        .font(.oscineBold(size: 32))
-                        .foregroundColor(.black)
-                    Text("Yield")
-                        .font(.oscineRegular(size: 11))
-                        .foregroundColor(.black)
-                }
-                
-                if brew.dose > 0 {
-                    VStack(alignment: .center, spacing: 2) {
-                        Text("\(Int(brew.dose))g")
-                            .font(.oscineBold(size: 32))
-                            .foregroundColor(.black)
-                        Text("Dose")
-                            .font(.oscineRegular(size: 11))
-                            .foregroundColor(.black)
-                    }
-                }
-            }
-            
-            Spacer()
-                .frame(height: 12)
-            
-            HStack(alignment: .top, spacing: 16) {
-                if brew.temperature > 0 {
-                    VStack(alignment: .center, spacing: 2) {
-                        Text("\(Int(brew.temperature))°")
-                            .font(.oscineBold(size: 32))
-                            .foregroundColor(.black)
-                        Text("Temp")
-                            .font(.oscineRegular(size: 11))
-                            .foregroundColor(.black)
-                    }
-                }
-                
-                if !brew.grindSetting.isEmpty {
-                    VStack(alignment: .center, spacing: 2) {
-                        Text(brew.grindSetting)
-                            .font(.oscineBold(size: 32))
-                            .foregroundColor(.black)
-                        Text("Grind")
-                            .font(.oscineRegular(size: 11))
-                            .foregroundColor(.black)
-                    }
-                }
-            }
-            
-            Spacer()
-            
-            // Bottom - orsa branding
-            Text("orsa")
-                .font(.oscineBold(size: 24))
-                .foregroundColor(.black)
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .padding(24)
-        .frame(width: 362, height: 433)
-        .background(
-            RoundedRectangle(cornerRadius: cornerRadius)
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            Color(red: 1.0, green: 0.75, blue: 0.0),
-                            Color(red: 1.0, green: 0.85, blue: 0.0),
-                            Color(red: 1.0, green: 0.95, blue: 0.3)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-        )
-    }
-}
-
-// Card content 3 for rendering (bottom aligned layout, no corner radius for export)
-struct BrewShareCardContent3: View {
-    let brew: Brew
-    let bean: Bean?
-    let formattedDate: String
-    let brewTimeDisplay: String
-    let yieldDisplay: String
-    let cornerRadius: CGFloat
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 0) {
-            // Top header - orsa and date
-            HStack {
-                Text("orsa")
-                    .font(.oscineBold(size: 24))
-                    .foregroundColor(.black)
-                
-                Spacer()
-                
-                Text(formattedDate)
-                    .font(.oscineRegular(size: 14))
-                    .foregroundColor(.black)
-            }
-            
-            Spacer()
-            
-            // Bottom section - drink type and bean info
-            VStack(alignment: .leading, spacing: 0) {
-                // Drink type and coffee name in one line with baseline alignment
-                HStack(alignment: .firstTextBaseline, spacing: 4) {
-                    Text(brew.drinkType)
-                        .font(.oscineBold(size: 24))
-                        .foregroundColor(.black)
-                    
-                    if let bean = bean {
-                        Text(bean.coffeeName)
-                            .font(.oscineRegular(size: 16))
-                            .foregroundColor(.black)
-                    }
-                }
-                
-                Spacer()
-                    .frame(height: 12)
-                
-                // Parameters in horizontal row with even spacing - all same font size
-                HStack(alignment: .top, spacing: 8) {
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(brewTimeDisplay)
-                            .font(.oscineBold(size: 24))
-                            .foregroundColor(.black)
-                            .minimumScaleFactor(0.6)
-                            .lineLimit(1)
-                        Text("Time")
-                            .font(.oscineRegular(size: 11))
-                            .foregroundColor(.black)
-                    }
-                    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                    
-                    VStack(alignment: .leading, spacing: 2) {
-                        Text(yieldDisplay)
-                            .font(.oscineBold(size: 24))
-                            .foregroundColor(.black)
-                            .minimumScaleFactor(0.6)
-                            .lineLimit(1)
-                        Text("Yield")
-                            .font(.oscineRegular(size: 11))
-                            .foregroundColor(.black)
-                    }
-                    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                    
-                    if brew.dose > 0 {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("\(Int(brew.dose))g")
-                                .font(.oscineBold(size: 24))
-                                .foregroundColor(.black)
-                                .minimumScaleFactor(0.6)
-                                .lineLimit(1)
-                            Text("Dose")
-                                .font(.oscineRegular(size: 11))
-                                .foregroundColor(.black)
-                        }
-                        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                    }
-                    
-                    if !brew.grindSetting.isEmpty {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(brew.grindSetting)
-                                .font(.oscineBold(size: 24))
-                                .foregroundColor(.black)
-                                .minimumScaleFactor(0.6)
-                                .lineLimit(1)
-                            Text("Grind")
-                                .font(.oscineRegular(size: 11))
-                                .foregroundColor(.black)
-                        }
-                        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                    }
-                    
-                    if brew.temperature > 0 {
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text("\(Int(brew.temperature))°")
-                                .font(.oscineBold(size: 24))
-                                .foregroundColor(.black)
-                                .minimumScaleFactor(0.6)
-                                .lineLimit(1)
-                            Text("Temp")
-                                .font(.oscineRegular(size: 11))
-                                .foregroundColor(.black)
-                        }
-                        .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                    }
-                }
-            }
-        }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
-        .padding(24)
-        .frame(width: 362, height: 433)
-        .background(
-            RoundedRectangle(cornerRadius: cornerRadius)
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            Color(red: 1.0, green: 0.75, blue: 0.0),
-                            Color(red: 1.0, green: 0.85, blue: 0.0),
-                            Color(red: 1.0, green: 0.95, blue: 0.3)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-        )
+        .brewShareCardBackground(style: cardStyle, cornerRadius: 24, isVisible: showsCardBackground)
     }
 }
 

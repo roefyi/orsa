@@ -107,3 +107,25 @@ struct AppColors {
         }
     })
 }
+
+enum AppGradients {
+    static let shareYellow = LinearGradient(
+        colors: [
+            Color(red: 1.0, green: 0.75, blue: 0.0),
+            Color(red: 1.0, green: 0.85, blue: 0.0),
+            Color(red: 1.0, green: 0.95, blue: 0.3)
+        ],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+    
+    static let shareBlack = LinearGradient(
+        colors: [
+            Color(red: 15/255.0, green: 15/255.0, blue: 15/255.0),
+            Color(red: 25/255.0, green: 25/255.0, blue: 25/255.0),
+            Color(red: 35/255.0, green: 35/255.0, blue: 35/255.0)
+        ],
+        startPoint: .topLeading,
+        endPoint: .bottomTrailing
+    )
+}
