@@ -55,7 +55,7 @@ struct OnboardingNameView: View {
         }
         .background(Color.appBackground)
         .onTapGesture {
-            isTextFieldFocused = false
+            KeyboardDismissal.dismiss()
         }
     }
 }

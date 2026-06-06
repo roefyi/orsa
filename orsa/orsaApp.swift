@@ -179,6 +179,7 @@ struct orsaApp: App {
         FontDebugHelper.listAllOscineFonts()
         FontDebugHelper.testFontNames()
         #endif
+        
     }
     
     var body: some Scene {

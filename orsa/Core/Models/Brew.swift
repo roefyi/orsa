@@ -22,7 +22,7 @@ final class Brew: Identifiable {
     var temperature: Double // °F or °C
     var brewTime: String // "28s" or "MM:SS"
     var yield: Double // grams or ml
-    var rating: Int? // 1-5
+    var rating: Int? // 0=☹️, 1=👎, 3=😐, 4=👍, 5=❤️
     var notes: String?
     var photoData: Data?
     var method: String // "espresso", "pour over", etc.

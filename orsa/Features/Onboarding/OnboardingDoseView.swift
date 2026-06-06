@@ -21,9 +21,9 @@ struct OnboardingDoseView: View {
                 
                 HStack(spacing: 12) {
                     TextField("18.0", text: $defaultDose)
+                        .keyboardType(.decimalPad)
                         .font(.oscineRegular(size: 17))
                         .foregroundColor(.primary)
-                        .keyboardType(.decimalPad)
                         .padding(.vertical, 12)
                         .padding(.horizontal, 16)
                         .background(Color.clear)
@@ -62,7 +62,7 @@ struct OnboardingDoseView: View {
         }
         .background(Color.appBackground)
         .onTapGesture {
-            isTextFieldFocused = false
+            KeyboardDismissal.dismiss()
         }
     }
 }

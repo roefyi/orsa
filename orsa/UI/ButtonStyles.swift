@@ -28,3 +28,18 @@ extension ButtonStyle where Self == YellowButtonStyle {
         YellowButtonStyle(isDisabled: isDisabled)
     }
 }
+
+struct SecondaryButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .font(.oscineHeadline)
+            .foregroundColor(.primary)
+            .frame(maxWidth: .infinity)
+            .padding()
+            .opacity(configuration.isPressed ? 0.6 : 1.0)
+    }
+}
+
+extension ButtonStyle where Self == SecondaryButtonStyle {
+    static var secondary: SecondaryButtonStyle { SecondaryButtonStyle() }
+}
