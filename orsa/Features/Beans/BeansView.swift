@@ -56,6 +56,16 @@ struct BeansView: View {
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
+            .overlay {
+                if beans.isEmpty {
+                    Text("press the + to add beans")
+                        .font(.oscineRegular(size: 17))
+                        .foregroundColor(.secondaryText)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
             .navigationTitle("beans")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {

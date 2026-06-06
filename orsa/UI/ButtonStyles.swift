@@ -43,3 +43,13 @@ struct SecondaryButtonStyle: ButtonStyle {
 extension ButtonStyle where Self == SecondaryButtonStyle {
     static var secondary: SecondaryButtonStyle { SecondaryButtonStyle() }
 }
+
+extension View {
+    func appInputFieldStyle() -> some View {
+        self
+            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
+            .tint(Color(red: 1.0, green: 0.8, blue: 0.0))
+            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
+    }
+}

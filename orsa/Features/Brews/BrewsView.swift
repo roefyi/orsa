@@ -53,6 +53,16 @@ struct BrewsView: View {
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
+            .overlay {
+                if brews.isEmpty {
+                    Text("press the + to add brew")
+                        .font(.oscineRegular(size: 17))
+                        .foregroundColor(.secondaryText)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
             .navigationTitle("all brews")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {

@@ -18,38 +18,54 @@ struct OnboardingView: View {
     @State private var userName = ""
     @State private var machineName = ""
     @State private var grinderName = ""
-    @State private var defaultDose = "18.0"
+    @State private var defaultDose = ""
     
     init(onComplete: (() -> Void)? = nil) {
         self.onComplete = onComplete
     }
     
+    private static let screenTransition = Animation.smooth(duration: 0.6)
+    
     var body: some View {
         ZStack {
-            switch currentStep {
-            case 0:
-                OnboardingIntroView(onNext: { currentStep = 1 })
-            case 1:
-                OnboardingNameView(
-                    userName: $userName,
-                    onNext: { currentStep = 2 }
+            if currentStep == 0 {
+                OnboardingIntroView(
+                    onNext: {
+                        withAnimation(Self.screenTransition) {
+                            currentStep = 1
+                        }
+                    },
+                    onSkip: completeOnboarding
                 )
-            case 2:
-                OnboardingSetupView(
+                .transition(
+                    .asymmetric(
+                        insertion: .opacity.combined(with: .scale(scale: 0.98)),
+                        removal: .opacity.combined(with: .offset(x: -24))
+                    )
+                )
+            } else {
+                OnboardingQuestionsView(
+                    userName: $userName,
                     machineName: $machineName,
                     grinderName: $grinderName,
-                    userName: userName,
-                    onNext: { currentStep = 3 }
-                )
-            case 3:
-                OnboardingDoseView(
                     defaultDose: $defaultDose,
-                    onComplete: completeOnboarding
+                    onComplete: completeOnboarding,
+                    onSkip: completeOnboarding,
+                    onBackToIntro: {
+                        withAnimation(Self.screenTransition) {
+                            currentStep = 0
+                        }
+                    }
                 )
-            default:
-                OnboardingIntroView(onNext: { currentStep = 1 })
+                .transition(
+                    .asymmetric(
+                        insertion: .opacity.combined(with: .scale(scale: 0.98)),
+                        removal: .opacity.combined(with: .offset(x: 24))
+                    )
+                )
             }
         }
+        .animation(Self.screenTransition, value: currentStep)
     }
     
     private func completeOnboarding() {

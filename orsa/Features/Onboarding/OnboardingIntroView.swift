@@ -9,40 +9,31 @@ import SwiftUI
 
 struct OnboardingIntroView: View {
     let onNext: () -> Void
+    let onSkip: () -> Void
     
     var body: some View {
         VStack(spacing: 0) {
-            VStack(alignment: .leading, spacing: 20) {
-                Text("this is Orsa")
-                    .font(.oscineLargeTitle)
-                    .foregroundColor(.primary)
-                
-                Text("the simple coffee journal")
-                    .font(.oscineRegular(size: 22))
-                    .foregroundColor(.secondaryText)
+            Spacer()
+            
+            VStack(spacing: 40) {
+                Text("Hey fellow coffee drinker. Thanks for downloading.")
+                Text("My job is simple: log your coffee, then get out of the way. I'm just here to help you get the most out of those beautiful little beans.")
+                Text("Now lets get you set up.")
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .font(.oscineRegular(size: 20))
+            .foregroundColor(.primary)
+            .multilineTextAlignment(.center)
+            .frame(maxWidth: .infinity)
             .padding(.horizontal, 32)
-            .padding(.top, 60)
             
             Spacer()
             
-            Button(action: onNext) {
-                Text("Get Started")
-                    .font(.oscineHeadline)
-                    .foregroundColor(.buttonText)
-                    .frame(maxWidth: .infinity)
-                    .padding()
-                    .background(AppColors.buttonYellow)
-                    .cornerRadius(12)
-            }
-            .padding(.horizontal, 32)
-            .padding(.bottom, 50)
+            OnboardingActionBar(onPrimary: onNext, onSkip: onSkip)
         }
         .background(Color.appBackground)
     }
 }
 
 #Preview {
-    OnboardingIntroView(onNext: {})
+    OnboardingIntroView(onNext: {}, onSkip: {})
 }
