@@ -11,28 +11,26 @@ import UIKit
 import StoreKit
 import WebKit
 
-/// Dedicated Settings tab — hosts the grouped settings cards plus a version footer.
+/// Settings screen — pushed from Tools; hosts grouped settings cards plus a version footer.
 struct SettingsView: View {
     var body: some View {
-        NavigationStack {
-            ScrollView {
-                VStack(spacing: 24) {
-                    SettingsCardView()
+        ScrollView {
+            VStack(spacing: 24) {
+                SettingsCardView()
 
-                    Text("version 0.1.0")
-                        .font(.oscineRegular(size: 12))
-                        .foregroundColor(.secondary)
-                        .padding(.top, 8)
-                }
-                .padding(.horizontal, 16)
-                .padding(.top, 8)
-                .padding(.bottom, 40)
+                Text("version 1.0")
+                    .font(.oscineRegular(size: 12))
+                    .foregroundColor(.secondary)
+                    .padding(.top, 8)
             }
-            .scrollContentBackground(.hidden)
-            .background(Color.appBackground.ignoresSafeArea())
-            .navigationTitle("settings")
-            .navigationBarTitleDisplayMode(.large)
+            .padding(.horizontal, 16)
+            .padding(.top, 8)
+            .padding(.bottom, 40)
         }
+        .scrollContentBackground(.hidden)
+        .background(Color.appBackground.ignoresSafeArea())
+        .navigationTitle("settings")
+        .navigationBarTitleDisplayMode(.large)
     }
 }
 
@@ -172,6 +170,41 @@ struct SettingsDivider: View {
     }
 }
 
+struct SettingsPickerField: View {
+    let title: String
+    let options: [(label: String, value: String)]
+    @Binding var selection: String
+
+    private var selectedLabel: String {
+        options.first(where: { $0.value == selection })?.label ?? selection
+    }
+
+    var body: some View {
+        SettingsGroup(title) {
+            Menu {
+                ForEach(options, id: \.value) { option in
+                    Button(option.label) {
+                        HapticFeedback.light()
+                        selection = option.value
+                    }
+                }
+            } label: {
+                HStack(spacing: 8) {
+                    Text(selectedLabel)
+                        .font(.oscineRegular(size: 17))
+                        .foregroundColor(.primary)
+                    Spacer()
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.secondary)
+                }
+                .padding(.vertical, 16)
+                .padding(.horizontal, 16)
+            }
+        }
+    }
+}
+
 struct SettingsRowView: View {
     let title: String
     var value: String? = nil
@@ -220,39 +253,43 @@ struct ProfileView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section {
-                    TextField("Enter your name", text: $name)
-                        .tint(AppColors.inputTint)
-                } header: {
-                    Text("name")
-                        .foregroundColor(.secondaryText)
-                        .textCase(.uppercase)
-                }
-
-                Section {
-                    HStack {
-                        TextField("18.0", text: $defaultDose)
-                            .keyboardType(.decimalPad)
+            ScrollView {
+                VStack(spacing: 24) {
+                    SettingsGroup("name") {
+                        TextField("Enter your name", text: $name)
+                            .font(.oscineRegular(size: 17))
+                            .foregroundColor(.primary)
                             .tint(AppColors.inputTint)
-                        Text("g")
-                            .foregroundColor(.secondary)
+                            .padding(.vertical, 16)
+                            .padding(.horizontal, 16)
                     }
-                } header: {
-                    Text("default dose")
-                        .foregroundColor(.secondaryText)
-                        .textCase(.uppercase)
+
+                    SettingsGroup("default dose") {
+                        HStack(spacing: 8) {
+                            TextField("18.0", text: $defaultDose)
+                                .font(.oscineRegular(size: 17))
+                                .foregroundColor(.primary)
+                                .keyboardType(.decimalPad)
+                                .tint(AppColors.inputTint)
+                            Text("g")
+                                .font(.oscineRegular(size: 17))
+                                .foregroundColor(.secondaryText)
+                        }
+                        .padding(.vertical, 16)
+                        .padding(.horizontal, 16)
+                    }
                 }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                .padding(.bottom, 40)
             }
-            .scrollContentBackground(.hidden)
+            .settingsSheetStyle()
             .keyboardDoneToolbar()
-            .background(Color.appBackground.ignoresSafeArea())
             .navigationTitle("profile")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(.clear, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") { dismiss() }
+                        .font(.oscineHeadline)
                         .foregroundColor(.primary)
                 }
                 ToolbarItem(placement: .confirmationAction) {
@@ -298,39 +335,38 @@ struct MeasurementsView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section {
-                    Picker("Yield Unit", selection: $yieldUnit) {
-                        Text("Grams").tag("grams")
-                        Text("Milliliters").tag("ml")
-                    }
-                } header: {
-                    Text("yield unit")
-                        .foregroundColor(.secondaryText)
-                        .textCase(.uppercase)
-                }
+            ScrollView {
+                VStack(spacing: 24) {
+                    SettingsPickerField(
+                        title: "yield unit",
+                        options: [
+                            (label: "Grams", value: "grams"),
+                            (label: "Milliliters", value: "ml")
+                        ],
+                        selection: $yieldUnit
+                    )
 
-                Section {
-                    Picker("Temperature Unit", selection: $temperatureUnit) {
-                        Text("Fahrenheit (°F)").tag("F")
-                        Text("Celsius (°C)").tag("C")
-                    }
-                } header: {
-                    Text("temperature unit")
-                        .foregroundColor(.secondaryText)
-                        .textCase(.uppercase)
+                    SettingsPickerField(
+                        title: "temperature unit",
+                        options: [
+                            (label: "Fahrenheit (°F)", value: "F"),
+                            (label: "Celsius (°C)", value: "C")
+                        ],
+                        selection: $temperatureUnit
+                    )
                 }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                .padding(.bottom, 40)
             }
-            .scrollContentBackground(.hidden)
-            .background(Color.appBackground.ignoresSafeArea())
+            .settingsSheetStyle()
             .navigationTitle("measurements")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(.clear, for: .navigationBar)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
+                ToolbarItem(placement: .confirmationAction) {
                     Button("Done") {
                         dismiss()
                     }
+                    .font(.oscineHeadline)
                     .foregroundColor(.primary)
                 }
             }
@@ -344,33 +380,43 @@ struct AppearanceView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section {
-                    Picker("Appearance", selection: $appearanceMode) {
-                        Text("Light").tag("light")
-                        Text("Dark").tag("dark")
-                        Text("System").tag("system")
-                    }
-                } header: {
-                    Text("appearance")
-                        .foregroundColor(.secondaryText)
-                        .textCase(.uppercase)
+            ScrollView {
+                VStack(spacing: 24) {
+                    SettingsPickerField(
+                        title: "theme",
+                        options: [
+                            (label: "Light", value: "light"),
+                            (label: "Dark", value: "dark"),
+                            (label: "System", value: "system")
+                        ],
+                        selection: $appearanceMode
+                    )
                 }
+                .padding(.horizontal, 16)
+                .padding(.top, 8)
+                .padding(.bottom, 40)
             }
-            .scrollContentBackground(.hidden)
-            .background(Color.appBackground.ignoresSafeArea())
+            .settingsSheetStyle()
             .navigationTitle("appearance")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarBackground(.clear, for: .navigationBar)
             .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
+                ToolbarItem(placement: .confirmationAction) {
                     Button("Done") {
                         dismiss()
                     }
+                    .font(.oscineHeadline)
                     .foregroundColor(.primary)
                 }
             }
         }
+    }
+}
+
+private extension View {
+    func settingsSheetStyle() -> some View {
+        scrollContentBackground(.hidden)
+            .background(Color.appBackground.ignoresSafeArea())
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarBackground(.clear, for: .navigationBar)
     }
 }
 
@@ -411,7 +457,8 @@ struct WebViewSheet: View {
                     Button("Done") {
                         dismiss()
                     }
-                    .foregroundStyle(.tint)
+                    .font(.oscineHeadline)
+                    .foregroundColor(.primary)
                 }
             }
         }

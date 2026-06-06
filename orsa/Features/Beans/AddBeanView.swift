@@ -33,24 +33,23 @@ struct AddBeanView: View {
                 // The essentials — only name + roaster are required.
                 Section {
                     TextField("Coffee Name", text: $coffeeName)
-                        .tint(AppColors.inputTint)
                     TextField("Roaster", text: $roaster)
-                        .tint(AppColors.inputTint)
                 } header: {
                     Text("coffee")
+                        .font(.oscineCaption)
                         .foregroundColor(.secondaryText)
                         .textCase(.uppercase)
                 }
 
-                // Industry-standard attributes, pick-from-list instead of free text.
+                // Industry-standard attributes; origin is free text.
                 Section {
-                    BeanOptionPicker(title: "Origin", options: CoffeeReference.origins, selection: $origin)
+                    TextField("Origin", text: $origin)
                     BeanOptionPicker(title: "Process", options: CoffeeReference.processes, selection: $process)
                     BeanOptionPicker(title: "Roast Level", options: CoffeeReference.roastLevels, selection: $roastLevel)
                     DatePicker("Roast Date", selection: $roastDate, displayedComponents: .date)
-                        .tint(AppColors.inputTint)
                 } header: {
                     Text("details")
+                        .font(.oscineCaption)
                         .foregroundColor(.secondaryText)
                         .textCase(.uppercase)
                 }
@@ -60,6 +59,7 @@ struct AddBeanView: View {
                     FlavorNotesEditor(notes: $notes)
                 } header: {
                     Text("tasting notes")
+                        .font(.oscineCaption)
                         .foregroundColor(.secondaryText)
                         .textCase(.uppercase)
                 }
@@ -71,13 +71,14 @@ struct AddBeanView: View {
                         }
                     }
                     Toggle("Set as Primary", isOn: $isPrimary)
-                        .tint(AppColors.inputTint)
                 } header: {
                     Text("shelf")
+                        .font(.oscineCaption)
                         .foregroundColor(.secondaryText)
                         .textCase(.uppercase)
                 }
             }
+            .appFormStyle()
             .scrollContentBackground(.hidden)
             .keyboardDoneToolbar()
             .background(Color.appBackground.ignoresSafeArea())
@@ -89,6 +90,7 @@ struct AddBeanView: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .font(.oscineHeadline)
                     .foregroundColor(.primary)
                 }
                 ToolbarItem(placement: .confirmationAction) {

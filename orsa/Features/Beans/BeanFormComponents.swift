@@ -66,7 +66,8 @@ struct BeanOptionPicker: View {
                 Text(option).tag(option)
             }
         }
-        .tint(.secondary)
+        .font(.oscineRegular(size: 17))
+        .tint(AppColors.inputTint)
     }
 }
 
@@ -103,6 +104,7 @@ struct FlavorNotesEditor: View {
         VStack(alignment: .leading, spacing: 14) {
             TextField("chocolate, berry, citrus…", text: $notes, axis: .vertical)
                 .lineLimit(2...4)
+                .font(.oscineRegular(size: 17))
                 .tint(AppColors.inputTint)
 
             FlowLayout(spacing: 8) {

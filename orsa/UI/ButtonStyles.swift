@@ -60,4 +60,9 @@ extension View {
             .tint(AppColors.inputTint)
             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
+
+    func appFormStyle() -> some View {
+        font(.oscineRegular(size: 17))
+            .tint(AppColors.inputTint)
+    }
 }

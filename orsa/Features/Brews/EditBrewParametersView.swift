@@ -168,6 +168,7 @@ struct EditBrewParametersView: View {
                     }
                 }
             }
+            .appFormStyle()
             .scrollContentBackground(.hidden)
             .keyboardDoneToolbar()
             .background(Color.appBackground)
@@ -187,14 +188,15 @@ struct EditBrewParametersView: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .font(.oscineHeadline)
                     .foregroundColor(.primary)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         dismiss()
                     }
-                    .tint(.accent)
                     .font(.oscineHeadline)
+                    .foregroundColor(.primary)
                 }
             }
         }

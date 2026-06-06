@@ -76,6 +76,15 @@ struct ToolsView: View {
                             .font(.system(size: 18, weight: .semibold))
                     }
                 }
+
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink {
+                        SettingsView()
+                    } label: {
+                        Image(systemName: "gearshape")
+                            .font(.system(size: 18, weight: .semibold))
+                    }
+                }
             }
             .sheet(isPresented: $showingAddTool) {
                 AddToolView()

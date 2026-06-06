@@ -30,22 +30,21 @@ struct AddToolView: View {
                         Text("Brand")
                         TextField("e.g. Lelit", text: $brand)
                             .multilineTextAlignment(.trailing)
-                            .tint(AppColors.inputTint)
                     }
                     HStack {
                         Text("Model")
                         TextField("e.g. Anna", text: $model)
                             .multilineTextAlignment(.trailing)
-                            .tint(AppColors.inputTint)
                     }
                     Toggle("Set as Primary", isOn: $isPrimary)
-                        .tint(AppColors.inputTint)
                 } header: {
                     Text("equipment info")
+                        .font(.oscineCaption)
                         .foregroundColor(.secondaryText)
                         .textCase(.uppercase)
                 }
             }
+            .appFormStyle()
             .scrollContentBackground(.hidden)
             .keyboardDoneToolbar()
             .background(Color.appBackground.ignoresSafeArea())
@@ -57,6 +56,7 @@ struct AddToolView: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .font(.oscineHeadline)
                     .foregroundColor(.primary)
                 }
                 ToolbarItem(placement: .confirmationAction) {
