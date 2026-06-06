@@ -105,8 +105,13 @@ final class BrewShareLoopingPlayerView: UIView {
     func configure(url: URL) {
         reset()
         
-        let player = AVPlayer(url: url)
+        let asset = AVURLAsset(url: url)
+        let item = AVPlayerItem(asset: asset)
+        item.preferredForwardBufferDuration = 1
+        
+        let player = AVPlayer(playerItem: item)
         player.isMuted = true
+        player.automaticallyWaitsToMinimizeStalling = false
         
         let playerLayer = AVPlayerLayer(player: player)
         playerLayer.videoGravity = .resizeAspectFill
@@ -114,14 +119,14 @@ final class BrewShareLoopingPlayerView: UIView {
         
         endObserver = NotificationCenter.default.addObserver(
             forName: .AVPlayerItemDidPlayToEndTime,
-            object: player.currentItem,
+            object: item,
             queue: .main
         ) { _ in
             player.seek(to: .zero)
             player.play()
         }
         
-        player.play()
+        player.playImmediately(atRate: 1.0)
         self.player = player
         self.playerLayer = playerLayer
         setNeedsLayout()

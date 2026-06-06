@@ -17,7 +17,10 @@ enum BrewShareVideoExporter {
     static func exportVideo(
         videoURL: URL,
         overlayImage: UIImage,
-        renderSize: CGSize
+        canvasSize: CGSize,
+        cardFrame: CGRect,
+        backgroundColor: UIColor,
+        cornerRadius: CGFloat
     ) async throws -> URL {
         let asset = AVURLAsset(url: videoURL)
         let videoTracks = try await asset.loadTracks(withMediaType: .video)
@@ -57,10 +60,13 @@ enum BrewShareVideoExporter {
         
         let orientedSize = naturalSize.applying(preferredTransform)
         let sourceSize = CGSize(width: abs(orientedSize.width), height: abs(orientedSize.height))
-        let transform = aspectFillTransform(
+        var transform = aspectFillTransform(
             sourceSize: sourceSize,
-            targetSize: renderSize,
+            targetSize: cardFrame.size,
             preferredTransform: preferredTransform
+        )
+        transform = transform.concatenating(
+            CGAffineTransform(translationX: cardFrame.origin.x, y: cardFrame.origin.y)
         )
         
         let instruction = AVMutableVideoCompositionInstruction()
@@ -71,20 +77,38 @@ enum BrewShareVideoExporter {
         instruction.layerInstructions = [layerInstruction]
         
         let videoComposition = AVMutableVideoComposition()
-        videoComposition.renderSize = renderSize
+        videoComposition.renderSize = canvasSize
         videoComposition.frameDuration = CMTime(value: 1, timescale: 30)
         videoComposition.instructions = [instruction]
         
         let parentLayer = CALayer()
+        parentLayer.frame = CGRect(origin: .zero, size: canvasSize)
+        
+        let backgroundLayer = CALayer()
+        backgroundLayer.frame = parentLayer.bounds
+        backgroundLayer.backgroundColor = backgroundColor.cgColor
+        parentLayer.addSublayer(backgroundLayer)
+        
         let videoLayer = CALayer()
-        parentLayer.frame = CGRect(origin: .zero, size: renderSize)
-        videoLayer.frame = parentLayer.frame
+        videoLayer.frame = parentLayer.bounds
+        
+        let videoMask = CAShapeLayer()
+        videoMask.path = CGPath(
+            roundedRect: cardFrame,
+            cornerWidth: cornerRadius,
+            cornerHeight: cornerRadius,
+            transform: nil
+        )
+        videoLayer.mask = videoMask
         parentLayer.addSublayer(videoLayer)
         
         let overlayLayer = CALayer()
-        overlayLayer.frame = parentLayer.frame
+        overlayLayer.frame = cardFrame
+        overlayLayer.cornerRadius = cornerRadius
+        overlayLayer.masksToBounds = true
         overlayLayer.contents = overlayImage.cgImage
-        overlayLayer.contentsGravity = .resizeAspectFill
+        overlayLayer.contentsScale = overlayImage.scale
+        overlayLayer.contentsGravity = .resize
         parentLayer.addSublayer(overlayLayer)
         
         videoComposition.animationTool = AVVideoCompositionCoreAnimationTool(

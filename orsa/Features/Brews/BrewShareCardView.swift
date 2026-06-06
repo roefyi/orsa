@@ -267,6 +267,7 @@ struct BrewShareCardView: View {
     @State private var customLayoutIndex = 0
     @State private var customTextColorOption: ShareOverlayTextColor = .white
     @State private var defaultCardStyle: ShareDefaultCardStyle = .yellow
+    @State private var isExportingMedia = false
     @Environment(\.colorScheme) private var colorScheme
     
     private static let cardCount = 4
@@ -423,6 +424,18 @@ struct BrewShareCardView: View {
                 }
             }
         }
+        .overlay {
+            if isExportingMedia {
+                ZStack {
+                    Color.black.opacity(0.35)
+                        .ignoresSafeArea()
+                    ProgressView()
+                        .controlSize(.large)
+                        .tint(.white)
+                }
+                .allowsHitTesting(true)
+            }
+        }
         .sheet(isPresented: $showingMediaPicker) {
             BrewShareMediaPicker { media in
                 switch media {
@@ -483,9 +496,19 @@ struct BrewShareCardView: View {
     private func exportCustomVideo(from videoURL: URL) {
         let cardWidth = BrewShareExport.canvasWidth - BrewShareExport.cardHorizontalPadding * 2
         let cardHeight = cardWidth * BrewShareExport.cardAspectRatio
-        let renderSize = CGSize(
+        let canvasSize = CGSize(
+            width: BrewShareExport.canvasWidth * BrewShareExport.renderScale,
+            height: BrewShareExport.canvasHeight * BrewShareExport.renderScale
+        )
+        let cardRenderSize = CGSize(
             width: cardWidth * BrewShareExport.renderScale,
             height: cardHeight * BrewShareExport.renderScale
+        )
+        let cardFrame = CGRect(
+            x: (canvasSize.width - cardRenderSize.width) / 2,
+            y: (canvasSize.height - cardRenderSize.height) / 2,
+            width: cardRenderSize.width,
+            height: cardRenderSize.height
         )
         
         guard let overlayImage = renderCustomOverlayImage(
@@ -496,20 +519,35 @@ struct BrewShareCardView: View {
             return
         }
         
+        isExportingMedia = true
+        
         Task {
             do {
                 let exportedURL = try await BrewShareVideoExporter.exportVideo(
                     videoURL: videoURL,
                     overlayImage: overlayImage,
-                    renderSize: renderSize
+                    canvasSize: canvasSize,
+                    cardFrame: cardFrame,
+                    backgroundColor: brewShareBackgroundColor,
+                    cornerRadius: 24 * BrewShareExport.renderScale
                 )
                 await MainActor.run {
+                    isExportingMedia = false
                     self.presentShareSheet(items: [exportedURL])
                 }
             } catch {
+                await MainActor.run {
+                    isExportingMedia = false
+                }
                 print("Error exporting share video: \(error)")
             }
         }
+    }
+    
+    private var brewShareBackgroundColor: UIColor {
+        colorScheme == .dark
+            ? UIColor(red: 28/255.0, green: 28/255.0, blue: 30/255.0, alpha: 1.0)
+            : UIColor.white
     }
     
     private func renderCustomOverlayImage(cardWidth: CGFloat, cardHeight: CGFloat) -> UIImage? {
