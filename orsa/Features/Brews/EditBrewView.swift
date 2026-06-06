@@ -154,8 +154,8 @@ struct EditBrewView: View {
                                 saveBrew()
                                 showingShareCard = true
                             } label: {
-                                Text("share")
-                                    .font(.oscineHeadline)
+                                Image(systemName: BrewActionIcon.share)
+                                    .font(BrewActionIcon.font)
                                     .foregroundColor(.primary)
                                     .frame(maxWidth: .infinity)
                                     .padding()

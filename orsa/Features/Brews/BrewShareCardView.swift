@@ -8,7 +8,6 @@
 import SwiftUI
 import SwiftData
 import UIKit
-import PhotosUI
 
 enum BrewShareExport {
     static let canvasWidth: CGFloat = 360
@@ -56,14 +55,18 @@ struct BrewShareTopBar: View {
 }
 
 struct BrewShareBottomActionButton: View {
-    let title: String
+    let systemImage: String
     let action: () -> Void
     
     var body: some View {
         Button(action: action) {
-            Text(title)
+            Image(systemName: systemImage)
+                .font(BrewActionIcon.font)
+                .foregroundColor(.primary)
+                .frame(maxWidth: .infinity)
+                .padding()
         }
-        .buttonStyle(.secondary)
+        .buttonStyle(.plain)
         .padding(.horizontal, BrewShareChrome.horizontalPadding)
         .padding(.top, BrewShareChrome.bottomActionTopPadding)
         .padding(.bottom, BrewShareChrome.bottomActionBottomPadding)
@@ -138,52 +141,6 @@ private extension View {
             )
         } else {
             self
-        }
-    }
-}
-
-struct BrewSharePhotoCardView: View {
-    let image: UIImage
-    let layoutIndex: Int
-    let brew: Brew
-    let bean: Bean?
-    let formattedDate: String
-    let brewTimeDisplay: String
-    let yieldDisplay: String
-    var textColor: Color = .white
-    
-    private static let designWidth: CGFloat = 362
-    private static let designHeight: CGFloat = 433
-    private static let cornerRadius: CGFloat = 24
-    
-    var body: some View {
-        GeometryReader { proxy in
-            let scale = min(
-                proxy.size.width / Self.designWidth,
-                proxy.size.height / Self.designHeight
-            )
-            
-            ZStack {
-                Image(uiImage: image)
-                    .resizable()
-                    .scaledToFill()
-                    .frame(width: proxy.size.width, height: proxy.size.height)
-                
-                BrewShareLayoutView(
-                    layoutIndex: layoutIndex,
-                    brew: brew,
-                    bean: bean,
-                    formattedDate: formattedDate,
-                    brewTimeDisplay: brewTimeDisplay,
-                    yieldDisplay: yieldDisplay,
-                    textColor: textColor,
-                    showsCardBackground: false
-                )
-                .frame(width: Self.designWidth, height: Self.designHeight)
-                .scaleEffect(scale)
-            }
-            .frame(width: proxy.size.width, height: proxy.size.height)
-            .clipShape(RoundedRectangle(cornerRadius: Self.cornerRadius, style: .continuous))
         }
     }
 }
@@ -306,7 +263,7 @@ struct BrewShareCardView: View {
     
     @State private var currentCardIndex = 0
     @State private var showingMediaPicker = false
-    @State private var customBackgroundImage: UIImage?
+    @State private var customBackground: BrewShareCustomBackground?
     @State private var customLayoutIndex = 0
     @State private var customTextColorOption: ShareOverlayTextColor = .white
     @State private var defaultCardStyle: ShareDefaultCardStyle = .yellow
@@ -315,7 +272,7 @@ struct BrewShareCardView: View {
     private static let cardCount = 4
     private static let customLayoutCount = 3
     private var isCustomMediaCard: Bool { currentCardIndex == Self.cardCount - 1 }
-    private var isComposingCustom: Bool { customBackgroundImage != nil }
+    private var isComposingCustom: Bool { customBackground != nil }
     
     var bean: Bean? {
         guard let beanID = brew.beanID else { return nil }
@@ -360,15 +317,15 @@ struct BrewShareCardView: View {
                     VStack(spacing: 0) {
                         Spacer(minLength: 0)
                         
-                        if isComposingCustom, let customBackgroundImage {
+                        if isComposingCustom, let customBackground {
                             BrewShareLayoutPager(
                                 selection: $customLayoutIndex,
                                 pageCount: Self.customLayoutCount,
                                 cardWidth: cardWidth,
                                 cardHeight: cardHeight
                             ) { index in
-                                BrewSharePhotoCardView(
-                                    image: customBackgroundImage,
+                                BrewShareMediaCardView(
+                                    background: customBackground,
                                     layoutIndex: index,
                                     brew: brew,
                                     bean: bean,
@@ -445,17 +402,17 @@ struct BrewShareCardView: View {
                 }
                 
                 if isComposingCustom {
-                    BrewShareBottomActionButton(title: "done") {
+                    BrewShareBottomActionButton(systemImage: "checkmark") {
                         HapticFeedback.medium()
                         exportCustomComposition()
                     }
                 } else if isCustomMediaCard {
-                    BrewShareBottomActionButton(title: "create") {
+                    BrewShareBottomActionButton(systemImage: BrewActionIcon.create) {
                         HapticFeedback.light()
                         showingMediaPicker = true
                     }
                 } else {
-                    BrewShareBottomActionButton(title: "share") {
+                    BrewShareBottomActionButton(systemImage: BrewActionIcon.share) {
                         HapticFeedback.light()
                         generateShareImage { image in
                             if let image = image {
@@ -467,8 +424,13 @@ struct BrewShareCardView: View {
             }
         }
         .sheet(isPresented: $showingMediaPicker) {
-            BrewSharePhotoPicker { image in
-                customBackgroundImage = image
+            BrewShareMediaPicker { media in
+                switch media {
+                case .image(let image):
+                    customBackground = .image(image)
+                case .video(let url):
+                    customBackground = .video(url)
+                }
                 customLayoutIndex = 0
                 customTextColorOption = .white
             }
@@ -476,16 +438,25 @@ struct BrewShareCardView: View {
     }
     
     private func exportCustomComposition() {
-        guard let customBackgroundImage else { return }
+        guard let customBackground else { return }
         
+        switch customBackground {
+        case .image(let image):
+            exportCustomImage(image)
+        case .video(let videoURL):
+            exportCustomVideo(from: videoURL)
+        }
+    }
+    
+    private func exportCustomImage(_ image: UIImage) {
         let cardWidth = BrewShareExport.canvasWidth - BrewShareExport.cardHorizontalPadding * 2
         let cardHeight = cardWidth * BrewShareExport.cardAspectRatio
         
         let finalView = ZStack {
             Color.appBackground
             
-            BrewSharePhotoCardView(
-                image: customBackgroundImage,
+            BrewShareMediaCardView(
+                background: .image(image),
                 layoutIndex: customLayoutIndex,
                 brew: brew,
                 bean: bean,
@@ -507,6 +478,66 @@ struct BrewShareCardView: View {
                 self.presentShareSheet(with: image)
             }
         }
+    }
+    
+    private func exportCustomVideo(from videoURL: URL) {
+        let cardWidth = BrewShareExport.canvasWidth - BrewShareExport.cardHorizontalPadding * 2
+        let cardHeight = cardWidth * BrewShareExport.cardAspectRatio
+        let renderSize = CGSize(
+            width: cardWidth * BrewShareExport.renderScale,
+            height: cardHeight * BrewShareExport.renderScale
+        )
+        
+        guard let overlayImage = renderCustomOverlayImage(
+            cardWidth: cardWidth,
+            cardHeight: cardHeight
+        ) else {
+            print("Failed to render overlay for share video")
+            return
+        }
+        
+        Task {
+            do {
+                let exportedURL = try await BrewShareVideoExporter.exportVideo(
+                    videoURL: videoURL,
+                    overlayImage: overlayImage,
+                    renderSize: renderSize
+                )
+                await MainActor.run {
+                    self.presentShareSheet(items: [exportedURL])
+                }
+            } catch {
+                print("Error exporting share video: \(error)")
+            }
+        }
+    }
+    
+    private func renderCustomOverlayImage(cardWidth: CGFloat, cardHeight: CGFloat) -> UIImage? {
+        let designWidth: CGFloat = 362
+        let designHeight: CGFloat = 433
+        let scale = min(cardWidth / designWidth, cardHeight / designHeight)
+        
+        let overlayView = ZStack {
+            Color.clear
+            BrewShareLayoutView(
+                layoutIndex: customLayoutIndex,
+                brew: brew,
+                bean: bean,
+                formattedDate: formattedDate,
+                brewTimeDisplay: brewTimeDisplay,
+                yieldDisplay: yieldDisplay,
+                textColor: customTextColorOption.color,
+                showsCardBackground: false
+            )
+            .frame(width: designWidth, height: designHeight)
+            .scaleEffect(scale)
+        }
+        .frame(width: cardWidth, height: cardHeight)
+        .environment(\.colorScheme, colorScheme)
+        
+        let renderer = ImageRenderer(content: overlayView)
+        renderer.scale = BrewShareExport.renderScale
+        return renderer.uiImage
     }
     
     private func presentShareSheet(with image: UIImage) {
@@ -590,7 +621,7 @@ struct BrewShareCardLayout4: View {
                     .foregroundColor(.primary)
                 
                 Text("use your own image/video")
-                    .font(.oscineHeadline)
+                    .font(.oscineRegular(size: 20))
                     .foregroundColor(.primary)
                     .multilineTextAlignment(.center)
             }
@@ -604,50 +635,6 @@ struct BrewShareCardLayout4: View {
                         style: StrokeStyle(lineWidth: 2, dash: [10, 8])
                     )
                     .padding(20)
-            }
-        }
-    }
-}
-
-struct BrewSharePhotoPicker: UIViewControllerRepresentable {
-    let onImage: (UIImage) -> Void
-    @Environment(\.dismiss) private var dismiss
-    
-    func makeUIViewController(context: Context) -> PHPickerViewController {
-        var configuration = PHPickerConfiguration(photoLibrary: .shared())
-        configuration.filter = .images
-        configuration.selectionLimit = 1
-        let picker = PHPickerViewController(configuration: configuration)
-        picker.delegate = context.coordinator
-        return picker
-    }
-    
-    func updateUIViewController(_ uiViewController: PHPickerViewController, context: Context) {}
-    
-    func makeCoordinator() -> Coordinator {
-        Coordinator(self)
-    }
-    
-    final class Coordinator: NSObject, PHPickerViewControllerDelegate {
-        let parent: BrewSharePhotoPicker
-        
-        init(_ parent: BrewSharePhotoPicker) {
-            self.parent = parent
-        }
-        
-        func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
-            parent.dismiss()
-            
-            guard let itemProvider = results.first?.itemProvider,
-                  itemProvider.canLoadObject(ofClass: UIImage.self) else {
-                return
-            }
-            
-            itemProvider.loadObject(ofClass: UIImage.self) { object, _ in
-                guard let image = object as? UIImage else { return }
-                DispatchQueue.main.async {
-                    self.parent.onImage(image)
-                }
             }
         }
     }

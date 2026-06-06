@@ -44,6 +44,14 @@ extension ButtonStyle where Self == SecondaryButtonStyle {
     static var secondary: SecondaryButtonStyle { SecondaryButtonStyle() }
 }
 
+enum BrewActionIcon {
+    static let font = Font.system(size: 20, weight: .light)
+    static let done = "checkmark"
+    static let share = "square.and.arrow.up"
+    static let delete = "trash"
+    static let create = "plus"
+}
+
 extension View {
     func appInputFieldStyle() -> some View {
         self

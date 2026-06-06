@@ -120,7 +120,7 @@ struct NewBrewView: View {
                         
                         // Action Buttons
                         VStack(spacing: 12) {
-                            // Home button (primary) - submits and saves
+                            // Done button (primary) - submits and saves
                             Button {
                                 HapticFeedback.medium()
                                 // Only save if not already saved for sharing
@@ -134,8 +134,8 @@ struct NewBrewView: View {
                                 }
                                 dismiss()
                             } label: {
-                                Text("home")
-                                    .font(.oscineHeadline)
+                                Image(systemName: BrewActionIcon.done)
+                                    .font(BrewActionIcon.font)
                                     .foregroundColor(.buttonText)
                                     .frame(maxWidth: .infinity)
                                     .padding()
@@ -179,8 +179,8 @@ struct NewBrewView: View {
                                     }
                                 }
                             } label: {
-                                Text("share")
-                                    .font(.oscineHeadline)
+                                Image(systemName: BrewActionIcon.share)
+                                    .font(BrewActionIcon.font)
                                     .foregroundColor(.primary)
                                     .frame(maxWidth: .infinity)
                                     .padding()

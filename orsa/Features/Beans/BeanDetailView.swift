@@ -273,8 +273,8 @@ struct BeanDetailView: View {
                         HapticFeedback.medium()
                         showingDeleteConfirmation = true
                     } label: {
-                        Text("delete")
-                            .font(.oscineHeadline)
+                        Image(systemName: BrewActionIcon.delete)
+                            .font(BrewActionIcon.font)
                             .foregroundColor(.primary)
                             .frame(maxWidth: .infinity)
                             .padding()
