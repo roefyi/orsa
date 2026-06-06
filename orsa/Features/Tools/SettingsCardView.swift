@@ -8,6 +8,7 @@
 import SwiftUI
 import StoreKit
 import MessageUI
+import WebKit
 
 struct SettingsCardView: View {
     @State private var showingMeasurements = false
@@ -86,12 +87,12 @@ struct SettingsCardView: View {
                 .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showingPrivacyPolicy) {
-            WebViewSheet(title: "Privacy Policy", url: "https://example.com/privacy")
+            WebViewSheet(title: "Privacy Policy", url: "https://www.roe.fyi/orsa/privacy-policy.html")
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
         }
         .sheet(isPresented: $showingTermsOfService) {
-            WebViewSheet(title: "Terms of Service", url: "https://example.com/terms")
+            WebViewSheet(title: "Terms of Service", url: "https://www.roe.fyi/orsa/terms-of-use.html")
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
         }
@@ -209,6 +210,18 @@ struct AppearanceView: View {
     }
 }
 
+private struct SettingsWebView: UIViewRepresentable {
+    let url: URL
+
+    func makeUIView(context: Context) -> WKWebView {
+        let webView = WKWebView()
+        webView.load(URLRequest(url: url))
+        return webView
+    }
+
+    func updateUIView(_ uiView: WKWebView, context: Context) {}
+}
+
 struct WebViewSheet: View {
     let title: String
     let url: String
@@ -216,12 +229,13 @@ struct WebViewSheet: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    Text("\(title) content coming soon")
+            Group {
+                if let pageURL = URL(string: url) {
+                    SettingsWebView(url: pageURL)
+                } else {
+                    Text("Unable to load page")
                         .font(.oscineBody)
                         .foregroundColor(.primary)
-                        .padding()
                 }
             }
             .background(Color.appBackground.ignoresSafeArea())
