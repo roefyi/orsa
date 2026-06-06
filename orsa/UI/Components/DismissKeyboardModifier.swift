@@ -24,6 +24,25 @@ extension View {
     func dismissKeyboardOnDrag() -> some View {
         modifier(DismissKeyboardOnDragModifier())
     }
+
+    /// Adds a "Done" button above the keyboard so number/decimal pads — which have no
+    /// return key — can be dismissed, and dismisses the keyboard on interactive scroll.
+    /// Apply once at a screen's top-level scroll/form container.
+    func keyboardDoneToolbar() -> some View {
+        self
+            .scrollDismissesKeyboard(.interactively)
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        HapticFeedback.light()
+                        KeyboardDismissal.dismiss()
+                    }
+                    .font(.oscineHeadline)
+                    .foregroundStyle(.primary)
+                }
+            }
+    }
 }
 
 struct DismissKeyboardOnDragModifier: ViewModifier {

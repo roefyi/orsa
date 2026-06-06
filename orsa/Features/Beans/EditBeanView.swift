@@ -67,14 +67,14 @@ struct EditBeanView: View {
                     TextField("Coffee Name", text: $coffeeName)
                     TextField("Roaster", text: $roaster)
                     DatePicker("Roast Date", selection: $roastDate, displayedComponents: .date)
-                        .tint(Color(red: 1.0, green: 0.8, blue: 0.0))
+                        .tint(AppColors.inputTint)
                     Picker("Status", selection: $status) {
                         ForEach(BeanStatus.allCases, id: \.self) { status in
                             Text(status.rawValue.capitalized).tag(status)
                         }
                     }
                     Toggle("Set as Primary", isOn: $isPrimary)
-                        .tint(Color(red: 1.0, green: 0.8, blue: 0.0))
+                        .tint(AppColors.inputTint)
                 } header: {
                     Text("coffee info")
                         .foregroundColor(.secondaryText)
@@ -82,21 +82,19 @@ struct EditBeanView: View {
                 }
                 
                 Section {
-                    TextField("Origin", text: $origin)
-                    TextField("Process", text: $process)
-                    TextField("Roast Level", text: $roastLevel)
+                    BeanOptionPicker(title: "Origin", options: CoffeeReference.origins, selection: $origin)
+                    BeanOptionPicker(title: "Process", options: CoffeeReference.processes, selection: $process)
+                    BeanOptionPicker(title: "Roast Level", options: CoffeeReference.roastLevels, selection: $roastLevel)
                 } header: {
                     Text("details")
                         .foregroundColor(.secondaryText)
                         .textCase(.uppercase)
                 }
-                
+
                 Section {
-                    TextField("Tasting Notes", text: $notes, axis: .vertical)
-                        .lineLimit(3...6)
-                        .tint(Color(red: 1.0, green: 0.8, blue: 0.0))
+                    FlavorNotesEditor(notes: $notes)
                 } header: {
-                    Text("notes")
+                    Text("tasting notes")
                         .foregroundColor(.secondaryText)
                         .textCase(.uppercase)
                 }
@@ -111,7 +109,7 @@ struct EditBeanView: View {
                 }
             }
             .scrollContentBackground(.hidden)
-            .scrollDismissesKeyboard(.interactively)
+            .keyboardDoneToolbar()
             .background(Color.appBackground)
             .navigationTitle("edit beans")
             .navigationBarTitleDisplayMode(.inline)
@@ -182,12 +180,7 @@ struct EditBeanView: View {
         bean.status = status.rawValue
         bean.temperature = temperature.isEmpty ? nil : temperature
         bean.grindSetting = grindSetting.isEmpty ? nil : grindSetting
-        
-        do {
-            try modelContext.save()
-        } catch {
-            print("Error saving bean: \(error)")
-        }
+        modelContext.saveOrLog("edit bean")
     }
 }
 

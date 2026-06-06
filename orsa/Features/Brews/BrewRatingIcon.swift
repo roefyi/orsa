@@ -9,24 +9,24 @@ import SwiftUI
 
 struct BrewRatingListIcon: View {
     let rating: Int
-    
+
     @ViewBuilder
     var body: some View {
-        switch rating {
-        case 0:
+        switch BrewRatingPickerOption(rawValue: rating) {
+        case .worst:
             BrewRatingSadFace(style: .filled, size: 16)
-        case 1:
+        case .down:
             Image(systemName: "hand.thumbsdown.fill")
                 .brewRatingSymbolStyle()
-        case 3:
+        case .neutral:
             BrewRatingNeutralFaceFilled(size: 16)
-        case 4:
+        case .up:
             Image(systemName: "hand.thumbsup.fill")
                 .brewRatingSymbolStyle()
-        case 5:
+        case .love:
             Image(systemName: "heart.fill")
                 .brewRatingSymbolStyle()
-        default:
+        case .none:
             EmptyView()
         }
     }
@@ -177,7 +177,7 @@ private struct BrewRatingPickerButton: View {
                         RoundedRectangle(cornerRadius: BrewRatingPickerMotion.cornerRadius, style: .continuous)
                             .fill(AppGradients.shareYellow)
                             .shadow(
-                                color: Color(red: 1.0, green: 0.85, blue: 0.0).opacity(0.4),
+                                color: AppColors.buttonYellow.opacity(0.4),
                                 radius: 10,
                                 y: 3
                             )

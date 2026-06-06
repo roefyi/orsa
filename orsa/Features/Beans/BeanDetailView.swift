@@ -342,22 +342,14 @@ struct BeanDetailView: View {
     private func saveImageToBean(_ image: UIImage) {
         if let imageData = image.jpegData(compressionQuality: 0.8) {
             bean.photoData = imageData
-            do {
-                try modelContext.save()
-            } catch {
-                print("Error saving image: \(error)")
-            }
+            modelContext.saveOrLog("save bean image")
         }
     }
-    
+
     private func deleteBean() {
         modelContext.delete(bean)
-        do {
-            try modelContext.save()
-            dismiss()
-        } catch {
-            print("Error deleting bean: \(error)")
-        }
+        modelContext.saveOrLog("delete bean")
+        dismiss()
     }
 }
 

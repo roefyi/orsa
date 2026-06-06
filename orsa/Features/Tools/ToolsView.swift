@@ -28,11 +28,19 @@ struct ToolsView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(sortedEquipment) { item in
-                    EquipmentCardView(equipment: item) {
-                        equipmentToEdit = item
+                ForEach(Array(sortedEquipment.enumerated()), id: \.element.id) { index, item in
+                    VStack(spacing: 0) {
+                        EquipmentCardView(equipment: item) {
+                            equipmentToEdit = item
+                        }
+
+                        // Divider spanning full width (except for last item)
+                        if index < sortedEquipment.count - 1 {
+                            Divider()
+                                .padding(.horizontal, 20)
+                        }
                     }
-                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                    .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
                     .listRowBackground(Color.clear)
                     .listRowSeparator(.hidden)
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
@@ -44,36 +52,19 @@ struct ToolsView: View {
                         .tint(.red)
                     }
                 }
-                
-                // Settings Section
-                Section {
-                    SettingsCardView()
-                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                        .listRowBackground(Color.clear)
-                        .listRowSeparator(.hidden)
-                } header: {
-                    Text("settings")
-                        .font(.oscineCaption)
-                        .foregroundColor(.secondary)
-                        .textCase(.uppercase)
-                }
-                
-                // Version Footer
-                Section {
-                    HStack {
-                        Spacer()
-                        Text("version 0.1.0")
-                            .font(.oscineRegular(size: 12))
-                            .foregroundColor(.secondary)
-                        Spacer()
-                    }
-                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 16, trailing: 16))
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                }
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
+            .overlay {
+                if equipment.isEmpty {
+                    Text("press the + to add tools")
+                        .font(.oscineRegular(size: 17))
+                        .foregroundColor(.secondaryText)
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 32)
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
+            }
             .navigationTitle("tools")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
@@ -101,11 +92,7 @@ struct ToolsView: View {
     
     private func deleteEquipment(_ equipment: Equipment) {
         modelContext.delete(equipment)
-        do {
-            try modelContext.save()
-        } catch {
-            print("Error deleting equipment: \(error)")
-        }
+        modelContext.saveOrLog("delete equipment")
     }
 }
 

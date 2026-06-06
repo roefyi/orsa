@@ -85,7 +85,7 @@ struct CustomSlider: View {
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
         .padding(.horizontal, 8)
-        .tint(Color(red: 1.0, green: 0.8, blue: 0.0))
+        .tint(AppColors.inputTint)
         .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
         .foregroundColor(.primary)
     }

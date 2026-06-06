@@ -37,6 +37,11 @@ struct MainTabView: View {
                     .tabItem {
                         Label("Tools", systemImage: "list.bullet")
                     }
+
+                SettingsView()
+                    .tabItem {
+                        Label("Settings", systemImage: "gearshape")
+                    }
             }
             .tint(.primary)
         }

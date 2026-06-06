@@ -70,6 +70,10 @@ struct AppColors {
             return UIColor(red: 1.0, green: 0.85, blue: 0.0, alpha: 1.0) // Yellow button for light mode
         }
     })
+
+    /// Yellow accent used for text-field cursors/tints throughout forms.
+    /// Single source of truth — do not inline `Color(red: 1.0, green: 0.8, blue: 0.0)`.
+    static let inputTint = Color(red: 1.0, green: 0.8, blue: 0.0)
     
     static let backgroundGray = Color(uiColor: UIColor { traitCollection in
         switch traitCollection.userInterfaceStyle {

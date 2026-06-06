@@ -89,11 +89,7 @@ struct BrewsView: View {
     
     private func deleteBrew(_ brew: Brew) {
         modelContext.delete(brew)
-        do {
-            try modelContext.save()
-        } catch {
-            print("Error deleting brew: \(error)")
-        }
+        modelContext.saveOrLog("delete brew")
     }
 }
 

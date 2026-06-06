@@ -57,7 +57,7 @@ extension View {
         self
             .padding(.vertical, 12)
             .padding(.horizontal, 16)
-            .tint(Color(red: 1.0, green: 0.8, blue: 0.0))
+            .tint(AppColors.inputTint)
             .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
     }
 }

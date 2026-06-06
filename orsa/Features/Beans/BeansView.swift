@@ -13,7 +13,6 @@ struct BeansView: View {
     @Query(sort: \Bean.dateAdded, order: .reverse) private var beans: [Bean]
     @State private var showingAddBeans = false
     @State private var selectedBean: Bean?
-    @State private var showingBeanDetail = false
     
     // Sort beans with primary/current bean at the top
     var sortedBeans: [Bean] {
@@ -37,7 +36,6 @@ struct BeansView: View {
                         Button(action: {
                             HapticFeedback.light()
                             selectedBean = bean
-                            showingBeanDetail = true
                         }) {
                             BeanCardView(bean: bean)
                         }

@@ -65,6 +65,12 @@ struct OnboardingQuestionsView: View {
     private var primaryIcon: String {
         currentQuestion == .dose ? "arrow.right" : "checkmark"
     }
+
+    /// A name is required before the tour can be skipped. Since the name is captured
+    /// on the first step, this is simply "is there a non-empty name yet?".
+    private var hasName: Bool {
+        !userName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
     
     var body: some View {
         VStack(spacing: 0) {
@@ -118,6 +124,8 @@ struct OnboardingQuestionsView: View {
             OnboardingActionBar(
                 primaryIcon: primaryIcon,
                 isPrimaryEnabled: isCurrentStepValid && !isTransitioning,
+                isSkipEnabled: hasName && !isTransitioning,
+                showsSkip: currentQuestion != .name,
                 isBackEnabled: !isTransitioning,
                 onPrimary: handlePrimaryAction,
                 onSkip: onSkip,
@@ -125,6 +133,7 @@ struct OnboardingQuestionsView: View {
             )
         }
         .background(Color.appBackground)
+        .keyboardDoneToolbar()
         .animation(OnboardingMotion.step, value: completedItems.count)
         .animation(OnboardingMotion.step, value: currentQuestion)
         .onTapGesture {

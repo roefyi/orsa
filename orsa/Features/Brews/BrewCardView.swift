@@ -13,8 +13,7 @@ struct BrewCardView: View {
     let onTap: () -> Void
     
     @Query private var beans: [Bean]
-    @Query private var equipment: [Equipment]
-    
+
     var bean: Bean? {
         guard let beanID = brew.beanID else { return nil }
         return beans.first { $0.id == beanID }

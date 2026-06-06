@@ -38,10 +38,20 @@ struct EditToolView: View {
                             Text(type.rawValue.capitalized).tag(type)
                         }
                     }
-                    TextField("Brand", text: $brand)
-                    TextField("Model", text: $model)
+                    HStack {
+                        Text("Brand")
+                        TextField("e.g. Lelit", text: $brand)
+                            .multilineTextAlignment(.trailing)
+                            .tint(AppColors.inputTint)
+                    }
+                    HStack {
+                        Text("Model")
+                        TextField("e.g. Anna", text: $model)
+                            .multilineTextAlignment(.trailing)
+                            .tint(AppColors.inputTint)
+                    }
                     Toggle("Set as Primary", isOn: $isPrimary)
-                        .tint(Color(red: 1.0, green: 0.8, blue: 0.0))
+                        .tint(AppColors.inputTint)
                 } header: {
                     Text("equipment info")
                         .foregroundColor(.secondaryText)
@@ -49,7 +59,7 @@ struct EditToolView: View {
                 }
             }
             .scrollContentBackground(.hidden)
-            .scrollDismissesKeyboard(.interactively)
+            .keyboardDoneToolbar()
             .background(Color.appBackground.ignoresSafeArea())
             .navigationTitle("edit tool")
             .navigationBarTitleDisplayMode(.inline)
@@ -79,12 +89,7 @@ struct EditToolView: View {
         equipment.brand = brand
         equipment.model = model
         equipment.isPrimary = isPrimary
-        
-        do {
-            try modelContext.save()
-        } catch {
-            print("Error saving equipment: \(error)")
-        }
+        modelContext.saveOrLog("edit equipment")
     }
 }
 
