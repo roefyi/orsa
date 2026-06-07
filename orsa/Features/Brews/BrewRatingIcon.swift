@@ -69,6 +69,8 @@ private enum BrewRatingPickerMotion {
     static let spring = Animation.spring(response: 0.45, dampingFraction: 0.72)
     static let popSpring = Animation.spring(response: 0.3, dampingFraction: 0.55)
     static let settleSpring = Animation.spring(response: 0.38, dampingFraction: 0.82)
+    static let fallAnimation = Animation.easeIn(duration: 0.95)
+    static let fallDuration: TimeInterval = 0.95
     static let popScale: CGFloat = 1.14
     static let popRotation: Double = -10
     static let restingScale: CGFloat = 1
@@ -77,6 +79,87 @@ private enum BrewRatingPickerMotion {
     static let buttonHeight: CGFloat = 60
     static let columnSpacing: CGFloat = 10
     static let cornerRadius: CGFloat = 12
+}
+
+struct BrewRatingFallEffect: Identifiable {
+    let id = UUID()
+    let emoji: String
+    let origin: CGPoint
+    let rotation: Double
+}
+
+struct BrewRatingFallEffectOverlay: View {
+    @Binding var effects: [BrewRatingFallEffect]
+
+    var body: some View {
+        GeometryReader { proxy in
+            let overlayFrame = proxy.frame(in: .global)
+
+            ZStack {
+                ForEach(effects) { effect in
+                    BrewRatingFallingEmoji(
+                        effect: effect,
+                        overlayOrigin: overlayFrame.origin,
+                        containerHeight: proxy.size.height,
+                        onFinished: {
+                            effects.removeAll { $0.id == effect.id }
+                        }
+                    )
+                }
+            }
+        }
+        .ignoresSafeArea()
+        .allowsHitTesting(false)
+    }
+}
+
+private struct BrewRatingFallingEmoji: View {
+    let effect: BrewRatingFallEffect
+    let overlayOrigin: CGPoint
+    let containerHeight: CGFloat
+    let onFinished: () -> Void
+
+    @State private var travelProgress: CGFloat = 0
+
+    private var localOrigin: CGPoint {
+        CGPoint(
+            x: effect.origin.x - overlayOrigin.x,
+            y: effect.origin.y - overlayOrigin.y
+        )
+    }
+
+    private var fallDistance: CGFloat {
+        containerHeight - localOrigin.y + 80
+    }
+
+    var body: some View {
+        Text(effect.emoji)
+            .font(.system(size: 34))
+            .scaleEffect(1 + travelProgress * 0.06)
+            .rotationEffect(.degrees(effect.rotation * Double(1 + travelProgress * 0.35)))
+            .opacity(Double(max(0, 1 - travelProgress * 1.1)))
+            .position(
+                x: localOrigin.x,
+                y: localOrigin.y + travelProgress * fallDistance
+            )
+            .onAppear {
+                withAnimation(BrewRatingPickerMotion.fallAnimation) {
+                    travelProgress = 1
+                }
+
+                DispatchQueue.main.asyncAfter(deadline: .now() + BrewRatingPickerMotion.fallDuration) {
+                    onFinished()
+                }
+            }
+    }
+}
+
+private struct BrewRatingButtonGlobalFrameKey: PreferenceKey {
+    static var defaultValue: CGRect = .zero
+
+    static func reduce(value: inout CGRect, nextValue: () -> CGRect) {
+        value = nextValue()
+    }
 }
 
 enum BrewRatingPickerOption: Int, CaseIterable, Identifiable {
@@ -124,6 +207,7 @@ enum BrewRatingPickerOption: Int, CaseIterable, Identifiable {
 struct BrewRatingPickerRow: View {
     @Binding var selectedRating: Int?
     @Binding var longPressJustCompleted: Bool
+    var onFallRequest: (BrewRatingPickerOption, CGPoint) -> Void = { _, _ in }
     @Namespace private var ratingHighlight
     
     var body: some View {
@@ -134,7 +218,8 @@ struct BrewRatingPickerRow: View {
                     isSelected: selectedRating == option.rawValue,
                     namespace: ratingHighlight,
                     longPressJustCompleted: $longPressJustCompleted,
-                    onSelect: {
+                    onSelect: { origin in
+                        onFallRequest(option, origin)
                         withAnimation(BrewRatingPickerMotion.spring) {
                             selectedRating = option.rawValue
                         }
@@ -157,12 +242,13 @@ private struct BrewRatingPickerButton: View {
     let isSelected: Bool
     let namespace: Namespace.ID
     @Binding var longPressJustCompleted: Bool
-    let onSelect: () -> Void
+    let onSelect: (CGPoint) -> Void
     let onDeselect: () -> Void
     
     @State private var presentationScale: CGFloat = 1
     @State private var presentationRotation: Double = 0
     @State private var settleTask: Task<Void, Never>?
+    @State private var globalFrame: CGRect = .zero
     
     var body: some View {
         Color.clear
@@ -203,6 +289,15 @@ private struct BrewRatingPickerButton: View {
             }
             .zIndex(isSelected ? 1 : 0)
             .contentShape(Rectangle())
+            .background {
+                GeometryReader { geo in
+                    Color.clear.preference(
+                        key: BrewRatingButtonGlobalFrameKey.self,
+                        value: geo.frame(in: .global)
+                    )
+                }
+            }
+            .onPreferenceChange(BrewRatingButtonGlobalFrameKey.self) { globalFrame = $0 }
             .onAppear {
                 syncPresentationToSelection()
             }
@@ -212,7 +307,8 @@ private struct BrewRatingPickerButton: View {
         .onTapGesture {
             if !longPressJustCompleted && !isSelected {
                 HapticFeedback.light()
-                onSelect()
+                let origin = CGPoint(x: globalFrame.midX, y: globalFrame.midY)
+                onSelect(origin)
             }
             longPressJustCompleted = false
         }

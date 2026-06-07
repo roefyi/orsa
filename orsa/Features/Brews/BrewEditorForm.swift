@@ -103,7 +103,6 @@ struct BrewEditorForm<Actions: View>: View {
     let userName: String
     @ViewBuilder var actions: () -> Actions
 
-    @Query(sort: \Bean.dateAdded, order: .reverse) private var beans: [Bean]
     @State private var showingEditParameters = false
     @State private var longPressJustCompleted = false
     @AppStorage("yieldUnit") private var yieldUnit: String = "grams"
@@ -111,7 +110,7 @@ struct BrewEditorForm<Actions: View>: View {
     var body: some View {
         ScrollView {
             VStack(spacing: 32) {
-                BrewDescriptionView(draft: $draft, userName: userName, beans: beans)
+                BrewDescriptionView(draft: $draft, userName: userName)
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.top, 40)
                     .padding(.horizontal, 20)
@@ -205,21 +204,28 @@ struct BrewEditorForm<Actions: View>: View {
     }
 }
 
-// MARK: - Inline description with tappable drink + bean selectors
+// MARK: - Brew description sentence
 
-/// Renders the "<name> is making a <drink> with <coffee> by <roaster>" sentence where
-/// the drink and coffee words are underlined inline menus — so the two most-changed
-/// fields can be set directly, without opening the parameters sheet.
+/// Renders the "<name> is making a <drink> with <coffee> by <roaster>" sentence.
+/// Drink and bean are read-only here — change them via the parameters sheet.
 private struct BrewDescriptionView: View {
     @Binding var draft: BrewDraft
     let userName: String
-    let beans: [Bean]
 
     private var leadingWords: [String] {
         let lead = userName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
             ? "making a"
             : "\(userName) is making a"
         return lead.split(separator: " ").map(String.init)
+    }
+
+    private var drinkWords: [String] {
+        draft.drinkType.lowercased().split(separator: " ").map(String.init)
+    }
+
+    private var beanWords: [String] {
+        let name = draft.selectedBean?.coffeeName ?? "coffee"
+        return name.split(separator: " ").map(String.init)
     }
 
     private var roaster: String {
@@ -232,11 +238,15 @@ private struct BrewDescriptionView: View {
                 word.titleWord
             }
 
-            drinkMenu
+            ForEach(Array(drinkWords.enumerated()), id: \.offset) { _, word in
+                word.titleWord
+            }
 
             "with".titleWord
 
-            beanMenu
+            ForEach(Array(beanWords.enumerated()), id: \.offset) { _, word in
+                word.titleWord
+            }
 
             if !roaster.isEmpty {
                 "by".titleWord
@@ -246,50 +256,12 @@ private struct BrewDescriptionView: View {
             }
         }
     }
-
-    private var drinkMenu: some View {
-        Menu {
-            ForEach(BrewOptions.drinkTypes, id: \.self) { type in
-                Button(type) {
-                    HapticFeedback.light()
-                    draft.drinkType = type
-                }
-            }
-        } label: {
-            selectableTitle(draft.drinkType.lowercased())
-        }
-    }
-
-    private var beanMenu: some View {
-        Menu {
-            Button("None") {
-                HapticFeedback.light()
-                draft.selectedBean = nil
-            }
-            ForEach(beans) { bean in
-                Button(bean.coffeeName.isEmpty ? "Untitled" : bean.coffeeName) {
-                    HapticFeedback.light()
-                    draft.selectedBean = bean
-                }
-            }
-        } label: {
-            selectableTitle(draft.selectedBean?.coffeeName ?? "coffee")
-        }
-    }
-
-    private func selectableTitle(_ text: String) -> some View {
-        Text(text)
-            .font(.oscineTitle)
-            .foregroundColor(.primary)
-            .underline()
-    }
 }
 
 private extension String {
-    /// A plain (non-interactive) word styled to match the description title.
     var titleWord: some View {
         Text(self)
-            .font(.oscineTitle)
+            .font(.oscineRegular(size: 28))
             .foregroundColor(.primary)
     }
 }
