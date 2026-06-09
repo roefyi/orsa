@@ -19,8 +19,9 @@ struct OnboardingDoseView: View {
             
             VStack(alignment: .leading, spacing: 20) {
                 Text("nice, what's your usual dose?")
-                    .font(.oscineRegular(size: 34))
+                    .font(.oscineRegular(size: 28))
                     .foregroundColor(.primary)
+                    .fixedSize(horizontal: false, vertical: true)
                 
                 HStack(spacing: 12) {
                     TextField("18.0", text: $defaultDose)

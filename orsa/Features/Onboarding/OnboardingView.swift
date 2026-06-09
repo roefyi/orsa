@@ -24,7 +24,7 @@ struct OnboardingView: View {
         self.onComplete = onComplete
     }
     
-    private static let screenTransition = Animation.smooth(duration: 0.6)
+    private static let screenTransition = Animation.smooth(duration: 0.95)
     
     var body: some View {
         ZStack {
