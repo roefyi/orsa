@@ -258,7 +258,6 @@ struct BrewShareCardView: View {
     @Environment(\.modelContext) private var modelContext
     
     @Query private var beans: [Bean]
-    @Query private var equipment: [Equipment]
     @Query private var userProfiles: [UserProfile]
     
     @State private var currentCardIndex = 0

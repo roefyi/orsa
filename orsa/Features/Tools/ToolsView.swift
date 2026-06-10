@@ -2,8 +2,6 @@
 //  ToolsView.swift
 //  orsa
 //
-//  Created by Rome on 1/9/26.
-//
 
 import SwiftUI
 import SwiftData
@@ -14,13 +12,11 @@ struct ToolsView: View {
     @State private var showingAddTool = false
     @State private var equipmentToEdit: Equipment?
     
-    var sortedEquipment: [Equipment] {
+    private var sortedEquipment: [Equipment] {
         equipment.sorted { first, second in
-            // Primary equipment first
             if first.isPrimary != second.isPrimary {
                 return first.isPrimary
             }
-            // Then by date added (most recent first)
             return first.dateAdded > second.dateAdded
         }
     }
@@ -29,20 +25,11 @@ struct ToolsView: View {
         NavigationStack {
             List {
                 ForEach(Array(sortedEquipment.enumerated()), id: \.element.id) { index, item in
-                    VStack(spacing: 0) {
+                    OrsaListItem(showsDivider: index < sortedEquipment.count - 1) {
                         EquipmentCardView(equipment: item) {
                             equipmentToEdit = item
                         }
-
-                        // Divider spanning full width (except for last item)
-                        if index < sortedEquipment.count - 1 {
-                            Divider()
-                                .padding(.horizontal, 20)
-                        }
                     }
-                    .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button(role: .destructive) {
                             deleteEquipment(item)
@@ -57,24 +44,14 @@ struct ToolsView: View {
             .scrollContentBackground(.hidden)
             .overlay {
                 if equipment.isEmpty {
-                    Text("press the + to add tools")
-                        .font(.oscineRegular(size: 17))
-                        .foregroundColor(.secondaryText)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 32)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    OrsaEmptyListOverlay(message: "press the + to add tools")
                 }
             }
             .navigationTitle("tools")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        showingAddTool = true
-                    } label: {
-                        Image(systemName: "plus")
-                            .font(.system(size: 18, weight: .semibold))
-                    }
+                    OrsaAddToolbarButton { showingAddTool = true }
                 }
 
                 ToolbarItem(placement: .navigationBarTrailing) {
@@ -87,14 +64,10 @@ struct ToolsView: View {
                 }
             }
             .sheet(isPresented: $showingAddTool) {
-                AddToolView()
-                    .presentationDetents([.large])
-                    .presentationDragIndicator(.visible)
+                EquipmentFormView(mode: .add).orsaLargeSheet()
             }
             .sheet(item: $equipmentToEdit) { equipment in
-                EditToolView(equipment: equipment)
-                    .presentationDetents([.large])
-                    .presentationDragIndicator(.visible)
+                EquipmentFormView(mode: .edit(equipment)).orsaLargeSheet()
             }
         }
     }

@@ -14,18 +14,15 @@ struct SplashScreenView: View {
     var body: some View {
         if showSplash {
             ZStack {
-                Color.appBackground
+                Color.black
                     .ignoresSafeArea()
                 
-                VStack(spacing: 0) {
-                    // Splash Screen Icon
-                    Image("orsasplashscreen")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 120, height: 120)
-                }
-                .scaleEffect(isActive ? 1.0 : 0.8)
-                .opacity(isActive ? 1.0 : 0.0)
+                Image("orsasplashscreen")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 100)
+                    .scaleEffect(isActive ? 1.0 : 0.92)
+                    .opacity(isActive ? 1.0 : 0.0)
             }
             .onAppear {
                 withAnimation(.easeOut(duration: 0.5)) {

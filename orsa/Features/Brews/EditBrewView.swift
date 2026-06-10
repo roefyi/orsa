@@ -33,14 +33,14 @@ struct EditBrewView: View {
     var body: some View {
         NavigationStack {
             BrewEditorForm(draft: $draft, userName: userName) {
-                // Save button (primary)
+                // Done button (primary)
                 Button {
                     HapticFeedback.medium()
                     saveBrew()
                     dismiss()
                 } label: {
-                    Text("save")
-                        .font(.oscineHeadline)
+                    Image(systemName: BrewActionIcon.done)
+                        .font(BrewActionIcon.font)
                         .foregroundColor(.buttonText)
                         .frame(maxWidth: .infinity)
                         .padding()

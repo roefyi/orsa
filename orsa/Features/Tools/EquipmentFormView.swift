@@ -1,15 +1,18 @@
 //
-//  EditToolView.swift
+//  EquipmentFormView.swift
 //  orsa
-//
-//  Created by Rome on 1/16/26.
 //
 
 import SwiftUI
 import SwiftData
 
-struct EditToolView: View {
-    let equipment: Equipment
+struct EquipmentFormView: View {
+    enum Mode {
+        case add
+        case edit(Equipment)
+    }
+    
+    let mode: Mode
     
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
@@ -19,14 +22,27 @@ struct EditToolView: View {
     @State private var model: String
     @State private var isPrimary: Bool
     
-    init(equipment: Equipment) {
-        self.equipment = equipment
-        
-        // Initialize state from equipment object
-        _type = State(initialValue: equipment.equipmentType)
-        _brand = State(initialValue: equipment.brand)
-        _model = State(initialValue: equipment.model)
-        _isPrimary = State(initialValue: equipment.isPrimary)
+    private var navigationTitle: String {
+        switch mode {
+        case .add: "add tool"
+        case .edit: "edit tool"
+        }
+    }
+    
+    init(mode: Mode) {
+        self.mode = mode
+        switch mode {
+        case .add:
+            _type = State(initialValue: .machine)
+            _brand = State(initialValue: "")
+            _model = State(initialValue: "")
+            _isPrimary = State(initialValue: false)
+        case .edit(let equipment):
+            _type = State(initialValue: equipment.equipmentType)
+            _brand = State(initialValue: equipment.brand)
+            _model = State(initialValue: equipment.model)
+            _isPrimary = State(initialValue: equipment.isPrimary)
+        }
     }
     
     var body: some View {
@@ -60,20 +76,18 @@ struct EditToolView: View {
             .scrollContentBackground(.hidden)
             .keyboardDoneToolbar()
             .background(Color.appBackground.ignoresSafeArea())
-            .navigationTitle("edit tool")
+            .navigationTitle(navigationTitle)
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.clear, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                    .font(.oscineHeadline)
-                    .foregroundColor(.primary)
+                    Button("Cancel") { dismiss() }
+                        .font(.oscineHeadline)
+                        .foregroundColor(.primary)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
-                        saveEquipment()
+                        save()
                         dismiss()
                     }
                     .disabled(brand.isEmpty && model.isEmpty)
@@ -83,24 +97,39 @@ struct EditToolView: View {
         }
     }
     
-    private func saveEquipment() {
-        // Update existing equipment
-        equipment.equipmentType = type
-        equipment.brand = brand
-        equipment.model = model
-        equipment.isPrimary = isPrimary
-        modelContext.saveOrLog("edit equipment")
+    private func save() {
+        switch mode {
+        case .add:
+            modelContext.insert(Equipment(
+                id: UUID(),
+                type: type.rawValue,
+                brand: brand,
+                model: model,
+                isPrimary: isPrimary
+            ))
+            modelContext.saveOrLog("add equipment")
+        case .edit(let equipment):
+            equipment.equipmentType = type
+            equipment.brand = brand
+            equipment.model = model
+            equipment.isPrimary = isPrimary
+            modelContext.saveOrLog("edit equipment")
+        }
     }
 }
 
-#Preview {
-    let equipment = Equipment(
+#Preview("Add") {
+    EquipmentFormView(mode: .add)
+        .modelContainer(for: [Equipment.self])
+}
+
+#Preview("Edit") {
+    EquipmentFormView(mode: .edit(Equipment(
         id: UUID(),
         type: EquipmentType.machine.rawValue,
         brand: "Lelit",
         model: "Anna",
         isPrimary: true
-    )
-    return EditToolView(equipment: equipment)
-        .modelContainer(for: [Equipment.self])
+    )))
+    .modelContainer(for: [Equipment.self])
 }
