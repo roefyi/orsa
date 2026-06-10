@@ -2,8 +2,6 @@
 //  ToolsView.swift
 //  orsa
 //
-//  Created by Rome on 1/9/26.
-//
 
 import SwiftUI
 import SwiftData
@@ -14,13 +12,11 @@ struct ToolsView: View {
     @State private var showingAddTool = false
     @State private var equipmentToEdit: Equipment?
     
-    var sortedEquipment: [Equipment] {
+    private var sortedEquipment: [Equipment] {
         equipment.sorted { first, second in
-            // Primary equipment first
             if first.isPrimary != second.isPrimary {
                 return first.isPrimary
             }
-            // Then by date added (most recent first)
             return first.dateAdded > second.dateAdded
         }
     }
@@ -28,13 +24,12 @@ struct ToolsView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(sortedEquipment) { item in
-                    EquipmentCardView(equipment: item) {
-                        equipmentToEdit = item
+                ForEach(Array(sortedEquipment.enumerated()), id: \.element.id) { index, item in
+                    OrsaListItem(showsDivider: index < sortedEquipment.count - 1) {
+                        EquipmentCardView(equipment: item) {
+                            equipmentToEdit = item
+                        }
                     }
-                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
                     .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                         Button(role: .destructive) {
                             deleteEquipment(item)
@@ -44,68 +39,42 @@ struct ToolsView: View {
                         .tint(.red)
                     }
                 }
-                
-                // Settings Section
-                Section {
-                    SettingsCardView()
-                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
-                        .listRowBackground(Color.clear)
-                        .listRowSeparator(.hidden)
-                } header: {
-                    Text("settings")
-                        .font(.oscineCaption)
-                        .foregroundColor(.secondary)
-                        .textCase(.uppercase)
-                }
-                
-                // Version Footer
-                Section {
-                    HStack {
-                        Spacer()
-                        Text("version 0.1.0")
-                            .font(.oscineRegular(size: 12))
-                            .foregroundColor(.secondary)
-                        Spacer()
-                    }
-                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 16, trailing: 16))
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                }
             }
             .listStyle(.plain)
             .scrollContentBackground(.hidden)
+            .overlay {
+                if equipment.isEmpty {
+                    OrsaEmptyListOverlay(message: "press the + to add tools")
+                }
+            }
             .navigationTitle("tools")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        showingAddTool = true
+                    OrsaAddToolbarButton { showingAddTool = true }
+                }
+
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    NavigationLink {
+                        SettingsView()
                     } label: {
-                        Image(systemName: "plus")
+                        Image(systemName: "gearshape")
                             .font(.system(size: 18, weight: .semibold))
                     }
                 }
             }
             .sheet(isPresented: $showingAddTool) {
-                AddToolView()
-                    .presentationDetents([.large])
-                    .presentationDragIndicator(.visible)
+                EquipmentFormView(mode: .add).orsaLargeSheet()
             }
             .sheet(item: $equipmentToEdit) { equipment in
-                EditToolView(equipment: equipment)
-                    .presentationDetents([.large])
-                    .presentationDragIndicator(.visible)
+                EquipmentFormView(mode: .edit(equipment)).orsaLargeSheet()
             }
         }
     }
     
     private func deleteEquipment(_ equipment: Equipment) {
         modelContext.delete(equipment)
-        do {
-            try modelContext.save()
-        } catch {
-            print("Error deleting equipment: \(error)")
-        }
+        modelContext.saveOrLog("delete equipment")
     }
 }
 

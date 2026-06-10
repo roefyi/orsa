@@ -11,319 +11,123 @@ import SwiftData
 struct NewBrewView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    
+
     @Query private var userProfiles: [UserProfile]
     @Query private var beans: [Bean]
     @Query private var equipment: [Equipment]
     @Query(sort: \Brew.timestamp, order: .reverse) private var brews: [Brew]
-    
-    @State private var brewTime: Double = 30.0 // seconds, default 30
-    @State private var yield: Double = 36.0 // grams or ml, default 36
-    @State private var notes = ""
-    @State private var selectedRating: Int? = nil
-    @State private var temperature = ""
-    @State private var grindSetting = ""
-    
-    // This will be auto-populated based on last brew
-    @State private var selectedBean: Bean?
-    @State private var selectedMachine: Equipment?
-    @State private var selectedGrinder: Equipment?
-    @State private var drinkType = "Double Shot"
-    @State private var milkType = "None"
-    @State private var dose: Double = 18.0
-    @State private var showingEditParameters = false
-    @State private var longPressJustCompleted = false
-    @State private var showingShareCard = false
+
+    @State private var draft = BrewDraft()
     @State private var shareBrew: Brew?
+    /// A brew that was persisted early because the user tapped Share. Tracked so we
+    /// can update it on Done, or delete it on Cancel (otherwise Cancel would leave a
+    /// stray saved brew behind).
     @State private var savedBrewForShare: Brew?
-    @AppStorage("yieldUnit") private var yieldUnit: String = "grams"
-    
+
     var userName: String {
         userProfiles.first?.name ?? ""
     }
-    
-    var descriptionText: String {
-        let coffeeName = selectedBean?.coffeeName ?? "coffee"
-        let roasterName = selectedBean?.roaster ?? ""
-        let drinkTypeLower = drinkType.lowercased()
-        if !roasterName.isEmpty {
-            return "\(userName) is making a \(drinkTypeLower) with \(coffeeName) by \(roasterName)"
-        } else {
-            return "\(userName) is making a \(drinkTypeLower) with \(coffeeName)"
-        }
-    }
-    
+
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 32) {
-                    // Description text left-aligned with title styling
-                    Text(descriptionText)
-                        .font(.oscineTitle)
-                        .foregroundColor(.primary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.top, 40)
-                        .padding(.horizontal, 20)
-                    
-                    VStack(spacing: 16) {
-                        // Brew Details Section
-                        VStack(alignment: .leading, spacing: 16) {
-                            Text("brew details")
-                                .font(.oscineHeadline)
-                                .foregroundColor(.primary)
-                                .textCase(.lowercase)
-                            
-                            CustomSlider(
-                                title: "Yield",
-                                value: $yield,
-                                in: 10...110,
-                                step: 1,
-                                suffix: yieldUnit == "ml" ? "ml" : "g"
-                            )
-                            
-                            CustomSlider(
-                                title: "Time",
-                                value: $brewTime,
-                                in: 15...75,
-                                step: 1,
-                                suffix: "s"
-                            )
-                        }
-                        
-                        // Rating Section
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("rating")
-                                .font(.oscineHeadline)
-                                .foregroundColor(.primary)
-                                .textCase(.lowercase)
-                            
-                            BrewRatingPickerRow(
-                                selectedRating: $selectedRating,
-                                longPressJustCompleted: $longPressJustCompleted
-                            )
-                        }
-                        
-                        // Notes Section
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("notes")
-                                .font(.oscineHeadline)
-                                .foregroundColor(.primary)
-                                .textCase(.lowercase)
-                            
-                            TextField("Notes", text: $notes, axis: .vertical)
-                                .lineLimit(3...6)
-                                .tint(Color(red: 1.0, green: 0.8, blue: 0.0))
-                                .padding()
-                                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 12, style: .continuous))
-                                .foregroundColor(.primary)
-                        }
-                        
-                        // Action Buttons
-                        VStack(spacing: 12) {
-                            // Done button (primary) - submits and saves
-                            Button {
-                                HapticFeedback.medium()
-                                // Only save if not already saved for sharing
-                                if savedBrewForShare == nil {
-                                    saveBrew()
-                                } else {
-                                    // Update the already-saved brew
-                                    if let brew = savedBrewForShare {
-                                        updateBrew(brew)
-                                    }
-                                }
-                                dismiss()
-                            } label: {
-                                Image(systemName: BrewActionIcon.done)
-                                    .font(BrewActionIcon.font)
-                                    .foregroundColor(.buttonText)
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                                    .background(AppColors.buttonYellow)
-                                    .cornerRadius(12)
-                            }
-                            
-                            // Share button (secondary) - always visible
-                            Button {
-                                HapticFeedback.light()
-                                if let brew = savedBrewForShare {
-                                    // Use already-saved brew
-                                    updateBrew(brew)
-                                    shareBrew = brew
-                                    showingShareCard = true
-                                } else {
-                                    // Save new brew first, then share
-                                    let newBrew = Brew(
-                                        beanID: selectedBean?.id,
-                                        machineID: selectedMachine?.id,
-                                        grinderID: selectedGrinder?.id,
-                                        drinkType: drinkType,
-                                        milkType: milkType == "None" ? nil : milkType,
-                                        dose: dose,
-                                        grindSetting: grindSetting,
-                                        temperature: Double(temperature) ?? 0,
-                                        brewTime: "\(Int(brewTime))s",
-                                        yield: yield,
-                                        rating: selectedRating,
-                                        notes: notes.isEmpty ? nil : notes,
-                                        method: drinkType.lowercased()
-                                    )
-                                    modelContext.insert(newBrew)
-                                    do {
-                                        try modelContext.save()
-                                        savedBrewForShare = newBrew
-                                        shareBrew = newBrew
-                                        showingShareCard = true
-                                    } catch {
-                                        print("Error saving brew for share: \(error)")
-                                    }
-                                }
-                            } label: {
-                                Image(systemName: BrewActionIcon.share)
-                                    .font(BrewActionIcon.font)
-                                    .foregroundColor(.primary)
-                                    .frame(maxWidth: .infinity)
-                                    .padding()
-                            }
-                        }
+            BrewEditorForm(draft: $draft, userName: userName) {
+                // Done button (primary) — submits and saves
+                Button {
+                    HapticFeedback.medium()
+                    if let brew = savedBrewForShare {
+                        draft.apply(to: brew)
+                        modelContext.saveOrLog("update brew")
+                    } else {
+                        let brew = draft.makeBrew()
+                        modelContext.insert(brew)
+                        modelContext.saveOrLog("save brew")
                     }
-                    .padding(.horizontal, 20)
+                    dismiss()
+                } label: {
+                    Image(systemName: BrewActionIcon.done)
+                        .font(BrewActionIcon.font)
+                        .foregroundColor(.buttonText)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                        .background(AppColors.buttonYellow)
+                        .cornerRadius(12)
                 }
-                .padding(.bottom, 100)
+
+                // Share button (secondary) — persists then opens the share card
+                Button {
+                    HapticFeedback.light()
+                    let brew: Brew
+                    if let existing = savedBrewForShare {
+                        draft.apply(to: existing)
+                        brew = existing
+                    } else {
+                        brew = draft.makeBrew()
+                        modelContext.insert(brew)
+                        savedBrewForShare = brew
+                    }
+                    modelContext.saveOrLog("save brew for share")
+                    shareBrew = brew
+                } label: {
+                    Image(systemName: BrewActionIcon.share)
+                        .font(BrewActionIcon.font)
+                        .foregroundColor(.primary)
+                        .frame(maxWidth: .infinity)
+                        .padding()
+                }
             }
-            .scrollContentBackground(.hidden)
-            .scrollDismissesKeyboard(.interactively)
-            .background(Color.appBackground.ignoresSafeArea())
             .navigationTitle("new brew")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarBackground(.clear, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Cancel") {
+                        // If Share created an early brew, discard it on cancel.
+                        if let orphan = savedBrewForShare {
+                            modelContext.delete(orphan)
+                            modelContext.saveOrLog("discard unsaved brew")
+                        }
                         dismiss()
                     }
                     .foregroundColor(.primary)
                 }
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Edit") {
-                        showingEditParameters = true
-                    }
-                    .font(.oscineHeadline)
-                    .foregroundColor(.primary)
-                }
             }
-            .onAppear {
-                setupAutoPopulation()
-            }
-            .fullScreenCover(isPresented: $showingEditParameters) {
-                EditBrewParametersView(
-                    selectedBean: $selectedBean,
-                    selectedMachine: $selectedMachine,
-                    selectedGrinder: $selectedGrinder,
-                    temperature: $temperature,
-                    grindSetting: $grindSetting,
-                    drinkType: $drinkType,
-                    milkType: $milkType,
-                    dose: $dose
-                )
-            }
+            .onAppear(perform: setupAutoPopulation)
             .fullScreenCover(item: $shareBrew) { brew in
                 BrewShareCardView(brew: brew)
             }
         }
     }
-    
+
     private func setupAutoPopulation() {
-        // Get default dose from user profile
+        // Start from the user's default dose.
         if let profile = userProfiles.first {
-            dose = profile.defaultDose
+            draft.dose = profile.defaultDose
         }
-        
-        // Get current beans
-        selectedBean = beans.first { $0.status == BeanStatus.current.rawValue }
-        
-        // Load last brew's parameters (drink type, temperature, grind setting)
+
+        // Default to a current bean.
+        draft.selectedBean = beans.first { $0.status == BeanStatus.current.rawValue }
+
         if let lastBrew = brews.first {
-            // Always use last brew's drink type, temperature, and grind setting
-            drinkType = lastBrew.drinkType.isEmpty ? "Double Shot" : lastBrew.drinkType
-            temperature = lastBrew.temperature > 0 ? String(Int(lastBrew.temperature)) : ""
-            grindSetting = lastBrew.grindSetting.isEmpty ? "" : lastBrew.grindSetting
-            milkType = lastBrew.milkType ?? "None"
-            
-            // Also load equipment and dose from last brew
-            if lastBrew.machineID != nil {
-                selectedMachine = equipment.first { $0.id == lastBrew.machineID }
-            } else {
-                // Fallback to primary machine if last brew had none
-                selectedMachine = equipment.first { $0.equipmentType == .machine && $0.isPrimary }
-            }
-            
-            if lastBrew.grinderID != nil {
-                selectedGrinder = equipment.first { $0.id == lastBrew.grinderID }
-            } else {
-                // Fallback to primary grinder if last brew had none
-                selectedGrinder = equipment.first { $0.equipmentType == .grinder && $0.isPrimary }
-            }
-            
+            // Carry over the last brew's parameters.
+            draft.drinkType = lastBrew.drinkType.isEmpty ? "Double Shot" : lastBrew.drinkType
+            draft.temperature = lastBrew.temperature > 0 ? String(Int(lastBrew.temperature)) : ""
+            draft.grindSetting = lastBrew.grindSetting
+            draft.milkType = lastBrew.milkType ?? "None"
+
+            draft.selectedMachine = equipment.first { $0.id == lastBrew.machineID }
+                ?? equipment.first { $0.equipmentType == .machine && $0.isPrimary }
+            draft.selectedGrinder = equipment.first { $0.id == lastBrew.grinderID }
+                ?? equipment.first { $0.equipmentType == .grinder && $0.isPrimary }
+
             if lastBrew.dose > 0 {
-                dose = lastBrew.dose
+                draft.dose = lastBrew.dose
             }
         } else {
-            // No previous brews - use defaults
-            drinkType = "Double Shot"
-            milkType = "None"
-            
-            // Use primary equipment
-            selectedMachine = equipment.first { $0.equipmentType == .machine && $0.isPrimary }
-            selectedGrinder = equipment.first { $0.equipmentType == .grinder && $0.isPrimary }
-        }
-    }
-    
-    private func updateBrew(_ brew: Brew) {
-        brew.beanID = selectedBean?.id
-        brew.machineID = selectedMachine?.id
-        brew.grinderID = selectedGrinder?.id
-        brew.drinkType = drinkType
-        brew.milkType = milkType == "None" ? nil : milkType
-        brew.dose = dose
-        brew.grindSetting = grindSetting
-        brew.temperature = Double(temperature) ?? 0
-        brew.brewTime = "\(Int(brewTime))s"
-        brew.yield = yield
-        brew.rating = selectedRating
-        brew.notes = notes.isEmpty ? nil : notes
-        brew.method = drinkType.lowercased()
-        
-        do {
-            try modelContext.save()
-        } catch {
-            print("Error updating brew: \(error)")
-        }
-    }
-    
-    private func saveBrew() {
-        // Create new brew
-        let brew = Brew(
-            beanID: selectedBean?.id,
-            machineID: selectedMachine?.id,
-            grinderID: selectedGrinder?.id,
-            drinkType: drinkType,
-            milkType: milkType == "None" ? nil : milkType,
-            dose: dose,
-            grindSetting: grindSetting,
-            temperature: Double(temperature) ?? 0,
-            brewTime: "\(Int(brewTime))s",
-            yield: yield,
-            rating: selectedRating,
-            notes: notes.isEmpty ? nil : notes,
-            method: drinkType.lowercased()
-        )
-        modelContext.insert(brew)
-        
-        do {
-            try modelContext.save()
-        } catch {
-            print("Error saving brew: \(error)")
+            // No history — fall back to defaults + primary equipment.
+            draft.drinkType = "Double Shot"
+            draft.milkType = "None"
+            draft.selectedMachine = equipment.first { $0.equipmentType == .machine && $0.isPrimary }
+            draft.selectedGrinder = equipment.first { $0.equipmentType == .grinder && $0.isPrimary }
         }
     }
 }

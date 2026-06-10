@@ -2,18 +2,12 @@
 //  MainTabView.swift
 //  orsa
 //
-//  Created by Rome on 1/9/26.
-//
 
 import SwiftUI
-import SwiftData
 
 struct MainTabView: View {
-    @Query private var userProfiles: [UserProfile]
-    
     var body: some View {
         ZStack {
-            // Base background layer that materials will blur
             Color.appBackground
                 .ignoresSafeArea(.all)
             

@@ -11,6 +11,7 @@ struct OnboardingActionBar: View {
     var primaryIcon: String = "arrow.right"
     var isPrimaryEnabled: Bool = true
     var isSkipEnabled: Bool = true
+    var showsSkip: Bool = true
     var isBackEnabled: Bool = true
     let onPrimary: () -> Void
     let onSkip: () -> Void
@@ -42,15 +43,17 @@ struct OnboardingActionBar: View {
                 .disabled(!isPrimaryEnabled)
             }
             
-            Button(action: onSkip) {
-                Image(systemName: "forward.end")
-                    .font(.system(size: 20, weight: .light))
-                    .foregroundColor(isSkipEnabled ? .primary : .secondary)
-                    .frame(maxWidth: .infinity)
-                    .frame(height: 44)
+            if showsSkip {
+                Button(action: onSkip) {
+                    Image(systemName: "forward.end")
+                        .font(.system(size: 20, weight: .light))
+                        .foregroundColor(isSkipEnabled ? .primary : .secondary)
+                        .frame(maxWidth: .infinity)
+                        .frame(height: 44)
+                }
+                .buttonStyle(.plain)
+                .disabled(!isSkipEnabled)
             }
-            .buttonStyle(.plain)
-            .disabled(!isSkipEnabled)
         }
         .padding(.horizontal, 32)
         .padding(.bottom, 50)

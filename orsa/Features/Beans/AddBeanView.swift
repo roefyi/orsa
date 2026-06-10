@@ -11,7 +11,7 @@ import SwiftData
 struct AddBeanView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
-    
+
     @State private var coffeeName = ""
     @State private var roaster = ""
     @State private var roastDate = Date()
@@ -21,50 +21,66 @@ struct AddBeanView: View {
     @State private var notes = ""
     @State private var isPrimary = false
     @State private var status: BeanStatus = .current
-    
+
+    private var canSave: Bool {
+        !coffeeName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            && !roaster.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
     var body: some View {
         NavigationStack {
             Form {
+                // The essentials — only name + roaster are required.
                 Section {
                     TextField("Coffee Name", text: $coffeeName)
                     TextField("Roaster", text: $roaster)
+                } header: {
+                    Text("coffee")
+                        .font(.oscineCaption)
+                        .foregroundColor(.secondaryText)
+                        .textCase(.uppercase)
+                }
+
+                // Industry-standard attributes; origin is free text.
+                Section {
+                    TextField("Origin", text: $origin)
+                    BeanOptionPicker(title: "Process", options: CoffeeReference.processes, selection: $process)
+                    BeanOptionPicker(title: "Roast Level", options: CoffeeReference.roastLevels, selection: $roastLevel)
                     DatePicker("Roast Date", selection: $roastDate, displayedComponents: .date)
-                        .tint(Color(red: 1.0, green: 0.8, blue: 0.0))
+                } header: {
+                    Text("details")
+                        .font(.oscineCaption)
+                        .foregroundColor(.secondaryText)
+                        .textCase(.uppercase)
+                }
+
+                // Tasting notes with quick-add flavor chips.
+                Section {
+                    FlavorNotesEditor(notes: $notes)
+                } header: {
+                    Text("tasting notes")
+                        .font(.oscineCaption)
+                        .foregroundColor(.secondaryText)
+                        .textCase(.uppercase)
+                }
+
+                Section {
                     Picker("Status", selection: $status) {
                         ForEach(BeanStatus.allCases, id: \.self) { status in
                             Text(status.rawValue.capitalized).tag(status)
                         }
                     }
                     Toggle("Set as Primary", isOn: $isPrimary)
-                        .tint(Color(red: 1.0, green: 0.8, blue: 0.0))
                 } header: {
-                    Text("coffee info")
-                        .foregroundColor(.secondaryText)
-                        .textCase(.uppercase)
-                }
-                
-                Section {
-                    TextField("Origin", text: $origin)
-                    TextField("Process", text: $process)
-                    TextField("Roast Level", text: $roastLevel)
-                } header: {
-                    Text("details")
-                        .foregroundColor(.secondaryText)
-                        .textCase(.uppercase)
-                }
-                
-                Section {
-                    TextField("Tasting Notes", text: $notes, axis: .vertical)
-                        .lineLimit(3...6)
-                        .tint(Color(red: 1.0, green: 0.8, blue: 0.0))
-                } header: {
-                    Text("notes")
+                    Text("shelf")
+                        .font(.oscineCaption)
                         .foregroundColor(.secondaryText)
                         .textCase(.uppercase)
                 }
             }
+            .appFormStyle()
             .scrollContentBackground(.hidden)
-            .scrollDismissesKeyboard(.interactively)
+            .keyboardDoneToolbar()
             .background(Color.appBackground.ignoresSafeArea())
             .navigationTitle("add beans")
             .navigationBarTitleDisplayMode(.inline)
@@ -74,6 +90,7 @@ struct AddBeanView: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .font(.oscineHeadline)
                     .foregroundColor(.primary)
                 }
                 ToolbarItem(placement: .confirmationAction) {
@@ -81,17 +98,17 @@ struct AddBeanView: View {
                         saveBean()
                         dismiss()
                     }
-                    .disabled(coffeeName.isEmpty || roaster.isEmpty)
+                    .disabled(!canSave)
                     .font(.oscineHeadline)
                 }
             }
         }
     }
-    
+
     private func saveBean() {
         let bean = Bean(
-            coffeeName: coffeeName,
-            roaster: roaster,
+            coffeeName: coffeeName.trimmingCharacters(in: .whitespacesAndNewlines),
+            roaster: roaster.trimmingCharacters(in: .whitespacesAndNewlines),
             roastDate: roastDate,
             process: process.isEmpty ? nil : process,
             origin: origin.isEmpty ? nil : origin,
@@ -101,12 +118,7 @@ struct AddBeanView: View {
             isPrimary: isPrimary
         )
         modelContext.insert(bean)
-        
-        do {
-            try modelContext.save()
-        } catch {
-            print("Error saving bean: \(error)")
-        }
+        modelContext.saveOrLog("add bean")
     }
 }
 

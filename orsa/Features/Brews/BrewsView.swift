@@ -2,8 +2,6 @@
 //  BrewsView.swift
 //  orsa
 //
-//  Created by Rome on 1/9/26.
-//
 
 import SwiftUI
 import SwiftData
@@ -11,29 +9,27 @@ import SwiftData
 struct BrewsView: View {
     @Environment(\.modelContext) private var modelContext
     @Query(sort: \Brew.timestamp, order: .reverse) private var brews: [Brew]
+    @Query private var beans: [Bean]
     @State private var showingNewBrew = false
     @State private var brewToEdit: Brew?
     @State private var brewToShare: Brew?
+    
+    private var beansByID: [UUID: Bean] {
+        Dictionary(uniqueKeysWithValues: beans.map { ($0.id, $0) })
+    }
     
     var body: some View {
         NavigationStack {
             List {
                 ForEach(Array(brews.enumerated()), id: \.element.id) { index, brew in
-                    VStack(spacing: 0) {
-                        BrewCardView(brew: brew) {
-                            HapticFeedback.light()
+                    OrsaListItem(showsDivider: index < brews.count - 1) {
+                        BrewCardView(
+                            brew: brew,
+                            bean: brew.beanID.flatMap { beansByID[$0] }
+                        ) {
                             brewToShare = brew
                         }
-                        
-                        // Divider spanning full width (except for last item)
-                        if index < brews.count - 1 {
-                            Divider()
-                                .padding(.horizontal, 20)
-                        }
                     }
-                    .listRowInsets(EdgeInsets(top: 8, leading: 0, bottom: 8, trailing: 0))
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
                     .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                         Button(role: .destructive) {
                             deleteBrew(brew)
@@ -55,24 +51,14 @@ struct BrewsView: View {
             .scrollContentBackground(.hidden)
             .overlay {
                 if brews.isEmpty {
-                    Text("press the + to add brew")
-                        .font(.oscineRegular(size: 17))
-                        .foregroundColor(.secondaryText)
-                        .multilineTextAlignment(.center)
-                        .padding(.horizontal, 32)
-                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                    OrsaEmptyListOverlay(message: "press the + to add brew")
                 }
             }
             .navigationTitle("all brews")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
                 ToolbarItem(placement: .navigationBarTrailing) {
-                    Button {
-                        showingNewBrew = true
-                    } label: {
-                        Image(systemName: "plus")
-                            .font(.system(size: 18, weight: .semibold))
-                    }
+                    OrsaAddToolbarButton { showingNewBrew = true }
                 }
             }
             .fullScreenCover(isPresented: $showingNewBrew) {
@@ -89,11 +75,7 @@ struct BrewsView: View {
     
     private func deleteBrew(_ brew: Brew) {
         modelContext.delete(brew)
-        do {
-            try modelContext.save()
-        } catch {
-            print("Error deleting brew: \(error)")
-        }
+        modelContext.saveOrLog("delete brew")
     }
 }
 

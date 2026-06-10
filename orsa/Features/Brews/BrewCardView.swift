@@ -2,23 +2,13 @@
 //  BrewCardView.swift
 //  orsa
 //
-//  Created by Rome on 1/9/26.
-//
 
 import SwiftUI
-import SwiftData
 
 struct BrewCardView: View {
     let brew: Brew
+    let bean: Bean?
     let onTap: () -> Void
-    
-    @Query private var beans: [Bean]
-    @Query private var equipment: [Equipment]
-    
-    var bean: Bean? {
-        guard let beanID = brew.beanID else { return nil }
-        return beans.first { $0.id == beanID }
-    }
     
     @ViewBuilder
     private var ratingIcon: some View {
@@ -28,12 +18,11 @@ struct BrewCardView: View {
     }
     
     var body: some View {
-        Button(action: {
+        Button {
             HapticFeedback.light()
             onTap()
-        }) {
+        } label: {
             HStack(spacing: 16) {
-                // Square coffee image (Apple Books style)
                 if let photoData = bean?.photoData, let uiImage = UIImage(data: photoData) {
                     Image(uiImage: uiImage)
                         .resizable()
@@ -41,7 +30,6 @@ struct BrewCardView: View {
                         .frame(width: 80, height: 80)
                         .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
                 } else {
-                    // Placeholder with coffee icon
                     ZStack {
                         RoundedRectangle(cornerRadius: 8, style: .continuous)
                             .fill(Color.secondary.opacity(0.2))
@@ -52,15 +40,12 @@ struct BrewCardView: View {
                     .frame(width: 80, height: 80)
                 }
                 
-                // Content
                 VStack(alignment: .leading, spacing: 6) {
-                    // Coffee name
                     Text(bean?.coffeeName ?? "Unknown Coffee")
                         .font(.oscineHeadline)
                         .foregroundColor(.primary)
                         .lineLimit(1)
                     
-                    // Roaster
                     if let roaster = bean?.roaster, !roaster.isEmpty {
                         Text(roaster)
                             .font(.oscineSubheadline)
@@ -70,7 +55,6 @@ struct BrewCardView: View {
                     
                     Spacer()
                     
-                    // Bottom row: drink type, date, rating
                     HStack(spacing: 8) {
                         Text(brew.drinkType)
                             .font(.oscineCaption)
@@ -100,12 +84,8 @@ struct BrewCardView: View {
 }
 
 #Preview {
-    let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: Brew.self, Bean.self, configurations: config)
     let brew = Brew(timestamp: Date(), drinkType: "Espresso")
-    
     List {
-        BrewCardView(brew: brew, onTap: {})
+        BrewCardView(brew: brew, bean: nil, onTap: {})
     }
-    .modelContainer(container)
 }

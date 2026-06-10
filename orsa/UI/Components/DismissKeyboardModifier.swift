@@ -2,8 +2,6 @@
 //  DismissKeyboardModifier.swift
 //  orsa
 //
-//  Created by Rome on 1/9/26.
-//
 
 import SwiftUI
 import UIKit
@@ -20,14 +18,20 @@ enum KeyboardDismissal {
 }
 
 extension View {
-    /// Dismisses the keyboard when the user scrolls content.
-    func dismissKeyboardOnDrag() -> some View {
-        modifier(DismissKeyboardOnDragModifier())
-    }
-}
-
-struct DismissKeyboardOnDragModifier: ViewModifier {
-    func body(content: Content) -> some View {
-        content.scrollDismissesKeyboard(.interactively)
+    /// Adds a "Done" button above the keyboard and dismisses it on interactive scroll.
+    func keyboardDoneToolbar() -> some View {
+        self
+            .scrollDismissesKeyboard(.interactively)
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        HapticFeedback.light()
+                        KeyboardDismissal.dismiss()
+                    }
+                    .font(.oscineHeadline)
+                    .foregroundStyle(.primary)
+                }
+            }
     }
 }

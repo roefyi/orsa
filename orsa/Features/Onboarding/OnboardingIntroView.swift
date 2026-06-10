@@ -10,6 +10,8 @@ import SwiftUI
 struct OnboardingIntroView: View {
     let onNext: () -> Void
     let onSkip: () -> Void
+    // Skip is hidden on the intro because a name is required before the tour can be
+    // skipped — the user must reach (and complete) the name step first.
     
     var body: some View {
         VStack(spacing: 0) {
@@ -28,7 +30,7 @@ struct OnboardingIntroView: View {
             
             Spacer()
             
-            OnboardingActionBar(onPrimary: onNext, onSkip: onSkip)
+            OnboardingActionBar(showsSkip: false, onPrimary: onNext, onSkip: onSkip)
         }
         .background(Color.appBackground)
     }

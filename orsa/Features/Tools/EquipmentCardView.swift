@@ -47,9 +47,11 @@ struct EquipmentCardView: View {
                         .foregroundColor(.primary)
                 }
             }
-            .padding(16)
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+            .contentShape(Rectangle())
+            .background(Color.clear)
         }
         .buttonStyle(.plain)
     }

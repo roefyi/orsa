@@ -25,9 +25,10 @@ struct EditBrewParametersView: View {
     @Binding var milkType: String
     @Binding var dose: Double
     
-    // Local state for drink type picker
-    @State private var drinkTypeOptions = ["Double Shot", "Cappuccino", "Latte", "Americano", "Macchiato", "Flat White", "Cortado", "Espresso Tonic", "Lungo", "Ristretto", "Allongé"]
-    @State private var milkTypeOptions = ["None", "Whole", "Oat", "Almond", "Soy", "Coconut", "2%", "Skim", "Tonic Water"]
+    @AppStorage("temperatureUnit") private var temperatureUnit: String = "F"
+
+    private let drinkTypeOptions = BrewOptions.drinkTypes
+    private let milkTypeOptions = BrewOptions.milkTypes
     
     init(
         selectedBean: Binding<Bean?>,
@@ -123,15 +124,35 @@ struct EditBrewParametersView: View {
                 }
                 
                 // Dose
-                TextField("Dose", value: $dose, format: .number)
-                    .keyboardType(.decimalPad)
-                
+                HStack {
+                    Text("Dose")
+                    TextField("18.0", value: $dose, format: .number)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .tint(AppColors.inputTint)
+                    Text("g")
+                        .foregroundColor(.secondary)
+                }
+
                 // Temperature
-                TextField("Temperature", text: $temperature)
-                    .keyboardType(.numberPad)
-                
+                HStack {
+                    Text("Temperature")
+                    TextField("0", text: $temperature)
+                        .keyboardType(.numberPad)
+                        .multilineTextAlignment(.trailing)
+                        .tint(AppColors.inputTint)
+                    Text("°\(temperatureUnit)")
+                        .foregroundColor(.secondary)
+                }
+
                 // Grind Size
-                TextField("Grind Size", text: $grindSetting)
+                HStack {
+                    Text("Grind Size")
+                    TextField("0", text: $grindSetting)
+                        .keyboardType(.decimalPad)
+                        .multilineTextAlignment(.trailing)
+                        .tint(AppColors.inputTint)
+                }
                 
                 // Drink Type
                 Picker("Drink Type", selection: $drinkType) {
@@ -147,8 +168,9 @@ struct EditBrewParametersView: View {
                     }
                 }
             }
+            .appFormStyle()
             .scrollContentBackground(.hidden)
-            .scrollDismissesKeyboard(.interactively)
+            .keyboardDoneToolbar()
             .background(Color.appBackground)
             .navigationTitle("parameters")
             .onAppear {
@@ -166,14 +188,15 @@ struct EditBrewParametersView: View {
                     Button("Cancel") {
                         dismiss()
                     }
+                    .font(.oscineHeadline)
                     .foregroundColor(.primary)
                 }
                 ToolbarItem(placement: .confirmationAction) {
                     Button("Save") {
                         dismiss()
                     }
-                    .tint(.accent)
                     .font(.oscineHeadline)
+                    .foregroundColor(.primary)
                 }
             }
         }
